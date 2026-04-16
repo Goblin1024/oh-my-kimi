@@ -53,6 +53,43 @@ OMK uses Kimi's native hooks system:
     └── *.md                # Context snapshots
 ```
 
+## Verification
+
+### Run All Tests
+
+```bash
+npm run test:all
+```
+
+### Individual Checks
+
+```bash
+# Verify installation
+npm run verify
+
+# Test hook handler
+npm run test:hook
+
+# Check installation health
+omk doctor
+```
+
+## Development
+
+```bash
+# Install dependencies
+npm install
+
+# Build
+npm run build
+
+# Watch mode
+npm run dev
+
+# Run setup locally
+npm run setup
+```
+
 ## Requirements
 
 - Node.js 20+
@@ -66,6 +103,19 @@ omk doctor     # Check installation
 omk --version  # Show version
 omk --help     # Show help
 ```
+
+## Verification Checklist
+
+After installation, verify:
+
+- [ ] `omk setup` completes with 7/7 steps passing
+- [ ] `omk doctor` shows all checks passing
+- [ ] `npm run verify` shows 11/11 checks passing
+- [ ] `npm run test:hook` shows 5/5 tests passing
+- [ ] Hook handler returns valid JSON
+- [ ] State files created in `.omk/state/`
+
+See [VERIFICATION.md](VERIFICATION.md) for detailed testing guide.
 
 ## License
 
