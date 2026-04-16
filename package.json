@@ -1,0 +1,36 @@
+{
+  "name": "oh-my-kimi",
+  "version": "0.1.0",
+  "description": "Workflow orchestration layer for Kimi Code CLI",
+  "type": "module",
+  "main": "dist/index.js",
+  "bin": {
+    "omk": "bin/omk.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "setup": "node dist/cli/index.js setup",
+    "doctor": "node dist/cli/index.js doctor"
+  },
+  "keywords": [
+    "kimi",
+    "cli",
+    "workflow",
+    "agents",
+    "orchestration"
+  ],
+  "author": "Yeachan Heo",
+  "license": "MIT",
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@iarna/toml": "^2.2.5",
+    "yaml": "^2.4.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.4.0"
+  }
+}
