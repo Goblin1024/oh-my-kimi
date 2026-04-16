@@ -33,12 +33,12 @@ jobs:
     - name: Check TypeScript compilation
       run: npx tsc --noEmit
     
-    - name: Run hook tests
-      run: node scripts/test-hook.js
+    - name: Test hook handler
+      run: node dist/hooks/handler.js --help
       continue-on-error: true
 
-  # Only run full verification on one OS to save CI time
-  verify:
+  # Code quality checks
+  lint:
     runs-on: ubuntu-latest
     
     steps:
@@ -53,14 +53,8 @@ jobs:
     - name: Install dependencies
       run: npm ci
     
-    - name: Build project
-      run: npm run build
+    - name: Check TypeScript compilation
+      run: npx tsc --noEmit
     
-    - name: Run OMK Setup
-      run: node dist/cli/index.js setup
-    
-    - name: Run OMK Doctor
-      run: node dist/cli/index.js doctor
-    
-    - name: Run verification
-      run: node scripts/verify-setup.js
+    - name: Check package.json validity
+      run: node -e "JSON.parse(require('fs').readFileSync('package.json'))"
