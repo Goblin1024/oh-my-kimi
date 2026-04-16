@@ -1,11 +1,13 @@
 # Contributing to oh-my-kimi
 
-Thank you for your interest in contributing!
+Thank you for your interest in contributing to oh-my-kimi!
+
+This project is maintained by **哈尔滨工业大学, SpiritPunch** and is inspired by [oh-my-codex](https://github.com/Yeachan-Heo/oh-my-codex).
 
 ## Development Setup
 
 ```bash
-git clone https://github.com/Yeachan-Heo/oh-my-kimi.git
+git clone https://github.com/SpiritPunch/oh-my-kimi.git
 cd oh-my-kimi
 npm install
 npm run build
@@ -67,3 +69,9 @@ All changes must include:
 ## Questions?
 
 Open an issue on GitHub.
+
+---
+
+## Acknowledgments
+
+This project builds upon the workflow architecture from [oh-my-codex](https://github.com/Yeachan-Heo/oh-my-codex) by Yeachan Heo.

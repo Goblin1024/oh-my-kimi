@@ -23,10 +23,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Comprehensive verification scripts
 - Documentation and examples
 
-### Features
-- Automatic skill activation via keyword detection
-- Workflow state persistence across sessions
-- Verification and testing tools
-- Clean architecture with minimal dependencies
+### Acknowledgments
+- This project is inspired by [oh-my-codex](https://github.com/Yeachan-Heo/oh-my-codex) by Yeachan Heo
+- Workflow concepts and architecture adapted from the original oh-my-codex project
 
-[0.1.0]: https://github.com/Yeachan-Heo/oh-my-kimi/releases/tag/v0.1.0
+[0.1.0]: https://github.com/SpiritPunch/oh-my-kimi/releases/tag/v0.1.0

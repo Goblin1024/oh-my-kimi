@@ -1,17 +1,44 @@
 # oh-my-kimi (OMK)
 
-Workflow orchestration layer for [Kimi Code CLI](https://moonshotai.github.io/kimi-cli/).
+<p align="center">
+  <strong>Workflow orchestration layer for <a href="https://moonshotai.github.io/kimi-cli/">Kimi Code CLI</a></strong>
+</p>
 
-Bring structured workflows (`$deep-interview`, `$ralplan`, `$ralph`) to your Kimi CLI sessions.
+<p align="center">
+  Bring structured workflows (<code>$deep-interview</code>, <code>$ralplan</code>, <code>$ralph</code>) to your Kimi CLI sessions
+</p>
 
-## Installation
+<p align="center">
+  <a href="#installation">Installation</a> •
+  <a href="#quick-start">Quick Start</a> •
+  <a href="#documentation">Documentation</a> •
+  <a href="#acknowledgments">Acknowledgments</a>
+</p>
+
+---
+
+## ✨ Features
+
+| Workflow | Description |
+|----------|-------------|
+| `$deep-interview` | Socratic requirements gathering |
+| `$ralplan` | Architecture planning and approval |
+| `$ralph` | Persistence loop to completion |
+| `$cancel` | Stop active workflow |
+
+## 📦 Installation
 
 ```bash
 npm install -g oh-my-kimi
 omk setup
 ```
 
-## Quick Start
+### Prerequisites
+
+- Node.js 20 or higher
+- [Kimi Code CLI](https://moonshotai.github.io/kimi-cli/) installed
+
+## 🚀 Quick Start
 
 ```bash
 # Launch Kimi CLI
@@ -23,16 +50,35 @@ $ralplan "implement authentication"
 $ralph "build the approved system"
 ```
 
-## Workflow Commands
+## 📖 Documentation
 
-| Command | Description |
-|---------|-------------|
-| `$deep-interview` | Socratic requirements gathering |
-| `$ralplan` | Architecture planning and approval |
-| `$ralph` | Persistence loop to completion |
-| `$cancel` | Stop active workflow |
+- [Getting Started](docs/GETTING-STARTED.md) - Installation and basic usage
+- [Examples](docs/EXAMPLES.md) - Real-world usage examples
+- [Architecture](docs/ARCHITECTURE.md) - Technical overview
+- [Verification](VERIFICATION.md) - Testing and verification guide
 
-## How It Works
+## 🔧 Commands
+
+```bash
+omk setup      # Install OMK skills and hooks
+omk doctor     # Check installation health
+omk --version  # Show version
+omk --help     # Show help
+```
+
+## ✅ Verification
+
+Run the test suite to verify installation:
+
+```bash
+npm run test:all
+```
+
+Expected output:
+- 11/11 installation checks passing
+- 5/5 hook tests passing
+
+## 🏗️ How It Works
 
 OMK uses Kimi's native hooks system:
 
@@ -41,7 +87,7 @@ OMK uses Kimi's native hooks system:
 3. **Skill Activation**: Kimi reads corresponding SKILL.md
 4. **Workflow Execution**: Kimi follows guided workflow
 
-## Project Structure
+## 📁 Project Structure
 
 ```
 .omk/
@@ -53,70 +99,18 @@ OMK uses Kimi's native hooks system:
     └── *.md                # Context snapshots
 ```
 
-## Verification
+## 🤝 Acknowledgments
 
-### Run All Tests
+This project is inspired by and built upon the excellent work of:
 
-```bash
-npm run test:all
-```
+- **[oh-my-codex](https://github.com/Yeachan-Heo/oh-my-codex)** by Yeachan Heo
 
-### Individual Checks
+The workflow concepts, state management patterns, and skill architecture are adapted from oh-my-codex, reimagined for Kimi Code CLI.
 
-```bash
-# Verify installation
-npm run verify
+## 👨‍💻 Author
 
-# Test hook handler
-npm run test:hook
+**哈尔滨工业大学** - **SpiritPunch**
 
-# Check installation health
-omk doctor
-```
+## 📄 License
 
-## Development
-
-```bash
-# Install dependencies
-npm install
-
-# Build
-npm run build
-
-# Watch mode
-npm run dev
-
-# Run setup locally
-npm run setup
-```
-
-## Requirements
-
-- Node.js 20+
-- Kimi Code CLI installed
-
-## Commands
-
-```bash
-omk setup      # Install OMK skills and hooks
-omk doctor     # Check installation
-omk --version  # Show version
-omk --help     # Show help
-```
-
-## Verification Checklist
-
-After installation, verify:
-
-- [ ] `omk setup` completes with 7/7 steps passing
-- [ ] `omk doctor` shows all checks passing
-- [ ] `npm run verify` shows 11/11 checks passing
-- [ ] `npm run test:hook` shows 5/5 tests passing
-- [ ] Hook handler returns valid JSON
-- [ ] State files created in `.omk/state/`
-
-See [VERIFICATION.md](VERIFICATION.md) for detailed testing guide.
-
-## License
-
-MIT
+MIT © 哈尔滨工业大学, SpiritPunch

@@ -1,7 +1,7 @@
 {
   "name": "oh-my-kimi",
   "version": "0.1.0",
-  "description": "Workflow orchestration layer for Kimi Code CLI",
+  "description": "Workflow orchestration layer for Kimi Code CLI - Inspired by oh-my-codex",
   "type": "module",
   "main": "dist/index.js",
   "bin": {
@@ -38,16 +38,16 @@
     "productivity",
     "developer-tools"
   ],
-  "author": "Yeachan Heo",
+  "author": "哈尔滨工业大学, SpiritPunch",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Yeachan-Heo/oh-my-kimi.git"
+    "url": "https://github.com/SpiritPunch/oh-my-kimi.git"
   },
   "bugs": {
-    "url": "https://github.com/Yeachan-Heo/oh-my-kimi/issues"
+    "url": "https://github.com/SpiritPunch/oh-my-kimi/issues"
   },
-  "homepage": "https://github.com/Yeachan-Heo/oh-my-kimi#readme",
+  "homepage": "https://github.com/SpiritPunch/oh-my-kimi#readme",
   "engines": {
     "node": ">=20"
   },

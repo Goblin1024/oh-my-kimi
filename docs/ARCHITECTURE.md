@@ -232,3 +232,10 @@ echo '{"hook_event_name":"UserPromptSubmit","prompt":"$ralph test","cwd":"."}' |
 - Kimi CLI must be installed
 - State is local (no cloud sync)
 - No built-in team coordination (use Kimi's Agent tool)
+
+---
+
+## Acknowledgments
+
+This architecture is inspired by [oh-my-codex](https://github.com/Yeachan-Heo/oh-my-codex) by Yeachan Heo.
+The workflow patterns, state management concepts, and hook-based integration are adapted from the original project.
