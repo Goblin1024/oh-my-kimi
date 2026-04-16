@@ -1,9 +1,10 @@
 {
   "name": "oh-my-kimi",
   "version": "0.1.0",
-  "description": "Workflow orchestration layer for Kimi Code CLI - Inspired by oh-my-codex",
+  "description": "Workflow orchestration layer for Kimi Code CLI - Bring structured workflows, agent teams, and persistent execution to your Kimi CLI sessions",
   "type": "module",
   "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "bin": {
     "omk": "bin/omk.js"
   },
@@ -15,7 +16,9 @@
     "scripts/",
     "docs/",
     "README.md",
-    "LICENSE"
+    "README.zh-CN.md",
+    "LICENSE",
+    "CHANGELOG.md"
   ],
   "scripts": {
     "build": "tsc",
@@ -25,7 +28,10 @@
     "verify": "node scripts/verify-setup.js",
     "test:hook": "node scripts/test-hook.js",
     "test:all": "npm run verify && npm run test:hook",
-    "prepublishOnly": "npm run build && npm run test:all"
+    "prepublishOnly": "npm run build && npm run test:all",
+    "clean": "rimraf dist",
+    "lint": "echo 'No linter configured'",
+    "format": "echo 'No formatter configured'"
   },
   "keywords": [
     "kimi",
@@ -36,21 +42,39 @@
     "orchestration",
     "ai",
     "productivity",
-    "developer-tools"
+    "developer-tools",
+    "code-assistant",
+    "automation",
+    "hooks",
+    "skills",
+    "state-management",
+    "deep-interview",
+    "ralplan",
+    "ralph",
+    "moonshot"
   ],
-  "author": "哈尔滨工业大学, SpiritPunch",
+  "author": {
+    "name": "SpiritPunch",
+    "email": "",
+    "url": "https://github.com/Goblin1024"
+  },
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Goblin1024/oh-my-kimi.git"
+    "url": "git+https://github.com/Goblin1024/oh-my-kimi.git"
   },
   "bugs": {
     "url": "https://github.com/Goblin1024/oh-my-kimi/issues"
   },
   "homepage": "https://github.com/Goblin1024/oh-my-kimi#readme",
   "engines": {
-    "node": ">=20"
+    "node": ">=20.0.0"
   },
+  "os": [
+    "darwin",
+    "linux",
+    "win32"
+  ],
   "dependencies": {
     "@iarna/toml": "^2.2.5",
     "yaml": "^2.4.0"
@@ -58,5 +82,9 @@
   "devDependencies": {
     "@types/node": "^20.0.0",
     "typescript": "^5.4.0"
+  },
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/Goblin1024"
   }
 }

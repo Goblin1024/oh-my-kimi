@@ -1,27 +1,43 @@
-# OMK Verification Checklist
+# Verification Guide - oh-my-kimi
 
-This document describes how to verify that oh-my-kimi is working correctly.
+This guide describes how to verify that oh-my-kimi (OMK) is installed and working correctly.
 
-## Automated Verification
+## 🚀 Quick Verification
 
-### 1. Setup Verification
+Run all tests with one command:
+
+```bash
+npm run test:all
+```
+
+Expected output:
+```
+✅ All verification checks passed
+✅ All hook tests passed
+```
+
+## 📋 Detailed Verification Steps
+
+### 1. Automated Verification
+
+#### Setup Verification
 
 ```bash
 node scripts/verify-setup.js
 ```
 
-Expected output:
+**Expected output:**
 - 11 checks passed
 - 0 checks failed
 - "✅ All checks passed! OMK is ready to use."
 
-### 2. Hook Handler Testing
+#### Hook Handler Testing
 
 ```bash
 node scripts/test-hook.js
 ```
 
-Expected output:
+**Expected output:**
 - 5 tests completed
 - All JSON outputs are valid
 - Skills correctly detected:
@@ -29,53 +45,77 @@ Expected output:
   - `$ralph` → skill: "ralph"
   - `$cancel` → skill: "cancel"
 
-### 3. Doctor Check
+#### Doctor Check
 
 ```bash
-node bin/omk.js doctor
+omk doctor
 ```
 
-Expected output:
-- ✓ Kimi CLI
-- ✓ OMK Skills Directory
-- ✓ All skills (deep-interview, ralplan, ralph, cancel)
-- ✓ Kimi Hooks
+**Expected output:**
+```
+🔍 Running OMK Doctor...
 
-## Manual Verification
+Installation Status:
+  ✓ Kimi CLI
+  ✓ OMK Skills Directory
+  ✓ Skills (deep-interview, ralplan, ralph, cancel)
+  ✓ Kimi Hooks
 
-### 1. Setup Command
+OMK State:
+  ✓ State directory exists
+  ✓ Plans directory exists
+  ✓ Context directory exists
+
+✅ All checks passed!
+```
+
+### 2. Manual Verification
+
+#### Setup Command
 
 ```bash
-node bin/omk.js setup
+omk setup
 ```
 
-Verify:
+**Verify:**
 - All 7 steps show "✓ Success"
 - Final verification shows "3/3 checks passed"
 - No error messages
 
-### 2. Check Installed Files
+#### Check Installed Files
 
+**macOS/Linux:**
 ```bash
 ls ~/.kimi/skills/omk/
 ```
 
-Should contain:
-- handler.js
-- session-start.js
-- stop.js
-- deep-interview/SKILL.md
-- ralplan/SKILL.md
-- ralph/SKILL.md
-- cancel/SKILL.md
+**Windows:**
+```powershell
+Get-ChildItem $env:USERPROFILE\.kimi\skills\omk\
+```
 
-### 3. Check Kimi Config
+**Should contain:**
+- `handler.js` - Main hook handler
+- `session-start.js` - Session start hook
+- `stop.js` - Stop hook
+- `deep-interview/SKILL.md`
+- `ralplan/SKILL.md`
+- `ralph/SKILL.md`
+- `cancel/SKILL.md`
 
+#### Check Kimi Config
+
+**macOS/Linux:**
 ```bash
 cat ~/.kimi/config.toml | grep -A 3 "hooks"
 ```
 
-Should contain:
+**Windows:**
+```powershell
+Get-Content $env:USERPROFILE\.kimi\config.toml | Select-String -Pattern "hooks" -Context 0,3
+```
+
+**Should contain:**
 ```toml
 [[hooks]]
 event = "UserPromptSubmit"
@@ -83,7 +123,7 @@ command = "node ~/.kimi/skills/omk/handler.js"
 matcher = "\\$[a-z-]+"
 ```
 
-### 4. State File Creation
+### 3. State File Verification
 
 After running test-hook.js:
 
@@ -91,74 +131,81 @@ After running test-hook.js:
 ls .omk/state/
 ```
 
-Should contain:
-- skill-active.json
-- deep-interview-state.json (created by test)
-- ralph-state.json (created by test, then cancelled)
+**Should contain:**
+- `skill-active.json` - Current workflow state
+- `deep-interview-state.json` - Deep interview progress
+- `ralph-state.json` - Ralph execution state
 
-### 5. State File Content
+Check state file content:
 
 ```bash
 cat .omk/state/skill-active.json
 ```
 
-Should show:
+**Should show valid JSON:**
 ```json
 {
-  "skill": "ralph",
+  "skill": "cancel",
   "active": false,
   "phase": "cancelled",
-  ...
+  "activated_at": "2026-04-16T...",
+  "updated_at": "2026-04-16T..."
 }
 ```
 
-## End-to-End Test in Kimi CLI
+### 4. End-to-End Test in Kimi CLI
 
-1. Launch Kimi CLI:
+1. **Launch Kimi CLI:**
    ```bash
    kimi
    ```
 
-2. Test deep-interview:
+2. **Test deep-interview:**
    ```
    $deep-interview "I want to build a todo app"
    ```
-   Expected: Kimi starts asking clarifying questions
+   **Expected:** Kimi starts asking clarifying questions
 
-3. Check state was created:
+3. **Check state was created:**
    ```bash
    cat .omk/state/deep-interview-state.json
    ```
 
-4. Cancel workflow:
+4. **Cancel workflow:**
    ```
    $cancel
    ```
-   Expected: "Cancelled deep-interview workflow"
+   **Expected:** Workflow is cancelled, state updated
 
-## Troubleshooting
+5. **Test ralplan:**
+   ```
+   $ralplan "design a simple todo app"
+   ```
+   **Expected:** Kimi creates a PRD document
 
-### Hook handler not found
+## 🔧 Troubleshooting
+
+### Hook Handler Not Found
 
 ```bash
 # Re-run setup
-node bin/omk.js setup
+omk setup
 
 # Verify handler exists
 ls ~/.kimi/skills/omk/handler.js
 ```
 
-### Skills not detected
+### Skills Not Detected
 
 ```bash
 # Check skills directory
 ls ~/.kimi/skills/omk/
 
 # Re-run setup
-node bin/omk.js setup
+omk setup
 ```
 
-### Hooks not triggering
+### Hooks Not Triggering
 
 ```bash
 # Check Kimi config
@@ -168,30 +215,75 @@ cat ~/.kimi/config.toml
 # Should have UserPromptSubmit, SessionStart, Stop
 ```
 
-## Verification Summary
+### State Files Not Created
 
-✅ **Setup**: 7/7 steps passing
-✅ **Files**: All hooks and skills installed
-✅ **Config**: Kimi config updated
-✅ **Hooks**: Handler returns valid JSON
-✅ **State**: Files created correctly
-✅ **Integration**: Ready for Kimi CLI
+```bash
+# Check state directory exists
+mkdir -p .omk/state
 
-## Continuous Verification
-
-Add to package.json scripts:
-
-```json
-{
-  "scripts": {
-    "verify": "node scripts/verify-setup.js",
-    "test:hook": "node scripts/test-hook.js",
-    "test:all": "npm run verify && npm run test:hook"
-  }
-}
+# Check permissions
+ls -la .omk/
 ```
 
-Run before each release:
+### Invalid JSON Output
+
 ```bash
+# Test hook directly
+echo '{"hook_event_name":"UserPromptSubmit","prompt":"$ralph test","cwd":"."}' | node ~/.kimi/skills/omk/handler.js
+
+# Validate JSON output
+echo '{"hook_event_name":"UserPromptSubmit","prompt":"$ralph test","cwd":"."}' | node ~/.kimi/skills/omk/handler.js | python3 -m json.tool
+```
+
+## ✅ Verification Checklist
+
+Before considering OMK fully verified:
+
+- [ ] **Setup**: All 7/7 steps passing
+- [ ] **Files**: All hooks and skills installed
+- [ ] **Config**: Kimi config updated with hooks
+- [ ] **Hooks**: Handler returns valid JSON
+- [ ] **State**: Files created correctly in `.omk/`
+- [ ] **Integration**: Commands work in Kimi CLI
+- [ ] **Cancellation**: `$cancel` works correctly
+
+## 🔄 Continuous Verification
+
+Add to your workflow:
+
+```bash
+# Before commits
+npm run verify
+
+# Before releases
 npm run test:all
 ```
+
+### CI/CD Integration
+
+See `.github/workflows/ci.yml` for automated testing configuration.
+
+## 📊 Expected Performance
+
+| Operation | Expected Time |
+|-----------|---------------|
+| Hook execution | < 100ms |
+| State file I/O | < 10ms |
+| Full verification | < 5s |
+| Complete test suite | < 10s |
+
+## 🐛 Reporting Issues
+
+If verification fails:
+
+1. Check the [Troubleshooting](#troubleshooting) section
+2. Run `omk doctor` for diagnostics
+3. Open an issue with:
+   - Your OS and Node.js version
+   - Output of `omk doctor`
+   - Error messages (if any)
+   - Steps to reproduce
+
+---
+
+For more help, see [README.md](README.md) or open an issue on GitHub.

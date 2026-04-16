@@ -1,77 +1,316 @@
 # Contributing to oh-my-kimi
 
-Thank you for your interest in contributing to oh-my-kimi!
+Thank you for your interest in contributing to oh-my-kimi! This document provides guidelines and instructions for contributing.
 
-This project is maintained by **哈尔滨工业大学, SpiritPunch** and is inspired by [oh-my-codex](https://github.com/Yeachan-Heo/oh-my-codex).
+## 📋 Table of Contents
 
-## Development Setup
+- [Code of Conduct](#code-of-conduct)
+- [Getting Started](#getting-started)
+- [How to Contribute](#how-to-contribute)
+- [Development Setup](#development-setup)
+- [Project Structure](#project-structure)
+- [Coding Standards](#coding-standards)
+- [Commit Message Guidelines](#commit-message-guidelines)
+- [Pull Request Process](#pull-request-process)
+- [Adding New Skills](#adding-new-skills)
+
+## 🤝 Code of Conduct
+
+This project adheres to a code of conduct that we expect all contributors to follow:
+
+- Be respectful and inclusive
+- Welcome newcomers and help them learn
+- Focus on constructive feedback
+- Respect different viewpoints and experiences
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- Node.js 20 or higher
+- Git
+- [Kimi Code CLI](https://moonshotai.github.io/kimi-cli/) (for testing)
+
+### Fork and Clone
 
 ```bash
-git clone https://github.com/SpiritPunch/oh-my-kimi.git
+# Fork the repository on GitHub, then clone your fork
+git clone https://github.com/YOUR_USERNAME/oh-my-kimi.git
 cd oh-my-kimi
-npm install
-npm run build
+
+# Add upstream remote
+git remote add upstream https://github.com/Goblin1024/oh-my-kimi.git
 ```
 
-## Development Workflow
+## 🛠️ How to Contribute
+
+### Reporting Bugs
+
+1. Check if the bug has already been reported in [Issues](https://github.com/Goblin1024/oh-my-kimi/issues)
+2. If not, create a new issue with:
+   - Clear title and description
+   - Steps to reproduce
+   - Expected vs actual behavior
+   - Environment details (OS, Node version, etc.)
+   - Screenshots if applicable
+
+### Suggesting Features
+
+1. Check existing issues and discussions
+2. Open a new issue with the `enhancement` label
+3. Describe:
+   - The problem you're trying to solve
+   - Your proposed solution
+   - Alternatives you've considered
+
+### Contributing Code
+
+1. Create a new branch for your feature/fix:
+   ```bash
+   git checkout -b feature/your-feature-name
+   # or
+   git checkout -b fix/issue-description
+   ```
+
+2. Make your changes
+3. Test thoroughly
+4. Commit with a clear message
+5. Push to your fork
+6. Open a Pull Request
+
+## 💻 Development Setup
 
 ```bash
-# Watch mode for development
+# Install dependencies
+npm install
+
+# Build the project
+npm run build
+
+# Run in development mode
 npm run dev
 
 # Run tests
 npm run test:all
 
-# Verify installation
+# Verify setup
 npm run verify
 ```
 
-## Project Structure
+## 📁 Project Structure
 
 ```
 oh-my-kimi/
-├── src/           # TypeScript source
-├── skills/        # Skill definitions (SKILL.md files)
-├── scripts/       # Verification and test scripts
-├── docs/          # Documentation
-└── templates/     # Project templates
+├── bin/              # CLI entry points
+├── src/              # Source code
+│   ├── cli/          # CLI commands
+│   ├── hooks/        # Kimi hook handlers
+│   ├── state/        # State management
+│   └── utils/        # Utility functions
+├── skills/           # Skill definitions
+│   ├── deep-interview/
+│   ├── ralplan/
+│   ├── ralph/
+│   └── cancel/
+├── templates/        # Project templates
+├── scripts/          # Utility scripts
+├── docs/             # Documentation
+└── dist/             # Compiled output (generated)
 ```
 
-## Adding a New Skill
+## 📝 Coding Standards
 
-1. Create `skills/<skill-name>/SKILL.md`
-2. Add keyword to `src/hooks/handler.ts`
-3. Test with `npm run test:hook`
-4. Update documentation
+### TypeScript
 
-## Submitting Changes
+- Use TypeScript for all new code
+- Enable strict mode checks
+- Add type annotations for function parameters and returns
+- Use interfaces for object shapes
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Run tests: `npm run test:all`
-5. Submit a pull request
+### Code Style
 
-## Code Style
+```typescript
+// Use meaningful variable names
+const isWorkflowActive = true;  // Good
+const flag = true;              // Avoid
 
-- TypeScript with strict mode
-- ES modules
-- No trailing semicolons
-- 2-space indentation
+// Use async/await over callbacks
+async function loadState(): Promise<State> {
+  const data = await readFile(path);
+  return JSON.parse(data);
+}
 
-## Testing
+// Prefer const/let over var
+const MAX_RETRIES = 3;
+let currentAttempt = 0;
 
-All changes must include:
-- Verification that `npm run test:all` passes
-- Manual testing of affected features
-- Documentation updates if needed
+// Use early returns to reduce nesting
+function processCommand(input: string): Result {
+  if (!input) {
+    return { error: 'Empty input' };
+  }
+  // Process valid input
+}
+```
 
-## Questions?
+### Error Handling
 
-Open an issue on GitHub.
+```typescript
+try {
+  await operation();
+} catch (error) {
+  if (error instanceof SpecificError) {
+    // Handle specific error
+  } else {
+    // Log and rethrow or handle generically
+    console.error('Unexpected error:', error);
+    throw error;
+  }
+}
+```
+
+## 💬 Commit Message Guidelines
+
+We follow the [Conventional Commits](https://www.conventionalcommits.org/) specification:
+
+```
+<type>(<scope>): <description>
+
+[optional body]
+
+[optional footer(s)]
+```
+
+### Types
+
+- `feat`: New feature
+- `fix`: Bug fix
+- `docs`: Documentation changes
+- `style`: Code style changes (formatting, no logic change)
+- `refactor`: Code refactoring
+- `test`: Adding or updating tests
+- `chore`: Build process, dependencies, etc.
+
+### Examples
+
+```
+feat(skills): add new code-review skill
+
+fix(hooks): resolve state corruption on rapid commands
+
+docs(readme): add installation troubleshooting section
+
+refactor(state): simplify state manager interface
+
+test(cli): add tests for doctor command
+```
+
+## 🔀 Pull Request Process
+
+1. **Update documentation** if your changes affect usage
+2. **Add tests** for new functionality
+3. **Ensure all tests pass**:
+   ```bash
+   npm run test:all
+   ```
+4. **Update CHANGELOG.md** with your changes
+5. **Link related issues** in the PR description
+6. **Request review** from maintainers
+
+### PR Checklist
+
+- [ ] Code follows project style guidelines
+- [ ] Self-review completed
+- [ ] Comments added for complex logic
+- [ ] Documentation updated
+- [ ] Tests added/updated and passing
+- [ ] CHANGELOG.md updated
+- [ ] No breaking changes (or clearly documented)
+
+## 🎯 Adding New Skills
+
+To add a new skill to OMK:
+
+1. **Create skill directory**:
+   ```bash
+   mkdir skills/your-skill
+   ```
+
+2. **Create SKILL.md**:
+   ```markdown
+   ---
+   name: your-skill
+   description: Brief description of what this skill does
+   ---
+   
+   # Your Skill
+   
+   ## Purpose
+   
+   Explain what this skill accomplishes.
+   
+   ## Activation
+   
+   Trigger: `$your-skill <parameters>`
+   
+   ## Workflow
+   
+   ### Phase 1: Something
+   
+   1. Step one
+   2. Step two
+   
+   ## State Management
+   
+   - On start: Create state file
+   - On completion: Update state
+   ```
+
+3. **Add keyword to handler** (`src/hooks/handler.ts`):
+   ```typescript
+   const SKILL_KEYWORDS = {
+     // ... existing skills
+     'your-skill': 'your-skill',
+   };
+   ```
+
+4. **Add state management** (if needed):
+   - Update `src/state/manager.ts`
+   - Define state interfaces
+
+5. **Test your skill**:
+   ```bash
+   npm run build
+   node scripts/test-hook.js
+   ```
+
+6. **Document your skill**:
+   - Update README.md
+   - Add to docs/EXAMPLES.md
+   - Update CHANGELOG.md
+
+## 🌍 Internationalization
+
+When adding features:
+
+- Keep user-facing strings in SKILL.md files
+- Consider how features work across languages
+- Document any locale-specific behavior
+
+## 📞 Getting Help
+
+- Open an issue for questions
+- Check existing documentation
+- Review closed issues for similar problems
+
+## 🙏 Recognition
+
+Contributors will be:
+
+- Listed in the README.md contributors section
+- Mentioned in release notes for significant contributions
+- Added to the project's contributor graph
 
 ---
 
-## Acknowledgments
-
-This project builds upon the workflow architecture from [oh-my-codex](https://github.com/Yeachan-Heo/oh-my-codex) by Yeachan Heo.
+Thank you for contributing to oh-my-kimi! 🎉
