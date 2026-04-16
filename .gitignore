@@ -17,6 +17,11 @@ Thumbs.db
 
 # Logs
 *.log
+logs_*/
+*.zip
 
 # Test outputs
 coverage/
+
+# GitHub Actions logs (downloaded)
+logs_*/

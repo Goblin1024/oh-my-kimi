@@ -1,8 +1,0 @@
-2026-04-16T08:52:47.4200000Z Requested labels: windows-latest
-2026-04-16T08:52:47.4200000Z Job defined at: Goblin1024/oh-my-kimi/.github/workflows/ci.yml@refs/heads/master
-2026-04-16T08:52:47.4200000Z Waiting for a runner to pick up this job...
-2026-04-16T08:52:47.4180000Z Evaluating test.if
-2026-04-16T08:52:47.4180000Z Evaluating: success()
-2026-04-16T08:52:47.4180000Z Result: true
-2026-04-16T08:52:48.1210000Z Job is about to start running on the hosted runner: GitHub Actions 1000000039
-2026-04-16T08:52:48.1200000Z Job is waiting for a hosted runner to come online.
