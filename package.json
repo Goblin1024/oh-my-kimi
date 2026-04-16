@@ -7,6 +7,16 @@
   "bin": {
     "omk": "bin/omk.js"
   },
+  "files": [
+    "bin/",
+    "dist/",
+    "skills/",
+    "templates/",
+    "scripts/",
+    "docs/",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
@@ -14,17 +24,30 @@
     "doctor": "node dist/cli/index.js doctor",
     "verify": "node scripts/verify-setup.js",
     "test:hook": "node scripts/test-hook.js",
-    "test:all": "npm run verify && npm run test:hook"
+    "test:all": "npm run verify && npm run test:hook",
+    "prepublishOnly": "npm run build && npm run test:all"
   },
   "keywords": [
     "kimi",
+    "kimi-cli",
     "cli",
     "workflow",
     "agents",
-    "orchestration"
+    "orchestration",
+    "ai",
+    "productivity",
+    "developer-tools"
   ],
   "author": "Yeachan Heo",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Yeachan-Heo/oh-my-kimi.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Yeachan-Heo/oh-my-kimi/issues"
+  },
+  "homepage": "https://github.com/Yeachan-Heo/oh-my-kimi#readme",
   "engines": {
     "node": ">=20"
   },
