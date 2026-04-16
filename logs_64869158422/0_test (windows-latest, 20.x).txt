@@ -1,0 +1,145 @@
+﻿2026-04-16T08:52:51.2202291Z Current runner version: '2.333.1'
+2026-04-16T08:52:51.2223214Z ##[group]Runner Image Provisioner
+2026-04-16T08:52:51.2223804Z Hosted Compute Agent
+2026-04-16T08:52:51.2224245Z Version: 20260213.493
+2026-04-16T08:52:51.2224662Z Commit: 5c115507f6dd24b8de37d8bbe0bb4509d0cc0fa3
+2026-04-16T08:52:51.2225182Z Build Date: 2026-02-13T00:28:41Z
+2026-04-16T08:52:51.2225644Z Worker ID: {41a4acd7-e146-402f-a8f9-76bc9df4ff20}
+2026-04-16T08:52:51.2226229Z Azure Region: westcentralus
+2026-04-16T08:52:51.2226625Z ##[endgroup]
+2026-04-16T08:52:51.2227570Z ##[group]Operating System
+2026-04-16T08:52:51.2228019Z Microsoft Windows Server 2025
+2026-04-16T08:52:51.2228400Z 10.0.26100
+2026-04-16T08:52:51.2228772Z Datacenter
+2026-04-16T08:52:51.2229090Z ##[endgroup]
+2026-04-16T08:52:51.2229448Z ##[group]Runner Image
+2026-04-16T08:52:51.2229790Z Image: windows-2025
+2026-04-16T08:52:51.2230185Z Version: 20260405.77.1
+2026-04-16T08:52:51.2231287Z Included Software: https://github.com/actions/runner-images/blob/win25/20260405.77/images/windows/Windows2025-Readme.md
+2026-04-16T08:52:51.2232372Z Image Release: https://github.com/actions/runner-images/releases/tag/win25%2F20260405.77
+2026-04-16T08:52:51.2233071Z ##[endgroup]
+2026-04-16T08:52:51.2233930Z ##[group]GITHUB_TOKEN Permissions
+2026-04-16T08:52:51.2235324Z Contents: read
+2026-04-16T08:52:51.2235701Z Metadata: read
+2026-04-16T08:52:51.2236064Z Packages: read
+2026-04-16T08:52:51.2236461Z ##[endgroup]
+2026-04-16T08:52:51.2238502Z Secret source: Actions
+2026-04-16T08:52:51.2239040Z Prepare workflow directory
+2026-04-16T08:52:51.2525596Z Prepare all required actions
+2026-04-16T08:52:51.2557061Z Getting action download info
+2026-04-16T08:52:51.5902744Z Download action repository 'actions/checkout@v4' (SHA:34e114876b0b11c390a56381ad16ebd13914f8d5)
+2026-04-16T08:52:51.6874822Z Download action repository 'actions/setup-node@v4' (SHA:49933ea5288caeca8642d1e84afbd3f7d6820020)
+2026-04-16T08:52:51.9174682Z Complete job name: test (windows-latest, 20.x)
+2026-04-16T08:52:52.0227402Z ##[group]Run actions/checkout@v4
+2026-04-16T08:52:52.0228183Z with:
+2026-04-16T08:52:52.0228473Z   repository: Goblin1024/oh-my-kimi
+2026-04-16T08:52:52.0228975Z   token: ***
+2026-04-16T08:52:52.0229239Z   ssh-strict: true
+2026-04-16T08:52:52.0229517Z   ssh-user: git
+2026-04-16T08:52:52.0229789Z   persist-credentials: true
+2026-04-16T08:52:52.0230105Z   clean: true
+2026-04-16T08:52:52.0230378Z   sparse-checkout-cone-mode: true
+2026-04-16T08:52:52.0230717Z   fetch-depth: 1
+2026-04-16T08:52:52.0230975Z   fetch-tags: false
+2026-04-16T08:52:52.0231254Z   show-progress: true
+2026-04-16T08:52:52.0231519Z   lfs: false
+2026-04-16T08:52:52.0231776Z   submodules: false
+2026-04-16T08:52:52.0232051Z   set-safe-directory: true
+2026-04-16T08:52:52.0232495Z ##[endgroup]
+2026-04-16T08:52:52.1542817Z Syncing repository: Goblin1024/oh-my-kimi
+2026-04-16T08:52:52.1544476Z ##[group]Getting Git version info
+2026-04-16T08:52:52.1545229Z Working directory is 'D:\a\oh-my-kimi\oh-my-kimi'
+2026-04-16T08:52:52.2161016Z [command]"C:\Program Files\Git\bin\git.exe" version
+2026-04-16T08:52:52.5922294Z git version 2.53.0.windows.2
+2026-04-16T08:52:52.5968701Z ##[endgroup]
+2026-04-16T08:52:52.5985707Z Temporarily overriding HOME='D:\a\_temp\08c77b70-3e6c-4715-97c1-db18851639b5' before making global git config changes
+2026-04-16T08:52:52.5986660Z Adding repository directory to the temporary git global config as a safe directory
+2026-04-16T08:52:52.5995072Z [command]"C:\Program Files\Git\bin\git.exe" config --global --add safe.directory D:\a\oh-my-kimi\oh-my-kimi
+2026-04-16T08:52:52.6677766Z Deleting the contents of 'D:\a\oh-my-kimi\oh-my-kimi'
+2026-04-16T08:52:52.6683495Z ##[group]Initializing the repository
+2026-04-16T08:52:52.6692184Z [command]"C:\Program Files\Git\bin\git.exe" init D:\a\oh-my-kimi\oh-my-kimi
+2026-04-16T08:52:52.7694796Z Initialized empty Git repository in D:/a/oh-my-kimi/oh-my-kimi/.git/
+2026-04-16T08:52:52.7746077Z [command]"C:\Program Files\Git\bin\git.exe" remote add origin https://github.com/Goblin1024/oh-my-kimi
+2026-04-16T08:52:52.8252240Z ##[endgroup]
+2026-04-16T08:52:52.8253097Z ##[group]Disabling automatic garbage collection
+2026-04-16T08:52:52.8260443Z [command]"C:\Program Files\Git\bin\git.exe" config --local gc.auto 0
+2026-04-16T08:52:52.8510884Z ##[endgroup]
+2026-04-16T08:52:52.8511643Z ##[group]Setting up auth
+2026-04-16T08:52:52.8526485Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp core\.sshCommand
+2026-04-16T08:52:52.8762496Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\""
+2026-04-16T08:52:54.2203452Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-04-16T08:52:54.2457101Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\""
+2026-04-16T08:52:54.6749326Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-04-16T08:52:54.6992287Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "git config --local --show-origin --name-only --get-regexp remote.origin.url"
+2026-04-16T08:52:55.1320977Z [command]"C:\Program Files\Git\bin\git.exe" config --local http.https://github.com/.extraheader "AUTHORIZATION: basic ***"
+2026-04-16T08:52:55.1579085Z ##[endgroup]
+2026-04-16T08:52:55.1579739Z ##[group]Fetching the repository
+2026-04-16T08:52:55.1590570Z [command]"C:\Program Files\Git\bin\git.exe" -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +9dcd15692c23f3e5dc7394bcff5bf719a12ba810:refs/remotes/origin/master
+2026-04-16T08:52:56.5315959Z From https://github.com/Goblin1024/oh-my-kimi
+2026-04-16T08:52:56.5316490Z  * [new ref]         9dcd15692c23f3e5dc7394bcff5bf719a12ba810 -> origin/master
+2026-04-16T08:52:56.5646043Z ##[endgroup]
+2026-04-16T08:52:56.5646648Z ##[group]Determining the checkout info
+2026-04-16T08:52:56.5648083Z ##[endgroup]
+2026-04-16T08:52:56.5657069Z [command]"C:\Program Files\Git\bin\git.exe" sparse-checkout disable
+2026-04-16T08:52:56.6128872Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset-all extensions.worktreeConfig
+2026-04-16T08:52:56.6373361Z ##[group]Checking out the ref
+2026-04-16T08:52:56.6386022Z [command]"C:\Program Files\Git\bin\git.exe" checkout --progress --force -B master refs/remotes/origin/master
+2026-04-16T08:52:56.8783049Z Reset branch 'master'
+2026-04-16T08:52:56.8843461Z branch 'master' set up to track 'origin/master'.
+2026-04-16T08:52:56.8897113Z ##[endgroup]
+2026-04-16T08:52:56.9268462Z [command]"C:\Program Files\Git\bin\git.exe" log -1 --format=%H
+2026-04-16T08:52:56.9533425Z 9dcd15692c23f3e5dc7394bcff5bf719a12ba810
+2026-04-16T08:52:56.9888188Z ##[group]Run actions/setup-node@v4
+2026-04-16T08:52:56.9888469Z with:
+2026-04-16T08:52:56.9888613Z   node-version: 20.x
+2026-04-16T08:52:56.9888752Z   cache: npm
+2026-04-16T08:52:56.9888888Z   always-auth: false
+2026-04-16T08:52:56.9889034Z   check-latest: false
+2026-04-16T08:52:56.9889302Z   token: ***
+2026-04-16T08:52:56.9889427Z ##[endgroup]
+2026-04-16T08:52:57.2009300Z Found in cache @ C:\hostedtoolcache\windows\node\20.20.2\x64
+2026-04-16T08:52:57.2021777Z ##[group]Environment details
+2026-04-16T08:53:03.7667979Z node: v20.20.2
+2026-04-16T08:53:03.7668267Z npm: 10.8.2
+2026-04-16T08:53:03.7668471Z yarn: 1.22.22
+2026-04-16T08:53:03.7671960Z ##[endgroup]
+2026-04-16T08:53:03.8171473Z [command]C:\Windows\system32\cmd.exe /D /S /C "C:\hostedtoolcache\windows\node\20.20.2\x64\npm.cmd config get cache"
+2026-04-16T08:53:04.8179689Z C:\npm\cache
+2026-04-16T08:53:05.2106242Z npm cache is not found
+2026-04-16T08:53:05.2346421Z ##[group]Run npm ci
+2026-04-16T08:53:05.2347302Z [36;1mnpm ci[0m
+2026-04-16T08:53:05.5758659Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+2026-04-16T08:53:05.5758981Z ##[endgroup]
+2026-04-16T08:53:13.4756569Z 
+2026-04-16T08:53:13.4763881Z added 5 packages, and audited 6 packages in 2s
+2026-04-16T08:53:13.4764300Z 
+2026-04-16T08:53:13.4764501Z 1 package is looking for funding
+2026-04-16T08:53:13.4764841Z   run `npm fund` for details
+2026-04-16T08:53:13.4767324Z 
+2026-04-16T08:53:13.4767501Z found 0 vulnerabilities
+2026-04-16T08:53:14.0911357Z ##[group]Run npm run build
+2026-04-16T08:53:14.0911623Z [36;1mnpm run build[0m
+2026-04-16T08:53:14.0960145Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+2026-04-16T08:53:14.0960425Z ##[endgroup]
+2026-04-16T08:53:14.5901574Z 
+2026-04-16T08:53:14.5902164Z > oh-my-kimi@0.1.0 build
+2026-04-16T08:53:14.5902450Z > tsc
+2026-04-16T08:53:14.5902560Z 
+2026-04-16T08:53:14.7477068Z Terminate batch job (Y/N)? 
+2026-04-16T08:53:14.8359445Z ##[error]The operation was canceled.
+2026-04-16T08:53:17.1161466Z Post job cleanup.
+2026-04-16T08:53:17.6752767Z [command]"C:\Program Files\Git\bin\git.exe" version
+2026-04-16T08:53:17.6983045Z git version 2.53.0.windows.2
+2026-04-16T08:53:17.7044187Z Temporarily overriding HOME='D:\a\_temp\14eba3dd-1238-4971-810d-5c4e6f7beb13' before making global git config changes
+2026-04-16T08:53:17.7045009Z Adding repository directory to the temporary git global config as a safe directory
+2026-04-16T08:53:17.7054503Z [command]"C:\Program Files\Git\bin\git.exe" config --global --add safe.directory D:\a\oh-my-kimi\oh-my-kimi
+2026-04-16T08:53:17.7349387Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp core\.sshCommand
+2026-04-16T08:53:17.7599589Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\""
+2026-04-16T08:53:18.1790607Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-04-16T08:53:18.1993046Z http.https://github.com/.extraheader
+2026-04-16T08:53:18.2032346Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset-all http.https://github.com/.extraheader
+2026-04-16T08:53:18.2270188Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\""
+2026-04-16T08:53:18.6388432Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-04-16T08:53:18.6616151Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "git config --local --show-origin --name-only --get-regexp remote.origin.url"
+2026-04-16T08:53:19.1852969Z Cleaning up orphan processes
+2026-04-16T08:53:19.2146765Z ##[warning]Node.js 20 actions are deprecated. The following actions are running on Node.js 20 and may not work as expected: actions/checkout@v4, actions/setup-node@v4. Actions will be forced to run with Node.js 24 by default starting June 2nd, 2026. Node.js 20 will be removed from the runner on September 16th, 2026. Please check if updated versions of these actions are available that support Node.js 24. To opt into Node.js 24 now, set the FORCE_JAVASCRIPT_ACTIONS_TO_NODE24=true environment variable on the runner or in your workflow file. Once Node.js 24 becomes the default, you can temporarily opt out by setting ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

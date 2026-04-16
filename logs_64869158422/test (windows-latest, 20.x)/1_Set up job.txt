@@ -1,0 +1,32 @@
+﻿2026-04-16T08:52:51.2177712Z Current runner version: '2.333.1'
+2026-04-16T08:52:51.2223189Z ##[group]Runner Image Provisioner
+2026-04-16T08:52:51.2223802Z Hosted Compute Agent
+2026-04-16T08:52:51.2224243Z Version: 20260213.493
+2026-04-16T08:52:51.2224659Z Commit: 5c115507f6dd24b8de37d8bbe0bb4509d0cc0fa3
+2026-04-16T08:52:51.2225178Z Build Date: 2026-02-13T00:28:41Z
+2026-04-16T08:52:51.2225641Z Worker ID: {41a4acd7-e146-402f-a8f9-76bc9df4ff20}
+2026-04-16T08:52:51.2226226Z Azure Region: westcentralus
+2026-04-16T08:52:51.2226623Z ##[endgroup]
+2026-04-16T08:52:51.2227564Z ##[group]Operating System
+2026-04-16T08:52:51.2228016Z Microsoft Windows Server 2025
+2026-04-16T08:52:51.2228398Z 10.0.26100
+2026-04-16T08:52:51.2228770Z Datacenter
+2026-04-16T08:52:51.2229088Z ##[endgroup]
+2026-04-16T08:52:51.2229444Z ##[group]Runner Image
+2026-04-16T08:52:51.2229788Z Image: windows-2025
+2026-04-16T08:52:51.2230181Z Version: 20260405.77.1
+2026-04-16T08:52:51.2230895Z Included Software: https://github.com/actions/runner-images/blob/win25/20260405.77/images/windows/Windows2025-Readme.md
+2026-04-16T08:52:51.2232368Z Image Release: https://github.com/actions/runner-images/releases/tag/win25%2F20260405.77
+2026-04-16T08:52:51.2233068Z ##[endgroup]
+2026-04-16T08:52:51.2233927Z ##[group]GITHUB_TOKEN Permissions
+2026-04-16T08:52:51.2235313Z Contents: read
+2026-04-16T08:52:51.2235698Z Metadata: read
+2026-04-16T08:52:51.2236063Z Packages: read
+2026-04-16T08:52:51.2236459Z ##[endgroup]
+2026-04-16T08:52:51.2238488Z Secret source: Actions
+2026-04-16T08:52:51.2239037Z Prepare workflow directory
+2026-04-16T08:52:51.2525562Z Prepare all required actions
+2026-04-16T08:52:51.2557027Z Getting action download info
+2026-04-16T08:52:51.5902713Z Download action repository 'actions/checkout@v4' (SHA:34e114876b0b11c390a56381ad16ebd13914f8d5)
+2026-04-16T08:52:51.6874796Z Download action repository 'actions/setup-node@v4' (SHA:49933ea5288caeca8642d1e84afbd3f7d6820020)
+2026-04-16T08:52:51.9174635Z Complete job name: test (windows-latest, 20.x)

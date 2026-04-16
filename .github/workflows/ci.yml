@@ -7,7 +7,7 @@ on:
     branches: [ main, master, develop ]
 
 jobs:
-  test:
+  build:
     runs-on: ${{ matrix.os }}
     
     strategy:
@@ -30,14 +30,15 @@ jobs:
     - name: Build project
       run: npm run build
     
-    - name: Run verification
-      run: npm run verify
+    - name: Check TypeScript compilation
+      run: npx tsc --noEmit
     
-    - name: Run tests
-      run: npm run test:all
-      continue-on-error: true  # Allow tests to fail while project is in early development
+    - name: Run hook tests
+      run: node scripts/test-hook.js
+      continue-on-error: true
 
-  lint:
+  # Only run full verification on one OS to save CI time
+  verify:
     runs-on: ubuntu-latest
     
     steps:
@@ -52,5 +53,14 @@ jobs:
     - name: Install dependencies
       run: npm ci
     
-    - name: Check TypeScript compilation
-      run: npx tsc --noEmit
+    - name: Build project
+      run: npm run build
+    
+    - name: Run OMK Setup
+      run: node dist/cli/index.js setup
+    
+    - name: Run OMK Doctor
+      run: node dist/cli/index.js doctor
+    
+    - name: Run verification
+      run: node scripts/verify-setup.js

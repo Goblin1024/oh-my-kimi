@@ -1,0 +1,219 @@
+﻿2026-04-16T08:52:51.2557570Z Current runner version: '2.333.1'
+2026-04-16T08:52:51.2570800Z ##[group]Runner Image Provisioner
+2026-04-16T08:52:51.2571280Z Hosted Compute Agent
+2026-04-16T08:52:51.2571620Z Version: 20260415.520
+2026-04-16T08:52:51.2571990Z Commit: af089020f5f67b61ccc91db6c07980876c02bf7b
+2026-04-16T08:52:51.2572410Z Build Date: 2026-04-15T18:07:08Z
+2026-04-16T08:52:51.2572800Z Worker ID: {703ec58f-82c6-4df0-a697-6f6e33d5b60a}
+2026-04-16T08:52:51.2573220Z Azure Region: westus
+2026-04-16T08:52:51.2573540Z ##[endgroup]
+2026-04-16T08:52:51.2574310Z ##[group]Operating System
+2026-04-16T08:52:51.2574650Z macOS
+2026-04-16T08:52:51.2575020Z 15.7.4
+2026-04-16T08:52:51.2575290Z 24G517
+2026-04-16T08:52:51.2575570Z ##[endgroup]
+2026-04-16T08:52:51.2575850Z ##[group]Runner Image
+2026-04-16T08:52:51.2576170Z Image: macos-15-arm64
+2026-04-16T08:52:51.2576490Z Version: 20260414.0270.1
+2026-04-16T08:52:51.2577200Z Included Software: https://github.com/actions/runner-images/blob/macos-15-arm64/20260414.0270/images/macos/macos-15-arm64-Readme.md
+2026-04-16T08:52:51.2578130Z Image Release: https://github.com/actions/runner-images/releases/tag/macos-15-arm64%2F20260414.0270
+2026-04-16T08:52:51.2578710Z ##[endgroup]
+2026-04-16T08:52:51.2579350Z ##[group]GITHUB_TOKEN Permissions
+2026-04-16T08:52:51.2580210Z Contents: read
+2026-04-16T08:52:51.2580520Z Metadata: read
+2026-04-16T08:52:51.2580800Z Packages: read
+2026-04-16T08:52:51.2581100Z ##[endgroup]
+2026-04-16T08:52:51.2582270Z Secret source: Actions
+2026-04-16T08:52:51.2582630Z Prepare workflow directory
+2026-04-16T08:52:51.2774840Z Prepare all required actions
+2026-04-16T08:52:51.2802200Z Getting action download info
+2026-04-16T08:52:51.6182740Z Download action repository 'actions/checkout@v4' (SHA:34e114876b0b11c390a56381ad16ebd13914f8d5)
+2026-04-16T08:52:51.9768130Z Download action repository 'actions/setup-node@v4' (SHA:49933ea5288caeca8642d1e84afbd3f7d6820020)
+2026-04-16T08:52:52.2228050Z Complete job name: test (macos-latest, 22.x)
+2026-04-16T08:52:52.2560460Z ##[group]Run actions/checkout@v4
+2026-04-16T08:52:52.2560990Z with:
+2026-04-16T08:52:52.2561260Z   repository: Goblin1024/oh-my-kimi
+2026-04-16T08:52:52.2561720Z   token: ***
+2026-04-16T08:52:52.2561970Z   ssh-strict: true
+2026-04-16T08:52:52.2562240Z   ssh-user: git
+2026-04-16T08:52:52.2562520Z   persist-credentials: true
+2026-04-16T08:52:52.2562810Z   clean: true
+2026-04-16T08:52:52.2563090Z   sparse-checkout-cone-mode: true
+2026-04-16T08:52:52.2563410Z   fetch-depth: 1
+2026-04-16T08:52:52.2563680Z   fetch-tags: false
+2026-04-16T08:52:52.2563950Z   show-progress: true
+2026-04-16T08:52:52.2564220Z   lfs: false
+2026-04-16T08:52:52.2564470Z   submodules: false
+2026-04-16T08:52:52.2564750Z   set-safe-directory: true
+2026-04-16T08:52:52.2565140Z ##[endgroup]
+2026-04-16T08:52:52.5945630Z Syncing repository: Goblin1024/oh-my-kimi
+2026-04-16T08:52:52.5947340Z ##[group]Getting Git version info
+2026-04-16T08:52:52.5948160Z Working directory is '/Users/runner/work/oh-my-kimi/oh-my-kimi'
+2026-04-16T08:52:52.5949000Z [command]/opt/homebrew/bin/git version
+2026-04-16T08:52:52.6490280Z git version 2.53.0
+2026-04-16T08:52:52.6518180Z ##[endgroup]
+2026-04-16T08:52:52.6526770Z Copying '/Users/runner/.gitconfig' to '/Users/runner/work/_temp/18be21b0-def9-4f15-b1dc-1b90dae56950/.gitconfig'
+2026-04-16T08:52:52.6539120Z Temporarily overriding HOME='/Users/runner/work/_temp/18be21b0-def9-4f15-b1dc-1b90dae56950' before making global git config changes
+2026-04-16T08:52:52.6540410Z Adding repository directory to the temporary git global config as a safe directory
+2026-04-16T08:52:52.6543640Z [command]/opt/homebrew/bin/git config --global --add safe.directory /Users/runner/work/oh-my-kimi/oh-my-kimi
+2026-04-16T08:52:52.6685380Z Deleting the contents of '/Users/runner/work/oh-my-kimi/oh-my-kimi'
+2026-04-16T08:52:52.6687940Z ##[group]Initializing the repository
+2026-04-16T08:52:52.6691890Z [command]/opt/homebrew/bin/git init /Users/runner/work/oh-my-kimi/oh-my-kimi
+2026-04-16T08:52:52.6873470Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-04-16T08:52:52.6875110Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-04-16T08:52:52.6875780Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-04-16T08:52:52.6876270Z hint: call:
+2026-04-16T08:52:52.6876550Z hint:
+2026-04-16T08:52:52.6876980Z hint: 	git config --global init.defaultBranch <name>
+2026-04-16T08:52:52.6877420Z hint:
+2026-04-16T08:52:52.6877810Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-04-16T08:52:52.6878420Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-04-16T08:52:52.6878910Z hint:
+2026-04-16T08:52:52.6879200Z hint: 	git branch -m <name>
+2026-04-16T08:52:52.6879520Z hint:
+2026-04-16T08:52:52.6879940Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-04-16T08:52:52.6880630Z Initialized empty Git repository in /Users/runner/work/oh-my-kimi/oh-my-kimi/.git/
+2026-04-16T08:52:52.6882140Z [command]/opt/homebrew/bin/git remote add origin https://github.com/Goblin1024/oh-my-kimi
+2026-04-16T08:52:52.6948910Z ##[endgroup]
+2026-04-16T08:52:52.6949450Z ##[group]Disabling automatic garbage collection
+2026-04-16T08:52:52.6951150Z [command]/opt/homebrew/bin/git config --local gc.auto 0
+2026-04-16T08:52:52.7001500Z ##[endgroup]
+2026-04-16T08:52:52.7002020Z ##[group]Setting up auth
+2026-04-16T08:52:52.7006320Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-04-16T08:52:52.7057500Z [command]/opt/homebrew/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-04-16T08:52:52.7815410Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-04-16T08:52:52.7868350Z [command]/opt/homebrew/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-04-16T08:52:52.9277630Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-04-16T08:52:52.9588230Z [command]/opt/homebrew/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-04-16T08:52:53.0268030Z [command]/opt/homebrew/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-04-16T08:52:53.0327490Z ##[endgroup]
+2026-04-16T08:52:53.0328220Z ##[group]Fetching the repository
+2026-04-16T08:52:53.0333180Z [command]/opt/homebrew/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +9dcd15692c23f3e5dc7394bcff5bf719a12ba810:refs/remotes/origin/master
+2026-04-16T08:52:54.0255600Z From https://github.com/Goblin1024/oh-my-kimi
+2026-04-16T08:52:54.0256390Z  * [new ref]         9dcd15692c23f3e5dc7394bcff5bf719a12ba810 -> origin/master
+2026-04-16T08:52:54.0338510Z ##[endgroup]
+2026-04-16T08:52:54.0339060Z ##[group]Determining the checkout info
+2026-04-16T08:52:54.0339570Z ##[endgroup]
+2026-04-16T08:52:54.0343020Z [command]/opt/homebrew/bin/git sparse-checkout disable
+2026-04-16T08:52:54.0410480Z [command]/opt/homebrew/bin/git config --local --unset-all extensions.worktreeConfig
+2026-04-16T08:52:54.0460580Z ##[group]Checking out the ref
+2026-04-16T08:52:54.0462550Z [command]/opt/homebrew/bin/git checkout --progress --force -B master refs/remotes/origin/master
+2026-04-16T08:52:54.1623400Z Reset branch 'master'
+2026-04-16T08:52:54.1718400Z branch 'master' set up to track 'origin/master'.
+2026-04-16T08:52:54.1831000Z ##[endgroup]
+2026-04-16T08:52:54.1852090Z [command]/opt/homebrew/bin/git log -1 --format=%H
+2026-04-16T08:52:54.1859720Z 9dcd15692c23f3e5dc7394bcff5bf719a12ba810
+2026-04-16T08:52:54.2040960Z ##[group]Run actions/setup-node@v4
+2026-04-16T08:52:54.2041260Z with:
+2026-04-16T08:52:54.2041490Z   node-version: 22.x
+2026-04-16T08:52:54.2041710Z   cache: npm
+2026-04-16T08:52:54.2042150Z   always-auth: false
+2026-04-16T08:52:54.2042380Z   check-latest: false
+2026-04-16T08:52:54.2042710Z   token: ***
+2026-04-16T08:52:54.2042900Z ##[endgroup]
+2026-04-16T08:52:54.3785000Z Found in cache @ /Users/runner/hostedtoolcache/node/22.22.2/arm64
+2026-04-16T08:52:54.3833590Z ##[group]Environment details
+2026-04-16T08:52:54.8645970Z node: v22.22.2
+2026-04-16T08:52:54.8747620Z npm: 10.9.7
+2026-04-16T08:52:54.8848100Z yarn: 1.22.22
+2026-04-16T08:52:54.8949710Z ##[endgroup]
+2026-04-16T08:52:54.9151410Z [command]/Users/runner/hostedtoolcache/node/22.22.2/arm64/bin/npm config get cache
+2026-04-16T08:52:55.0542100Z /Users/runner/.npm
+2026-04-16T08:52:55.2949460Z npm cache is not found
+2026-04-16T08:52:55.3024880Z ##[group]Run npm ci
+2026-04-16T08:52:55.3025160Z [36;1mnpm ci[0m
+2026-04-16T08:52:55.3073740Z shell: /bin/bash -e {0}
+2026-04-16T08:52:55.3074000Z ##[endgroup]
+2026-04-16T08:52:56.1015410Z 
+2026-04-16T08:52:56.1122300Z added 5 packages, and audited 6 packages in 666ms
+2026-04-16T08:52:56.1216230Z 
+2026-04-16T08:52:56.1318350Z 1 package is looking for funding
+2026-04-16T08:52:56.1422200Z   run `npm fund` for details
+2026-04-16T08:52:56.1522980Z 
+2026-04-16T08:52:56.1528830Z found 0 vulnerabilities
+2026-04-16T08:52:56.2063760Z ##[group]Run npm run build
+2026-04-16T08:52:56.2064000Z [36;1mnpm run build[0m
+2026-04-16T08:52:56.2104910Z shell: /bin/bash -e {0}
+2026-04-16T08:52:56.2105120Z ##[endgroup]
+2026-04-16T08:52:56.3457750Z 
+2026-04-16T08:52:56.3458400Z > oh-my-kimi@0.1.0 build
+2026-04-16T08:52:56.3458630Z > tsc
+2026-04-16T08:52:56.3458700Z 
+2026-04-16T08:52:56.9788980Z ##[group]Run npm run verify
+2026-04-16T08:52:56.9789210Z [36;1mnpm run verify[0m
+2026-04-16T08:52:56.9825560Z shell: /bin/bash -e {0}
+2026-04-16T08:52:56.9825810Z ##[endgroup]
+2026-04-16T08:52:57.1420340Z 
+2026-04-16T08:52:57.1522020Z > oh-my-kimi@0.1.0 verify
+2026-04-16T08:52:57.1623490Z > node scripts/verify-setup.js
+2026-04-16T08:52:57.1697490Z 
+2026-04-16T08:52:57.2063620Z OMK Setup Verification
+2026-04-16T08:52:57.2078330Z 
+2026-04-16T08:52:57.2119920Z ==================================================
+2026-04-16T08:52:57.2145550Z ✗ Kimi CLI installed
+2026-04-16T08:52:57.2175960Z   Path: /Users/runner/.kimi
+2026-04-16T08:52:57.2211680Z   Status: FAILED
+2026-04-16T08:52:57.2230960Z 
+2026-04-16T08:52:57.2256590Z ✗ OMK skills directory
+2026-04-16T08:52:57.2257580Z   Path: /Users/runner/.kimi/skills/omk
+2026-04-16T08:52:57.2257900Z   Status: FAILED
+2026-04-16T08:52:57.2258080Z 
+2026-04-16T08:52:57.2258310Z ✗ Hook handler (handler.js)
+2026-04-16T08:52:57.2258740Z   Path: /Users/runner/.kimi/skills/omk/handler.js
+2026-04-16T08:52:57.2259050Z   Status: FAILED
+2026-04-16T08:52:57.2259240Z 
+2026-04-16T08:52:57.2259450Z ✗ Session start hook
+2026-04-16T08:52:57.2259800Z   Path: /Users/runner/.kimi/skills/omk/session-start.js
+2026-04-16T08:52:57.2260120Z   Status: FAILED
+2026-04-16T08:52:57.2260300Z 
+2026-04-16T08:52:57.2260460Z ✗ Stop hook
+2026-04-16T08:52:57.2260760Z   Path: /Users/runner/.kimi/skills/omk/stop.js
+2026-04-16T08:52:57.2261070Z   Status: FAILED
+2026-04-16T08:52:57.2261250Z 
+2026-04-16T08:52:57.2261460Z ✗ Skill: deep-interview
+2026-04-16T08:52:57.2261860Z   Path: /Users/runner/.kimi/skills/omk/deep-interview/SKILL.md
+2026-04-16T08:52:57.2262200Z   Status: FAILED
+2026-04-16T08:52:57.2262370Z 
+2026-04-16T08:52:57.2262540Z ✗ Skill: ralplan
+2026-04-16T08:52:57.2262880Z   Path: /Users/runner/.kimi/skills/omk/ralplan/SKILL.md
+2026-04-16T08:52:57.2263220Z   Status: FAILED
+2026-04-16T08:52:57.2263380Z 
+2026-04-16T08:52:57.2263760Z ✗ Skill: ralph
+2026-04-16T08:52:57.2264190Z   Path: /Users/runner/.kimi/skills/omk/ralph/SKILL.md
+2026-04-16T08:52:57.2264550Z   Status: FAILED
+2026-04-16T08:52:57.2264730Z 
+2026-04-16T08:52:57.2264900Z ✗ Skill: cancel
+2026-04-16T08:52:57.2265300Z   Path: /Users/runner/.kimi/skills/omk/cancel/SKILL.md
+2026-04-16T08:52:57.2265620Z   Status: FAILED
+2026-04-16T08:52:57.2265800Z 
+2026-04-16T08:52:57.2266000Z ✗ Kimi config has OMK hooks
+2026-04-16T08:52:57.2266340Z   Path: /Users/runner/.kimi/config.toml
+2026-04-16T08:52:57.2267270Z   Status: FAILED
+2026-04-16T08:52:57.2267450Z 
+2026-04-16T08:52:57.2267660Z ✗ Hook script is valid JS
+2026-04-16T08:52:57.2268010Z   Path: /Users/runner/.kimi/skills/omk/handler.js
+2026-04-16T08:52:57.2268320Z   Status: FAILED
+2026-04-16T08:52:57.2268500Z 
+2026-04-16T08:52:57.2268870Z ==================================================
+2026-04-16T08:52:57.2269150Z 
+2026-04-16T08:52:57.2269350Z Results: 0 passed, 11 failed
+2026-04-16T08:52:57.2269570Z 
+2026-04-16T08:52:57.2270010Z ❌ Some checks failed. Run "omk setup" to fix.
+2026-04-16T08:52:57.2279760Z ##[error]Process completed with exit code 1.
+2026-04-16T08:52:57.2369650Z Post job cleanup.
+2026-04-16T08:52:57.3300780Z [command]/opt/homebrew/bin/git version
+2026-04-16T08:52:57.3365340Z git version 2.53.0
+2026-04-16T08:52:57.3386050Z Copying '/Users/runner/.gitconfig' to '/Users/runner/work/_temp/6e28de05-a20b-4b50-98e4-41c71d3cfe40/.gitconfig'
+2026-04-16T08:52:57.3393100Z Temporarily overriding HOME='/Users/runner/work/_temp/6e28de05-a20b-4b50-98e4-41c71d3cfe40' before making global git config changes
+2026-04-16T08:52:57.3393870Z Adding repository directory to the temporary git global config as a safe directory
+2026-04-16T08:52:57.3400170Z [command]/opt/homebrew/bin/git config --global --add safe.directory /Users/runner/work/oh-my-kimi/oh-my-kimi
+2026-04-16T08:52:57.3464750Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-04-16T08:52:57.3524900Z [command]/opt/homebrew/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-04-16T08:52:57.4634050Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-04-16T08:52:57.4634730Z http.https://github.com/.extraheader
+2026-04-16T08:52:57.4635850Z [command]/opt/homebrew/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-04-16T08:52:57.4657040Z [command]/opt/homebrew/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-04-16T08:52:57.5557430Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-04-16T08:52:57.5626250Z [command]/opt/homebrew/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-04-16T08:52:57.6689330Z Cleaning up orphan processes
+2026-04-16T08:52:58.0529150Z ##[warning]Node.js 20 actions are deprecated. The following actions are running on Node.js 20 and may not work as expected: actions/checkout@v4, actions/setup-node@v4. Actions will be forced to run with Node.js 24 by default starting June 2nd, 2026. Node.js 20 will be removed from the runner on September 16th, 2026. Please check if updated versions of these actions are available that support Node.js 24. To opt into Node.js 24 now, set the FORCE_JAVASCRIPT_ACTIONS_TO_NODE24=true environment variable on the runner or in your workflow file. Once Node.js 24 becomes the default, you can temporarily opt out by setting ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

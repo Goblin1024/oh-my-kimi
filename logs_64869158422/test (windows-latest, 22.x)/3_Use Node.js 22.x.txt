@@ -1,0 +1,11 @@
+﻿2026-04-16T08:53:01.0024369Z ##[group]Run actions/setup-node@v4
+2026-04-16T08:53:01.0024747Z with:
+2026-04-16T08:53:01.0024929Z   node-version: 22.x
+2026-04-16T08:53:01.0025127Z   cache: npm
+2026-04-16T08:53:01.0025287Z   always-auth: false
+2026-04-16T08:53:01.0025815Z   check-latest: false
+2026-04-16T08:53:01.0026191Z   token: ***
+2026-04-16T08:53:01.0026370Z ##[endgroup]
+2026-04-16T08:53:01.2405487Z Found in cache @ C:\hostedtoolcache\windows\node\22.22.2\x64
+2026-04-16T08:53:01.2416682Z ##[group]Environment details
+2026-04-16T08:53:06.2157807Z ##[error]The operation was canceled.

@@ -1,0 +1,61 @@
+﻿2026-04-16T08:52:56.9788960Z ##[group]Run npm run verify
+2026-04-16T08:52:56.9789210Z [36;1mnpm run verify[0m
+2026-04-16T08:52:56.9825540Z shell: /bin/bash -e {0}
+2026-04-16T08:52:56.9825810Z ##[endgroup]
+2026-04-16T08:52:57.1420210Z 
+2026-04-16T08:52:57.1521960Z > oh-my-kimi@0.1.0 verify
+2026-04-16T08:52:57.1623440Z > node scripts/verify-setup.js
+2026-04-16T08:52:57.1697440Z 
+2026-04-16T08:52:57.2063570Z OMK Setup Verification
+2026-04-16T08:52:57.2078320Z 
+2026-04-16T08:52:57.2119880Z ==================================================
+2026-04-16T08:52:57.2145530Z ✗ Kimi CLI installed
+2026-04-16T08:52:57.2175930Z   Path: /Users/runner/.kimi
+2026-04-16T08:52:57.2211650Z   Status: FAILED
+2026-04-16T08:52:57.2230930Z 
+2026-04-16T08:52:57.2256570Z ✗ OMK skills directory
+2026-04-16T08:52:57.2257570Z   Path: /Users/runner/.kimi/skills/omk
+2026-04-16T08:52:57.2257890Z   Status: FAILED
+2026-04-16T08:52:57.2258080Z 
+2026-04-16T08:52:57.2258300Z ✗ Hook handler (handler.js)
+2026-04-16T08:52:57.2258660Z   Path: /Users/runner/.kimi/skills/omk/handler.js
+2026-04-16T08:52:57.2259050Z   Status: FAILED
+2026-04-16T08:52:57.2259240Z 
+2026-04-16T08:52:57.2259440Z ✗ Session start hook
+2026-04-16T08:52:57.2259800Z   Path: /Users/runner/.kimi/skills/omk/session-start.js
+2026-04-16T08:52:57.2260120Z   Status: FAILED
+2026-04-16T08:52:57.2260300Z 
+2026-04-16T08:52:57.2260460Z ✗ Stop hook
+2026-04-16T08:52:57.2260750Z   Path: /Users/runner/.kimi/skills/omk/stop.js
+2026-04-16T08:52:57.2261070Z   Status: FAILED
+2026-04-16T08:52:57.2261250Z 
+2026-04-16T08:52:57.2261460Z ✗ Skill: deep-interview
+2026-04-16T08:52:57.2261850Z   Path: /Users/runner/.kimi/skills/omk/deep-interview/SKILL.md
+2026-04-16T08:52:57.2262190Z   Status: FAILED
+2026-04-16T08:52:57.2262370Z 
+2026-04-16T08:52:57.2262540Z ✗ Skill: ralplan
+2026-04-16T08:52:57.2262870Z   Path: /Users/runner/.kimi/skills/omk/ralplan/SKILL.md
+2026-04-16T08:52:57.2263210Z   Status: FAILED
+2026-04-16T08:52:57.2263380Z 
+2026-04-16T08:52:57.2263750Z ✗ Skill: ralph
+2026-04-16T08:52:57.2264170Z   Path: /Users/runner/.kimi/skills/omk/ralph/SKILL.md
+2026-04-16T08:52:57.2264540Z   Status: FAILED
+2026-04-16T08:52:57.2264720Z 
+2026-04-16T08:52:57.2264900Z ✗ Skill: cancel
+2026-04-16T08:52:57.2265300Z   Path: /Users/runner/.kimi/skills/omk/cancel/SKILL.md
+2026-04-16T08:52:57.2265620Z   Status: FAILED
+2026-04-16T08:52:57.2265800Z 
+2026-04-16T08:52:57.2266000Z ✗ Kimi config has OMK hooks
+2026-04-16T08:52:57.2266340Z   Path: /Users/runner/.kimi/config.toml
+2026-04-16T08:52:57.2267270Z   Status: FAILED
+2026-04-16T08:52:57.2267450Z 
+2026-04-16T08:52:57.2267660Z ✗ Hook script is valid JS
+2026-04-16T08:52:57.2268000Z   Path: /Users/runner/.kimi/skills/omk/handler.js
+2026-04-16T08:52:57.2268310Z   Status: FAILED
+2026-04-16T08:52:57.2268500Z 
+2026-04-16T08:52:57.2268870Z ==================================================
+2026-04-16T08:52:57.2269150Z 
+2026-04-16T08:52:57.2269350Z Results: 0 passed, 11 failed
+2026-04-16T08:52:57.2269570Z 
+2026-04-16T08:52:57.2270010Z ❌ Some checks failed. Run "omk setup" to fix.
+2026-04-16T08:52:57.2279740Z ##[error]Process completed with exit code 1.

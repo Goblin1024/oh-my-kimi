@@ -1,0 +1,32 @@
+﻿2026-04-16T08:52:50.7376700Z Current runner version: '2.333.1'
+2026-04-16T08:52:50.7391930Z ##[group]Runner Image Provisioner
+2026-04-16T08:52:50.7392410Z Hosted Compute Agent
+2026-04-16T08:52:50.7392770Z Version: 20260415.520
+2026-04-16T08:52:50.7393140Z Commit: af089020f5f67b61ccc91db6c07980876c02bf7b
+2026-04-16T08:52:50.7393580Z Build Date: 2026-04-15T18:07:08Z
+2026-04-16T08:52:50.7394000Z Worker ID: {19306a2d-9dff-41be-a330-19635efa5c96}
+2026-04-16T08:52:50.7394540Z Azure Region: westus
+2026-04-16T08:52:50.7394880Z ##[endgroup]
+2026-04-16T08:52:50.7395670Z ##[group]Operating System
+2026-04-16T08:52:50.7396040Z macOS
+2026-04-16T08:52:50.7396320Z 15.7.4
+2026-04-16T08:52:50.7396600Z 24G517
+2026-04-16T08:52:50.7396890Z ##[endgroup]
+2026-04-16T08:52:50.7397210Z ##[group]Runner Image
+2026-04-16T08:52:50.7397550Z Image: macos-15-arm64
+2026-04-16T08:52:50.7397870Z Version: 20260414.0270.1
+2026-04-16T08:52:50.7398570Z Included Software: https://github.com/actions/runner-images/blob/macos-15-arm64/20260414.0270/images/macos/macos-15-arm64-Readme.md
+2026-04-16T08:52:50.7399590Z Image Release: https://github.com/actions/runner-images/releases/tag/macos-15-arm64%2F20260414.0270
+2026-04-16T08:52:50.7400200Z ##[endgroup]
+2026-04-16T08:52:50.7400880Z ##[group]GITHUB_TOKEN Permissions
+2026-04-16T08:52:50.7401930Z Contents: read
+2026-04-16T08:52:50.7402250Z Metadata: read
+2026-04-16T08:52:50.7402570Z Packages: read
+2026-04-16T08:52:50.7402870Z ##[endgroup]
+2026-04-16T08:52:50.7404230Z Secret source: Actions
+2026-04-16T08:52:50.7404620Z Prepare workflow directory
+2026-04-16T08:52:50.7625390Z Prepare all required actions
+2026-04-16T08:52:50.7661550Z Getting action download info
+2026-04-16T08:52:51.0074660Z Download action repository 'actions/checkout@v4' (SHA:34e114876b0b11c390a56381ad16ebd13914f8d5)
+2026-04-16T08:52:51.2301910Z Download action repository 'actions/setup-node@v4' (SHA:49933ea5288caeca8642d1e84afbd3f7d6820020)
+2026-04-16T08:52:51.3748470Z Complete job name: test (macos-latest, 20.x)
