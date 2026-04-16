@@ -11,7 +11,10 @@
     "build": "tsc",
     "dev": "tsc --watch",
     "setup": "node dist/cli/index.js setup",
-    "doctor": "node dist/cli/index.js doctor"
+    "doctor": "node dist/cli/index.js doctor",
+    "verify": "node scripts/verify-setup.js",
+    "test:hook": "node scripts/test-hook.js",
+    "test:all": "npm run verify && npm run test:hook"
   },
   "keywords": [
     "kimi",
