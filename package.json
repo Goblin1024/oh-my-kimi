@@ -42,12 +42,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/SpiritPunch/oh-my-kimi.git"
+    "url": "https://github.com/Goblin1024/oh-my-kimi.git"
   },
   "bugs": {
-    "url": "https://github.com/SpiritPunch/oh-my-kimi/issues"
+    "url": "https://github.com/Goblin1024/oh-my-kimi/issues"
   },
-  "homepage": "https://github.com/SpiritPunch/oh-my-kimi#readme",
+  "homepage": "https://github.com/Goblin1024/oh-my-kimi#readme",
   "engines": {
     "node": ">=20"
   },
