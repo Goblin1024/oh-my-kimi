@@ -19,8 +19,8 @@ const testCases = [
       hook_event_name: 'UserPromptSubmit',
       prompt: '$deep-interview "I need a feature"',
       cwd: process.cwd(),
-      session_id: 'test-session-123'
-    }
+      session_id: 'test-session-123',
+    },
   },
   {
     name: 'UserPromptSubmit with $ralph',
@@ -28,8 +28,8 @@ const testCases = [
       hook_event_name: 'UserPromptSubmit',
       prompt: '$ralph "fix the bug"',
       cwd: process.cwd(),
-      session_id: 'test-session-123'
-    }
+      session_id: 'test-session-123',
+    },
   },
   {
     name: 'UserPromptSubmit with $cancel',
@@ -37,8 +37,8 @@ const testCases = [
       hook_event_name: 'UserPromptSubmit',
       prompt: '$cancel',
       cwd: process.cwd(),
-      session_id: 'test-session-123'
-    }
+      session_id: 'test-session-123',
+    },
   },
   {
     name: 'SessionStart',
@@ -46,17 +46,17 @@ const testCases = [
       hook_event_name: 'SessionStart',
       source: 'startup',
       cwd: process.cwd(),
-      session_id: 'test-session-123'
-    }
+      session_id: 'test-session-123',
+    },
   },
   {
     name: 'Stop',
     input: {
       hook_event_name: 'Stop',
       cwd: process.cwd(),
-      session_id: 'test-session-123'
-    }
-  }
+      session_id: 'test-session-123',
+    },
+  },
 ];
 
 console.log('OMK Hook Handler Test\n');
@@ -79,7 +79,7 @@ async function runTest(testCase) {
 
   return new Promise((resolve) => {
     const child = spawn('node', [HANDLER_PATH], {
-      stdio: ['pipe', 'pipe', 'pipe']
+      stdio: ['pipe', 'pipe', 'pipe'],
     });
 
     let stdout = '';
@@ -95,16 +95,16 @@ async function runTest(testCase) {
 
     child.on('close', (code) => {
       console.log('Output:');
-      
+
       if (stderr) {
         console.log('  stderr:', stderr.trim());
       }
-      
+
       if (stdout) {
         try {
           const output = JSON.parse(stdout.trim());
           console.log('  stdout (parsed):', JSON.stringify(output, null, 2));
-          
+
           // Validate output structure
           if (output.hookSpecificOutput) {
             console.log('  ✓ Valid output structure');
@@ -117,7 +117,7 @@ async function runTest(testCase) {
           } else {
             console.log('  ℹ No hookSpecificOutput (may be expected for non-matching input)');
           }
-        } catch (e) {
+        } catch (_e) {
           console.log('  stdout (raw):', stdout.trim());
           console.log('  ✗ Failed to parse JSON output');
         }
@@ -148,7 +148,7 @@ async function main() {
   console.log('  3. State files are created in .omk/state/');
 }
 
-main().catch(err => {
+main().catch((err) => {
   console.error('Test error:', err);
   process.exit(1);
 });

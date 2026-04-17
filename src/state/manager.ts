@@ -2,7 +2,7 @@
  * State management operations
  */
 
-import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs';
+import { readFileSync, writeFileSync, mkdirSync } from 'fs';
 import { dirname } from 'path';
 import { skillActivePath, skillStatePath } from './paths.js';
 
@@ -78,7 +78,10 @@ export function isWorkflowActive(projectRoot?: string): boolean {
 /**
  * Cancel active workflow
  */
-export function cancelWorkflow(reason: string = 'User requested', projectRoot?: string): SkillState | null {
+export function cancelWorkflow(
+  reason: string = 'User requested',
+  projectRoot?: string
+): SkillState | null {
   const active = getActiveSkill(projectRoot);
   if (!active?.active) return null;
 
@@ -87,7 +90,7 @@ export function cancelWorkflow(reason: string = 'User requested', projectRoot?: 
     active: false,
     phase: 'cancelled',
     cancelled_at: new Date().toISOString(),
-    reason
+    reason,
   };
 
   setActiveSkill(cancelled, projectRoot);

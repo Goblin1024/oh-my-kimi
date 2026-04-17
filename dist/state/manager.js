@@ -66,7 +66,7 @@ export function cancelWorkflow(reason = 'User requested', projectRoot) {
         active: false,
         phase: 'cancelled',
         cancelled_at: new Date().toISOString(),
-        reason
+        reason,
     };
     setActiveSkill(cancelled, projectRoot);
     setSkillState(active.skill, cancelled, projectRoot);

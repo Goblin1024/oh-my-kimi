@@ -7,10 +7,10 @@ import { join } from 'path';
 // Workflow keywords mapping
 const KEYWORDS = {
     'deep-interview': /\$deep-interview/,
-    'ralplan': /\$ralplan/,
-    'ralph': /\$ralph/,
-    'cancel': /\$cancel/,
-    'team': /\$team/
+    ralplan: /\$ralplan/,
+    ralph: /\$ralph/,
+    cancel: /\$cancel/,
+    team: /\$team/,
 };
 function detectSkill(prompt) {
     for (const [skill, pattern] of Object.entries(KEYWORDS)) {
@@ -39,8 +39,8 @@ function writeState(stateDir, filename, state) {
 function handleUserPromptSubmit(input) {
     const output = {
         hookSpecificOutput: {
-            hookEventName: 'UserPromptSubmit'
-        }
+            hookEventName: 'UserPromptSubmit',
+        },
     };
     if (!input.prompt) {
         return output;
@@ -58,13 +58,13 @@ function handleUserPromptSubmit(input) {
                 ...currentState,
                 active: false,
                 phase: 'cancelled',
-                cancelled_at: new Date().toISOString()
+                cancelled_at: new Date().toISOString(),
             });
             output.hookSpecificOutput = {
                 hookEventName: 'UserPromptSubmit',
                 skill: 'cancel',
                 activated: true,
-                message: `Cancelled ${currentState.skill} workflow`
+                message: `Cancelled ${currentState.skill} workflow`,
             };
         }
         return output;
@@ -76,7 +76,7 @@ function handleUserPromptSubmit(input) {
         active: true,
         phase: 'starting',
         activated_at: new Date().toISOString(),
-        session_id: input.session_id
+        session_id: input.session_id,
     };
     writeState(stateDir, 'skill-active.json', state);
     writeState(stateDir, `${skill}-state.json`, state);
@@ -84,7 +84,7 @@ function handleUserPromptSubmit(input) {
         hookEventName: 'UserPromptSubmit',
         skill,
         activated: true,
-        message: `OMK: ${skill} workflow activated`
+        message: `OMK: ${skill} workflow activated`,
     };
     return output;
 }
@@ -98,15 +98,15 @@ function handleSessionStart(input) {
                 hookEventName: 'SessionStart',
                 skill: activeState.skill,
                 activated: true,
-                message: `Resuming ${activeState.skill} workflow (phase: ${activeState.phase})`
-            }
+                message: `Resuming ${activeState.skill} workflow (phase: ${activeState.phase})`,
+            },
         };
     }
     return {
         hookSpecificOutput: {
             hookEventName: 'SessionStart',
-            message: 'No active workflow'
-        }
+            message: 'No active workflow',
+        },
     };
 }
 function handleStop(input) {
@@ -118,7 +118,7 @@ function handleStop(input) {
         if (activeState.phase !== 'completing') {
             writeState(stateDir, 'skill-active.json', {
                 ...activeState,
-                phase: 'completing'
+                phase: 'completing',
             });
         }
         return {
@@ -126,15 +126,15 @@ function handleStop(input) {
                 hookEventName: 'Stop',
                 skill: activeState.skill,
                 activated: true,
-                message: `${activeState.skill} is active. Complete or use $cancel to stop.`
-            }
+                message: `${activeState.skill} is active. Complete or use $cancel to stop.`,
+            },
         };
     }
     return {
         hookSpecificOutput: {
             hookEventName: 'Stop',
-            message: 'No active workflow'
-        }
+            message: 'No active workflow',
+        },
     };
 }
 // Main entry point
@@ -155,8 +155,8 @@ function main() {
             default:
                 output = {
                     hookSpecificOutput: {
-                        hookEventName: input.hook_event_name
-                    }
+                        hookEventName: input.hook_event_name,
+                    },
                 };
         }
         console.log(JSON.stringify(output));

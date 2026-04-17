@@ -1,90 +1,96 @@
 {
-  "name": "oh-my-kimi",
-  "version": "0.1.0",
-  "description": "Workflow orchestration layer for Kimi Code CLI - Bring structured workflows, agent teams, and persistent execution to your Kimi CLI sessions",
-  "type": "module",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "bin": {
-    "omk": "bin/omk.js"
-  },
-  "files": [
-    "bin/",
-    "dist/",
-    "skills/",
-    "templates/",
-    "scripts/",
-    "docs/",
-    "README.md",
-    "README.zh-CN.md",
-    "LICENSE",
-    "CHANGELOG.md"
-  ],
-  "scripts": {
-    "build": "tsc",
-    "dev": "tsc --watch",
-    "setup": "node dist/cli/index.js setup",
-    "doctor": "node dist/cli/index.js doctor",
-    "verify": "node scripts/verify-setup.js",
-    "test:hook": "node scripts/test-hook.js",
-    "test:all": "npm run verify && npm run test:hook",
-    "prepublishOnly": "npm run build && npm run test:all",
-    "clean": "rimraf dist",
-    "lint": "echo 'No linter configured'",
-    "format": "echo 'No formatter configured'"
-  },
-  "keywords": [
-    "kimi",
-    "kimi-cli",
-    "cli",
-    "workflow",
-    "agents",
-    "orchestration",
-    "ai",
-    "productivity",
-    "developer-tools",
-    "code-assistant",
-    "automation",
-    "hooks",
-    "skills",
-    "state-management",
-    "deep-interview",
-    "ralplan",
-    "ralph",
-    "moonshot"
-  ],
-  "author": {
-    "name": "SpiritPunch",
-    "email": "",
-    "url": "https://github.com/Goblin1024"
-  },
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Goblin1024/oh-my-kimi.git"
-  },
-  "bugs": {
-    "url": "https://github.com/Goblin1024/oh-my-kimi/issues"
-  },
-  "homepage": "https://github.com/Goblin1024/oh-my-kimi#readme",
-  "engines": {
-    "node": ">=20.0.0"
-  },
-  "os": [
-    "darwin",
-    "linux",
-    "win32"
-  ],
-  "dependencies": {
-    "@iarna/toml": "^2.2.5",
-    "yaml": "^2.4.0"
-  },
-  "devDependencies": {
-    "@types/node": "^20.0.0",
-    "typescript": "^5.4.0"
-  },
-  "funding": {
-    "type": "github",
-    "url": "https://github.com/sponsors/Goblin1024"
-  }
+    "name":  "oh-my-kimi",
+    "version":  "0.1.0",
+    "description":  "Workflow orchestration layer for Kimi Code CLI - Bring structured workflows, agent teams, and persistent execution to your Kimi CLI sessions",
+    "type":  "module",
+    "main":  "dist/index.js",
+    "types":  "dist/index.d.ts",
+    "bin":  {
+                "omk":  "bin/omk.js"
+            },
+    "files":  [
+                  "bin/",
+                  "dist/",
+                  "skills/",
+                  "templates/",
+                  "scripts/",
+                  "docs/",
+                  "README.md",
+                  "README.zh-CN.md",
+                  "LICENSE",
+                  "CHANGELOG.md"
+              ],
+    "scripts":  {
+                    "build":  "tsc",
+                    "dev":  "tsc --watch",
+                    "setup":  "node dist/cli/index.js setup",
+                    "doctor":  "node dist/cli/index.js doctor",
+                    "verify":  "node scripts/verify-setup.js",
+                    "test:hook":  "node scripts/test-hook.js",
+                    "test:all":  "npm run verify \u0026\u0026 npm run test:hook",
+                    "prepublishOnly":  "npm run build \u0026\u0026 npm run test:all",
+                    "clean":  "rimraf dist",
+                    "lint":  "eslint \"src/**/*.ts\" \"scripts/**/*.js\"",
+                    "format":  "prettier --write \"src/**/*.ts\" \"scripts/**/*.js\" \"bin/**/*.js\"",
+                    "check":  "npm run format \u0026\u0026 npm run lint \u0026\u0026 npm run build \u0026\u0026 npm run test:all"
+                },
+    "keywords":  [
+                     "kimi",
+                     "kimi-cli",
+                     "cli",
+                     "workflow",
+                     "agents",
+                     "orchestration",
+                     "ai",
+                     "productivity",
+                     "developer-tools",
+                     "code-assistant",
+                     "automation",
+                     "hooks",
+                     "skills",
+                     "state-management",
+                     "deep-interview",
+                     "ralplan",
+                     "ralph",
+                     "moonshot"
+                 ],
+    "author":  {
+                   "name":  "SpiritPunch",
+                   "email":  "",
+                   "url":  "https://github.com/Goblin1024"
+               },
+    "license":  "MIT",
+    "repository":  {
+                       "type":  "git",
+                       "url":  "git+https://github.com/Goblin1024/oh-my-kimi.git"
+                   },
+    "bugs":  {
+                 "url":  "https://github.com/Goblin1024/oh-my-kimi/issues"
+             },
+    "homepage":  "https://github.com/Goblin1024/oh-my-kimi#readme",
+    "engines":  {
+                    "node":  "\u003e=20.0.0"
+                },
+    "os":  [
+               "darwin",
+               "linux",
+               "win32"
+           ],
+    "dependencies":  {
+                         "@iarna/toml":  "^2.2.5",
+                         "yaml":  "^2.4.0"
+                     },
+    "devDependencies":  {
+                            "@eslint/js":  "^10.0.1",
+                            "@types/node":  "^20.0.0",
+                            "eslint":  "^10.2.0",
+                            "prettier":  "^3.8.3",
+                            "rimraf":  "^6.1.3",
+                            "typescript":  "^5.4.0",
+                            "typescript-eslint":  "^8.58.2"
+                        },
+    "funding":  {
+                    "type":  "github",
+                    "url":  "https://github.com/sponsors/Goblin1024"
+                }
 }

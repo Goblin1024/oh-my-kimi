@@ -18,60 +18,60 @@ const checks = [];
 checks.push({
   name: 'Kimi CLI installed',
   test: () => existsSync(KIMI_HOME),
-  path: KIMI_HOME
+  path: KIMI_HOME,
 });
 
 // Check 2: OMK skills directory
 checks.push({
   name: 'OMK skills directory',
   test: () => existsSync(OMK_SKILLS_DIR),
-  path: OMK_SKILLS_DIR
+  path: OMK_SKILLS_DIR,
 });
 
 // Check 3: Hook handler exists
 checks.push({
   name: 'Hook handler (handler.js)',
   test: () => existsSync(join(OMK_SKILLS_DIR, 'handler.js')),
-  path: join(OMK_SKILLS_DIR, 'handler.js')
+  path: join(OMK_SKILLS_DIR, 'handler.js'),
 });
 
 // Check 4: Session start hook
 checks.push({
   name: 'Session start hook',
   test: () => existsSync(join(OMK_SKILLS_DIR, 'session-start.js')),
-  path: join(OMK_SKILLS_DIR, 'session-start.js')
+  path: join(OMK_SKILLS_DIR, 'session-start.js'),
 });
 
 // Check 5: Stop hook
 checks.push({
   name: 'Stop hook',
   test: () => existsSync(join(OMK_SKILLS_DIR, 'stop.js')),
-  path: join(OMK_SKILLS_DIR, 'stop.js')
+  path: join(OMK_SKILLS_DIR, 'stop.js'),
 });
 
 // Check 6: Skills exist
 checks.push({
   name: 'Skill: deep-interview',
   test: () => existsSync(join(OMK_SKILLS_DIR, 'deep-interview', 'SKILL.md')),
-  path: join(OMK_SKILLS_DIR, 'deep-interview', 'SKILL.md')
+  path: join(OMK_SKILLS_DIR, 'deep-interview', 'SKILL.md'),
 });
 
 checks.push({
   name: 'Skill: ralplan',
   test: () => existsSync(join(OMK_SKILLS_DIR, 'ralplan', 'SKILL.md')),
-  path: join(OMK_SKILLS_DIR, 'ralplan', 'SKILL.md')
+  path: join(OMK_SKILLS_DIR, 'ralplan', 'SKILL.md'),
 });
 
 checks.push({
   name: 'Skill: ralph',
   test: () => existsSync(join(OMK_SKILLS_DIR, 'ralph', 'SKILL.md')),
-  path: join(OMK_SKILLS_DIR, 'ralph', 'SKILL.md')
+  path: join(OMK_SKILLS_DIR, 'ralph', 'SKILL.md'),
 });
 
 checks.push({
   name: 'Skill: cancel',
   test: () => existsSync(join(OMK_SKILLS_DIR, 'cancel', 'SKILL.md')),
-  path: join(OMK_SKILLS_DIR, 'cancel', 'SKILL.md')
+  path: join(OMK_SKILLS_DIR, 'cancel', 'SKILL.md'),
 });
 
 // Check 7: Hooks configured in config.toml
@@ -82,7 +82,7 @@ checks.push({
     const content = readFileSync(KIMI_CONFIG, 'utf-8');
     return content.includes('omk') || content.includes('oh-my-kimi');
   },
-  path: KIMI_CONFIG
+  path: KIMI_CONFIG,
 });
 
 // Check 8: Hook script is valid JavaScript
@@ -99,7 +99,7 @@ checks.push({
       return false;
     }
   },
-  path: join(OMK_SKILLS_DIR, 'handler.js')
+  path: join(OMK_SKILLS_DIR, 'handler.js'),
 });
 
 // Run all checks

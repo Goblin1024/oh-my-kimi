@@ -28,14 +28,14 @@ export async function setup() {
                     throw new Error('Kimi CLI not found. Please install Kimi CLI first.');
                 }
             },
-            verify: () => existsSync(KIMI_HOME)
+            verify: () => existsSync(KIMI_HOME),
         },
         {
             name: 'Create OMK skills directory',
             action: () => {
                 mkdirSync(OMK_SKILLS_DIR, { recursive: true });
             },
-            verify: () => existsSync(OMK_SKILLS_DIR)
+            verify: () => existsSync(OMK_SKILLS_DIR),
         },
         {
             name: 'Copy hook handler',
@@ -47,7 +47,7 @@ export async function setup() {
                 }
                 cpSync(source, target);
             },
-            verify: () => existsSync(join(OMK_SKILLS_DIR, 'handler.js'))
+            verify: () => existsSync(join(OMK_SKILLS_DIR, 'handler.js')),
         },
         {
             name: 'Copy session-start hook',
@@ -58,7 +58,7 @@ export async function setup() {
                 // For now, copy the same file - handler.js handles all events
                 cpSync(source, target);
             },
-            verify: () => existsSync(join(OMK_SKILLS_DIR, 'session-start.js'))
+            verify: () => existsSync(join(OMK_SKILLS_DIR, 'session-start.js')),
         },
         {
             name: 'Copy stop hook',
@@ -67,7 +67,7 @@ export async function setup() {
                 const target = join(OMK_SKILLS_DIR, 'stop.js');
                 cpSync(source, target);
             },
-            verify: () => existsSync(join(OMK_SKILLS_DIR, 'stop.js'))
+            verify: () => existsSync(join(OMK_SKILLS_DIR, 'stop.js')),
         },
         {
             name: 'Install skills',
@@ -88,8 +88,8 @@ export async function setup() {
                 }
             },
             verify: () => {
-                return ['ralph', 'deep-interview', 'ralplan', 'cancel'].every(skill => existsSync(join(OMK_SKILLS_DIR, skill, 'SKILL.md')));
-            }
+                return ['ralph', 'deep-interview', 'ralplan', 'cancel'].every((skill) => existsSync(join(OMK_SKILLS_DIR, skill, 'SKILL.md')));
+            },
         },
         {
             name: 'Configure Kimi hooks',
@@ -101,8 +101,8 @@ export async function setup() {
                     return false;
                 const content = readFileSync(KIMI_CONFIG, 'utf-8');
                 return content.includes('omk') || content.includes('oh-my-kimi');
-            }
-        }
+            },
+        },
     ];
     // Execute each step with verification
     let allPassed = true;
@@ -165,7 +165,7 @@ function configureHooks() {
             const content = readFileSync(KIMI_CONFIG, 'utf-8');
             config = TOML.parse(content);
         }
-        catch (e) {
+        catch (_e) {
             console.warn('  ⚠ Could not parse existing config, creating new one');
         }
     }
@@ -184,17 +184,17 @@ function configureHooks() {
         {
             event: 'UserPromptSubmit',
             command: `node ${join(OMK_SKILLS_DIR, 'handler.js')}`,
-            matcher: '\\$[a-z-]+'
+            matcher: '\\$[a-z-]+',
         },
         {
             event: 'SessionStart',
-            command: `node ${join(OMK_SKILLS_DIR, 'session-start.js')}`
+            command: `node ${join(OMK_SKILLS_DIR, 'session-start.js')}`,
         },
         {
             event: 'Stop',
             command: `node ${join(OMK_SKILLS_DIR, 'stop.js')}`,
-            timeout: 30
-        }
+            timeout: 30,
+        },
     ];
     config.hooks.push(...omkHooks);
     // Write config back
@@ -206,11 +206,11 @@ async function runFinalVerification() {
     const checks = [
         {
             name: 'Hook handler executable',
-            test: () => existsSync(join(OMK_SKILLS_DIR, 'handler.js'))
+            test: () => existsSync(join(OMK_SKILLS_DIR, 'handler.js')),
         },
         {
             name: 'All skills installed',
-            test: () => ['ralph', 'deep-interview', 'ralplan', 'cancel'].every(skill => existsSync(join(OMK_SKILLS_DIR, skill, 'SKILL.md')))
+            test: () => ['ralph', 'deep-interview', 'ralplan', 'cancel'].every((skill) => existsSync(join(OMK_SKILLS_DIR, skill, 'SKILL.md'))),
         },
         {
             name: 'Kimi config updated',
@@ -219,8 +219,8 @@ async function runFinalVerification() {
                     return false;
                 const content = readFileSync(KIMI_CONFIG, 'utf-8');
                 return content.includes('omk');
-            }
-        }
+            },
+        },
     ];
     let passed = 0;
     for (const check of checks) {

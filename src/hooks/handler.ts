@@ -3,16 +3,16 @@
  * Processes UserPromptSubmit, SessionStart, and Stop events
  */
 
-import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'fs';
+import { readFileSync, writeFileSync, mkdirSync } from 'fs';
 import { join } from 'path';
 
 // Workflow keywords mapping
 const KEYWORDS: Record<string, RegExp> = {
   'deep-interview': /\$deep-interview/,
-  'ralplan': /\$ralplan/,
-  'ralph': /\$ralph/,
-  'cancel': /\$cancel/,
-  'team': /\$team/
+  ralplan: /\$ralplan/,
+  ralph: /\$ralph/,
+  cancel: /\$cancel/,
+  team: /\$team/,
 };
 
 interface HookInput {
@@ -69,8 +69,8 @@ function writeState(stateDir: string, filename: string, state: any): void {
 function handleUserPromptSubmit(input: HookInput): HookOutput {
   const output: HookOutput = {
     hookSpecificOutput: {
-      hookEventName: 'UserPromptSubmit'
-    }
+      hookEventName: 'UserPromptSubmit',
+    },
   };
 
   if (!input.prompt) {
@@ -78,7 +78,7 @@ function handleUserPromptSubmit(input: HookInput): HookOutput {
   }
 
   const skill = detectSkill(input.prompt);
-  
+
   if (!skill) {
     return output;
   }
@@ -87,23 +87,23 @@ function handleUserPromptSubmit(input: HookInput): HookOutput {
   if (skill === 'cancel') {
     const stateDir = getStateDir(input.cwd);
     const currentState = readState(stateDir, 'skill-active.json');
-    
+
     if (currentState?.active) {
       writeState(stateDir, 'skill-active.json', {
         ...currentState,
         active: false,
         phase: 'cancelled',
-        cancelled_at: new Date().toISOString()
+        cancelled_at: new Date().toISOString(),
       });
-      
+
       output.hookSpecificOutput = {
         hookEventName: 'UserPromptSubmit',
         skill: 'cancel',
         activated: true,
-        message: `Cancelled ${currentState.skill} workflow`
+        message: `Cancelled ${currentState.skill} workflow`,
       };
     }
-    
+
     return output;
   }
 
@@ -114,7 +114,7 @@ function handleUserPromptSubmit(input: HookInput): HookOutput {
     active: true,
     phase: 'starting',
     activated_at: new Date().toISOString(),
-    session_id: input.session_id
+    session_id: input.session_id,
   };
 
   writeState(stateDir, 'skill-active.json', state);
@@ -124,7 +124,7 @@ function handleUserPromptSubmit(input: HookInput): HookOutput {
     hookEventName: 'UserPromptSubmit',
     skill,
     activated: true,
-    message: `OMK: ${skill} workflow activated`
+    message: `OMK: ${skill} workflow activated`,
   };
 
   return output;
@@ -132,26 +132,26 @@ function handleUserPromptSubmit(input: HookInput): HookOutput {
 
 function handleSessionStart(input: HookInput): HookOutput {
   const stateDir = getStateDir(input.cwd);
-  
+
   // Check for active workflow
   const activeState = readState(stateDir, 'skill-active.json');
-  
+
   if (activeState?.active) {
     return {
       hookSpecificOutput: {
         hookEventName: 'SessionStart',
         skill: activeState.skill,
         activated: true,
-        message: `Resuming ${activeState.skill} workflow (phase: ${activeState.phase})`
-      }
+        message: `Resuming ${activeState.skill} workflow (phase: ${activeState.phase})`,
+      },
     };
   }
 
   return {
     hookSpecificOutput: {
       hookEventName: 'SessionStart',
-      message: 'No active workflow'
-    }
+      message: 'No active workflow',
+    },
   };
 }
 
@@ -165,7 +165,7 @@ function handleStop(input: HookInput): HookOutput {
     if (activeState.phase !== 'completing') {
       writeState(stateDir, 'skill-active.json', {
         ...activeState,
-        phase: 'completing'
+        phase: 'completing',
       });
     }
 
@@ -174,16 +174,16 @@ function handleStop(input: HookInput): HookOutput {
         hookEventName: 'Stop',
         skill: activeState.skill,
         activated: true,
-        message: `${activeState.skill} is active. Complete or use $cancel to stop.`
-      }
+        message: `${activeState.skill} is active. Complete or use $cancel to stop.`,
+      },
     };
   }
 
   return {
     hookSpecificOutput: {
       hookEventName: 'Stop',
-      message: 'No active workflow'
-    }
+      message: 'No active workflow',
+    },
   };
 }
 
@@ -206,8 +206,8 @@ function main(): void {
       default:
         output = {
           hookSpecificOutput: {
-            hookEventName: input.hook_event_name
-          }
+            hookEventName: input.hook_event_name,
+          },
         };
     }
 

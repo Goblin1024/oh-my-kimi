@@ -52,7 +52,7 @@ export async function doctor(): Promise<void> {
   // Summary
   console.log('-'.repeat(40));
   console.log(`Results: ${passCount} passed, ${failCount} failed, ${warnCount} warnings`);
-  
+
   if (failCount === 0) {
     console.log('\nAll checks passed! OMK is ready to use.');
   } else {
@@ -66,13 +66,13 @@ function checkKimiCli(): CheckResult {
     return {
       name: 'Kimi CLI',
       status: 'pass',
-      message: `Found at ${KIMI_HOME}`
+      message: `Found at ${KIMI_HOME}`,
     };
   }
   return {
     name: 'Kimi CLI',
     status: 'fail',
-    message: 'Not found. Please install Kimi CLI first.'
+    message: 'Not found. Please install Kimi CLI first.',
   };
 }
 
@@ -81,13 +81,13 @@ function checkSkillsDir(): CheckResult {
     return {
       name: 'OMK Skills Directory',
       status: 'pass',
-      message: OMK_SKILLS_DIR
+      message: OMK_SKILLS_DIR,
     };
   }
   return {
     name: 'OMK Skills Directory',
     status: 'fail',
-    message: `Not found at ${OMK_SKILLS_DIR}. Run "omk setup".`
+    message: `Not found at ${OMK_SKILLS_DIR}. Run "omk setup".`,
   };
 }
 
@@ -101,13 +101,13 @@ function checkSkills(): CheckResult[] {
       results.push({
         name: `Skill: ${skill}`,
         status: 'pass',
-        message: 'SKILL.md found'
+        message: 'SKILL.md found',
       });
     } else {
       results.push({
         name: `Skill: ${skill}`,
         status: 'warn',
-        message: 'SKILL.md not found'
+        message: 'SKILL.md not found',
       });
     }
   }
@@ -120,7 +120,7 @@ function checkHooks(): CheckResult {
     return {
       name: 'Kimi Hooks',
       status: 'fail',
-      message: `Config file not found: ${KIMI_CONFIG}`
+      message: `Config file not found: ${KIMI_CONFIG}`,
     };
   }
 
@@ -130,19 +130,19 @@ function checkHooks(): CheckResult {
       return {
         name: 'Kimi Hooks',
         status: 'pass',
-        message: 'OMK hooks configured in config.toml'
+        message: 'OMK hooks configured in config.toml',
       };
     }
     return {
       name: 'Kimi Hooks',
       status: 'fail',
-      message: 'OMK hooks not found. Run "omk setup".'
+      message: 'OMK hooks not found. Run "omk setup".',
     };
-  } catch (e) {
+  } catch (_e) {
     return {
       name: 'Kimi Hooks',
       status: 'fail',
-      message: 'Could not read config.toml'
+      message: 'Could not read config.toml',
     };
   }
 }
