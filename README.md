@@ -68,6 +68,18 @@ npm install -g oh-my-kimi
 omk setup
 ```
 
+### Self-Check & Quality Assurance
+
+OMK includes built-in code quality tools:
+
+```bash
+npm run check      # Full self-check: format + lint + build + test
+npm run format     # Auto-format code with Prettier
+npm run lint       # Lint with ESLint
+npm run build      # Compile TypeScript
+npm run test:all   # Run tests
+```
+
 ## 🚀 Quick Start
 
 ```bash
@@ -133,12 +145,13 @@ OMK uses Kimi's native hooks system:
 │  $ralph     │     │  Detects    │     │              │
 │  "..."      │◀────│  $commands  │◀────│  skill-      │
 └─────────────┘     └─────────────┘     │  active.json │
-                                               │
-                                               ▼
-                                        ┌─────────────┐
-                                        │   Skills    │
-                                        │ (SKILL.md)  │
-                                        └─────────────┘
+                                        │              │
+                                        ▼              │
+                                 ┌─────────────┐       │
+                                 │   Skills    │       │
+                                 │ (SKILL.md)  │       │
+                                 └─────────────┘       │
+                                                └──────┘
 ```
 
 1. **Keyword Detection**: Hooks detect `$command` patterns
@@ -195,7 +208,7 @@ The workflow concepts, state management patterns, and skill architecture are ada
 
 ## 📄 License
 
-MIT © 哈尔滨工业大学, SpiritPunch
+MIT © SpiritPunch
 
 ---
 

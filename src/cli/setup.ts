@@ -8,6 +8,19 @@ import { homedir } from 'os';
 import { fileURLToPath } from 'url';
 import * as TOML from '@iarna/toml';
 
+// Typed representation of the Kimi config TOML
+interface KimiHook {
+  event: string;
+  command: string;
+  matcher?: string;
+  timeout?: number;
+}
+
+interface KimiConfig {
+  hooks?: KimiHook[];
+  [key: string]: unknown;
+}
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
@@ -182,13 +195,13 @@ function findPackageRoot(): string {
 }
 
 function configureHooks(): void {
-  let config: any = {};
+  let config: KimiConfig = {};
 
   // Read existing config
   if (existsSync(KIMI_CONFIG)) {
     try {
       const content = readFileSync(KIMI_CONFIG, 'utf-8');
-      config = TOML.parse(content);
+      config = TOML.parse(content) as KimiConfig;
     } catch (_e) {
       console.warn('  ⚠ Could not parse existing config, creating new one');
     }
@@ -200,7 +213,7 @@ function configureHooks(): void {
   }
 
   // Check if OMK hooks already exist
-  const hasOmkHooks = config.hooks.some((h: any) => h.command && h.command.includes('omk'));
+  const hasOmkHooks = config.hooks.some((h) => h.command && h.command.includes('omk'));
 
   if (hasOmkHooks) {
     console.log('  ℹ OMK hooks already configured');
@@ -227,8 +240,10 @@ function configureHooks(): void {
 
   config.hooks.push(...omkHooks);
 
-  // Write config back
-  const tomlContent = TOML.stringify(config);
+  // Write config back — cast through unknown to satisfy TOML library's JsonMap type
+  // (KimiConfig uses unknown value types but all actual values are TOML-serializable)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const tomlContent = TOML.stringify(config as unknown as any);
   writeFileSync(KIMI_CONFIG, tomlContent);
 
   console.log(`  ✓ Added hooks to ~/.kimi/config.toml`);

@@ -16,13 +16,13 @@ export interface SkillState {
   cancelled_at?: string;
   session_id?: string;
   iteration?: number;
-  [key: string]: any;
+  reason?: string;
 }
 
 /**
  * Read state from JSON file
  */
-export function readState<T = any>(filePath: string): T | null {
+export function readState<T extends SkillState = SkillState>(filePath: string): T | null {
   try {
     const content = readFileSync(filePath, 'utf-8');
     return JSON.parse(content) as T;
@@ -34,7 +34,7 @@ export function readState<T = any>(filePath: string): T | null {
 /**
  * Write state to JSON file
  */
-export function writeState(filePath: string, state: any): void {
+export function writeState(filePath: string, state: SkillState): void {
   mkdirSync(dirname(filePath), { recursive: true });
   writeFileSync(filePath, JSON.stringify(state, null, 2));
 }

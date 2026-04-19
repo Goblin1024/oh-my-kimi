@@ -197,7 +197,9 @@ function configureHooks() {
         },
     ];
     config.hooks.push(...omkHooks);
-    // Write config back
+    // Write config back — cast through unknown to satisfy TOML library's JsonMap type
+    // (KimiConfig uses unknown value types but all actual values are TOML-serializable)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const tomlContent = TOML.stringify(config);
     writeFileSync(KIMI_CONFIG, tomlContent);
     console.log(`  ✓ Added hooks to ~/.kimi/config.toml`);

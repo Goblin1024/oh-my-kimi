@@ -37,6 +37,8 @@ interface SkillState {
   phase: string;
   activated_at: string;
   session_id?: string;
+  cancelled_at?: string;
+  reason?: string;
 }
 
 function detectSkill(prompt: string): string | null {
@@ -52,16 +54,16 @@ function getStateDir(cwd: string): string {
   return join(cwd, '.omk', 'state');
 }
 
-function readState(stateDir: string, filename: string): any | null {
+function readState(stateDir: string, filename: string): SkillState | null {
   try {
     const content = readFileSync(join(stateDir, filename), 'utf-8');
-    return JSON.parse(content);
+    return JSON.parse(content) as SkillState;
   } catch {
     return null;
   }
 }
 
-function writeState(stateDir: string, filename: string, state: any): void {
+function writeState(stateDir: string, filename: string, state: SkillState): void {
   mkdirSync(stateDir, { recursive: true });
   writeFileSync(join(stateDir, filename), JSON.stringify(state, null, 2));
 }

@@ -11,16 +11,16 @@ export interface SkillState {
     cancelled_at?: string;
     session_id?: string;
     iteration?: number;
-    [key: string]: any;
+    reason?: string;
 }
 /**
  * Read state from JSON file
  */
-export declare function readState<T = any>(filePath: string): T | null;
+export declare function readState<T extends SkillState = SkillState>(filePath: string): T | null;
 /**
  * Write state to JSON file
  */
-export declare function writeState(filePath: string, state: any): void;
+export declare function writeState(filePath: string, state: SkillState): void;
 /**
  * Get active skill state
  */
