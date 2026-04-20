@@ -1,3 +1,7 @@
+<div align="center">
+<img src="../logo/omk-character-spark-initiative.jpg" width="400" alt="oh-my-kimi Logo">
+</div>
+
 # Getting Started with oh-my-kimi
 
 Quick start guide for oh-my-kimi (OMK) workflow orchestration.
