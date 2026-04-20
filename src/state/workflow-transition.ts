@@ -3,7 +3,11 @@
  *
  * Defines the valid state transitions for an active workflow.
  * Prevents illegal state jumps and ensures phase consistency.
+ *
+ * Enhanced to support per-skill phase lists loaded from SKILL.md manifests.
  */
+
+import { loadSkillManifest } from '../skills/parser.js';
 
 export type WorkflowPhase =
   | 'starting'
@@ -27,6 +31,38 @@ const VALID_TRANSITIONS: Record<WorkflowPhase, WorkflowPhase[]> = {
   cancelled: [], // Terminal state
 };
 
+/**
+ * Build a linear transition map from a skill's declared phases.
+ * Each phase can move to the next one, plus 'cancelled' as an escape hatch.
+ */
+function buildTransitionsFromPhases(phases: string[]): Record<string, string[]> {
+  const map: Record<string, string[]> = {};
+  for (let i = 0; i < phases.length; i++) {
+    const next: string[] = ['cancelled'];
+    if (i + 1 < phases.length) {
+      next.push(phases[i + 1]);
+    }
+    // Also allow jumping to 'completed' from any non-terminal phase
+    if (phases[i] !== 'completed' && phases[i] !== 'cancelled') {
+      next.push('completed');
+    }
+    map[phases[i]] = next;
+  }
+  // Terminal states
+  map['completed'] = [];
+  map['cancelled'] = [];
+  return map;
+}
+
+function getSkillTransitions(skill: string, cwd?: string): Record<string, string[]> | null {
+  const manifest = loadSkillManifest(skill, cwd);
+  if (manifest && manifest.phases.length > 0 && !manifest.phases.every((p) => p in VALID_TRANSITIONS)) {
+    // Skill defines custom phases — build a transition map from them
+    return buildTransitionsFromPhases(manifest.phases);
+  }
+  return null;
+}
+
 export class IllegalStateTransitionError extends Error {
   constructor(
     public readonly skill: string,
@@ -45,9 +81,29 @@ export class IllegalStateTransitionError extends Error {
  *
  * @param fromPhase The current phase
  * @param toPhase The target phase
+ * @param skill Optional skill name to load per-skill phase rules
+ * @param cwd Optional project root for manifest lookup
  * @returns true if allowed, false otherwise
  */
-export function isValidTransition(fromPhase: string, toPhase: string): boolean {
+export function isValidTransition(
+  fromPhase: string,
+  toPhase: string,
+  skill?: string,
+  cwd?: string
+): boolean {
+  // Load per-skill transitions if a skill is provided
+  if (skill) {
+    const skillTransitions = getSkillTransitions(skill, cwd);
+    if (skillTransitions) {
+      const allowed = skillTransitions[fromPhase];
+      if (allowed) {
+        return allowed.includes(toPhase);
+      }
+      // Unknown phase in custom skill — fail-open
+      return true;
+    }
+  }
+
   // If the fromPhase isn't recognized, we allow it (fail-open) to maintain backwards compatibility
   // or allow custom skill phases.
   if (!(fromPhase in VALID_TRANSITIONS)) {
@@ -67,13 +123,18 @@ export function isValidTransition(fromPhase: string, toPhase: string): boolean {
 /**
  * Ensures a transition is valid. Throws if invalid.
  */
-export function assertValidTransition(skill: string, fromPhase: string, toPhase: string): void {
+export function assertValidTransition(
+  skill: string,
+  fromPhase: string,
+  toPhase: string,
+  cwd?: string
+): void {
   // Skip check if the phase isn't actually changing
   if (fromPhase === toPhase) {
     return;
   }
 
-  if (!isValidTransition(fromPhase, toPhase)) {
+  if (!isValidTransition(fromPhase, toPhase, skill, cwd)) {
     throw new IllegalStateTransitionError(skill, fromPhase, toPhase);
   }
 }

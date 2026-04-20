@@ -13,6 +13,14 @@ export async function main(args) {
         const { doctor } = await import('./doctor.js');
         await doctor();
     }
+    else if (command === 'uninstall') {
+        const { uninstall } = await import('./uninstall.js');
+        await uninstall();
+    }
+    else if (command === 'update') {
+        const { update } = await import('./update.js');
+        await update();
+    }
     else if (command === 'mcp') {
         const serverType = args[1];
         if (serverType === 'state') {
@@ -58,6 +66,8 @@ Usage:
 Commands:
   setup         Install OMK skills and configure Kimi hooks
   doctor        Check if OMK is correctly installed and configured
+  update        Check for updates
+  uninstall     Remove OMK skills and hooks from Kimi
   mcp <type>    Start an MCP server (types: state, memory)
   hud           Start the Heads-Up Display (Live Dashboard)
   explore       Search the codebase (omk explore <query> [--regex])

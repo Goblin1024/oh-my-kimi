@@ -2,11 +2,14 @@
  * Team State Manager
  *
  * Manages the state of the active team session.
+ * All writes use writeAtomic and updateWorkerState uses withFileLock
+ * to eliminate the classic read-modify-write race condition.
  */
 
-import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'fs';
+import { readFileSync, mkdirSync, existsSync } from 'fs';
 import { join } from 'path';
 import { omkStateDir } from '../state/paths.js';
+import { writeAtomic, withFileLock } from '../state/atomic.js';
 
 export interface WorkerState {
   id: string;
@@ -46,20 +49,30 @@ export function getTeamState(cwd?: string): TeamState | null {
 
 export function setTeamState(state: TeamState, cwd?: string): void {
   const filePath = getTeamStatePath(cwd);
-  writeFileSync(filePath, JSON.stringify(state, null, 2));
+  writeAtomic(filePath, JSON.stringify(state, null, 2));
 }
 
-export function updateWorkerState(
+/**
+ * Atomically update a single worker's fields within the team state.
+ *
+ * Uses withFileLock to prevent the race condition where two worker exit
+ * events arrive simultaneously and both read stale state before writing.
+ */
+export async function updateWorkerState(
   workerId: string,
   updates: Partial<WorkerState>,
   cwd?: string
-): void {
-  const state = getTeamState(cwd);
-  if (!state) return;
+): Promise<void> {
+  const filePath = getTeamStatePath(cwd);
 
-  const worker = state.workers.find((w) => w.id === workerId);
-  if (worker) {
-    Object.assign(worker, updates);
-    setTeamState(state, cwd);
-  }
+  await withFileLock(filePath, () => {
+    const state = getTeamState(cwd);
+    if (!state) return;
+
+    const worker = state.workers.find((w) => w.id === workerId);
+    if (worker) {
+      Object.assign(worker, updates);
+      setTeamState(state, cwd);
+    }
+  });
 }

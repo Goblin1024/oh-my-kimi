@@ -1,11 +1,14 @@
 /**
  * State management operations
+ *
+ * All writes use writeAtomic (write-to-temp-then-rename) so that concurrent
+ * hook invocations or HUD polling can never observe a partially-written JSON.
  */
 
-import { readFileSync, writeFileSync, mkdirSync } from 'fs';
-import { dirname } from 'path';
+import { readFileSync } from 'fs';
 import { skillActivePath, skillStatePath } from './paths.js';
 import { assertValidTransition } from './workflow-transition.js';
+import { writeAtomic } from './atomic.js';
 
 export interface SkillState {
   skill: string;
@@ -33,11 +36,11 @@ export function readState<T extends SkillState = SkillState>(filePath: string): 
 }
 
 /**
- * Write state to JSON file
+ * Write state to JSON file using an atomic rename so reads always see
+ * complete JSON even under concurrent access.
  */
 export function writeState(filePath: string, state: SkillState): void {
-  mkdirSync(dirname(filePath), { recursive: true });
-  writeFileSync(filePath, JSON.stringify(state, null, 2));
+  writeAtomic(filePath, JSON.stringify(state, null, 2));
 }
 
 /**

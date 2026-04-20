@@ -8,6 +8,9 @@ import { join } from 'path';
 
 import { createDefaultRegistry } from './keyword-registry.js';
 import { injectOverlay } from './agents-overlay.js';
+import { validateFlags, checkGates } from '../skills/validator.js';
+import { logger } from '../utils/logger.js';
+import { writeAudit } from '../utils/audit.js';
 
 const keywordRegistry = createDefaultRegistry();
 
@@ -96,12 +99,41 @@ function handleUserPromptSubmit(input: HookInput): HookOutput {
         activated: true,
         message: `Cancelled ${currentState.skill} workflow`,
       };
+
+      logger.info('handler', `Cancelled ${currentState.skill} workflow via $cancel`);
     }
 
     return output;
   }
 
-  // Activate new skill
+  // Activate new skill — run code-enforced validation first
+  const flagResult = validateFlags(skill, input.prompt, input.cwd);
+  if (!flagResult.valid) {
+    output.hookSpecificOutput = {
+      hookEventName: 'UserPromptSubmit',
+      skill,
+      activated: false,
+      message: `OMK: ${flagResult.message}`,
+    };
+    return output;
+  }
+
+  const gateResults = checkGates(skill, input.prompt, input.cwd);
+  const blockedGate = gateResults.find((g) => !g.passed && g.blocking);
+  if (blockedGate) {
+    output.hookSpecificOutput = {
+      hookEventName: 'UserPromptSubmit',
+      skill,
+      activated: false,
+      message: `OMK Gate check failed for $${skill}: ${blockedGate.description}. Please provide more specific context.`,
+    };
+    logger.warn('handler', `Gate block for $${skill}`, {
+      gate: blockedGate.gate,
+      prompt: input.prompt,
+    });
+    return output;
+  }
+
   const stateDir = getStateDir(input.cwd);
   const state: SkillState = {
     skill,
@@ -120,6 +152,8 @@ function handleUserPromptSubmit(input: HookInput): HookOutput {
     activated: true,
     message: `OMK: ${skill} workflow activated`,
   };
+
+  logger.info('handler', `Activated workflow $${skill}`, { session_id: input.session_id });
 
   return output;
 }
@@ -184,9 +218,15 @@ function handleStop(input: HookInput): HookOutput {
 
 // Main entry point
 function main(): void {
+  const start = Date.now();
+  let success = true;
+  let output: HookOutput = {};
+  let skillName: string | undefined;
+  let activated: boolean | undefined;
+  let errorMsg: string | undefined;
+
   try {
     const input: HookInput = JSON.parse(readFileSync(0, 'utf-8'));
-    let output: HookOutput = {};
 
     switch (input.hook_event_name) {
       case 'UserPromptSubmit':
@@ -206,11 +246,41 @@ function main(): void {
         };
     }
 
-    console.log(JSON.stringify(output));
+    const hso = output.hookSpecificOutput;
+    if (hso) {
+      skillName = hso.skill;
+      activated = hso.activated;
+    }
+
+    // Return output on success to Kimi
+    const outStr = JSON.stringify(output);
+    logger.debug('handler', `Output: ${outStr}`);
+    console.log(outStr);
   } catch (error) {
-    console.error('OMK Hook Error:', error);
+    success = false;
+    errorMsg = error instanceof Error ? error.message : String(error);
+    logger.error('handler', 'OMK Hook Error', {
+      error: error instanceof Error ? error.stack : errorMsg,
+    });
     // Return empty output on error (fail-open)
     console.log(JSON.stringify({}));
+  }
+
+  // Write audit entry (best-effort, must not crash)
+  try {
+    const hso = output.hookSpecificOutput;
+    writeAudit({
+      timestamp: new Date().toISOString(),
+      event: hso?.hookEventName ?? 'unknown',
+      skill: skillName,
+      activated,
+      outputMessage: hso?.message,
+      durationMs: Date.now() - start,
+      success,
+      error: errorMsg,
+    });
+  } catch {
+    // Audit failures are non-blocking
   }
 }
 

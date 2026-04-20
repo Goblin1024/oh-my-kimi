@@ -4,6 +4,9 @@
  * Runs a continuous loop to monitor and display OMK state.
  */
 import { getActiveSkill } from '../state/manager.js';
+import { getTeamState } from '../team/state.js';
+import { omkStateDir } from '../state/paths.js';
+import { watch, existsSync, mkdirSync } from 'fs';
 import { clearScreen, colors, drawHeader, drawSection, drawKeyValue, formatDuration, } from './render.js';
 let isRunning = false;
 function renderHUD() {
@@ -28,6 +31,23 @@ function renderHUD() {
             drawKeyValue('Duration', formatDuration(now - start), colors.cyan);
         }
     }
+    const teamState = getTeamState();
+    if (teamState && teamState.active) {
+        console.log('\n');
+        drawSection('Team Status');
+        drawKeyValue('Role', teamState.role, colors.yellow);
+        drawKeyValue('Task', teamState.task.substring(0, 60) + (teamState.task.length > 60 ? '...' : ''));
+        console.log(`  ${colors.dim}Workers:${colors.reset}`);
+        for (const w of teamState.workers) {
+            let color = colors.yellow; // starting/running
+            if (w.status === 'completed')
+                color = colors.green;
+            if (w.status === 'failed' || w.status === 'terminated')
+                color = colors.red;
+            const pidStr = w.pid ? `PID:${w.pid.toString().padEnd(6)}` : 'PID:---   ';
+            console.log(`    [${w.id}] ${pidStr} Status: ${color}${w.status.padEnd(10)}${colors.reset} Task: ${w.task.substring(0, 40).replace(/\n/g, ' ')}...`);
+        }
+    }
     console.log('\n');
     drawSection('Instructions');
     console.log(`  ${colors.dim}Press Ctrl+C to exit HUD. This terminal will auto-refresh.${colors.reset}`);
@@ -50,10 +70,39 @@ export async function startHUD() {
     });
     // Initial render
     renderHUD();
-    // Poll every 2 seconds (reduced from 1s to avoid flicker on slow terminals)
+    // Watch state directory
+    const stateDir = omkStateDir(process.cwd());
+    if (!existsSync(stateDir)) {
+        mkdirSync(stateDir, { recursive: true });
+    }
+    // Debounce render to avoid flickering on rapid writes
+    let renderTimeout = null;
+    const scheduleRender = () => {
+        if (renderTimeout)
+            clearTimeout(renderTimeout);
+        renderTimeout = setTimeout(() => {
+            renderHUD();
+            renderTimeout = null;
+        }, 100); // 100ms debounce
+    };
+    try {
+        watch(stateDir, (eventType, filename) => {
+            if (filename && filename.endsWith('.json')) {
+                scheduleRender();
+            }
+        });
+    }
+    catch (err) {
+        console.error(`\n${colors.red}Failed to watch state directory: ${err}${colors.reset}`);
+        console.log(`${colors.yellow}Falling back to polling mode...${colors.reset}`);
+        setInterval(renderHUD, 2000);
+    }
+    // We also need a slow polling loop just to update the "Duration" timer
     setInterval(() => {
-        renderHUD();
-    }, 2000);
+        if (!renderTimeout) {
+            renderHUD();
+        }
+    }, 1000);
     // Keep process alive
     await new Promise(() => { });
 }

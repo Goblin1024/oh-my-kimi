@@ -1,6 +1,14 @@
 ---
 name: deep-interview
 description: Socratic requirements gathering through structured questioning
+trigger: $deep-interview
+phases:
+  - starting
+  - intent-first
+  - deep-dive
+  - synthesis
+  - complete
+  - cancelled
 ---
 
 # Deep Interview Skill

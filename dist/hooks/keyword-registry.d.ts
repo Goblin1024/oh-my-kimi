@@ -50,6 +50,10 @@ export declare class KeywordRegistry {
 }
 /**
  * Create and return the default keyword registry with built-in OMK keywords.
+ *
+ * First registers the full hardcoded keyword set (including implicit patterns)
+ * for guaranteed backwards compatibility, then dynamically discovers any
+ * additional skills from the bundled skills/ directory and appends them.
  */
 export declare function createDefaultRegistry(): KeywordRegistry;
 //# sourceMappingURL=keyword-registry.d.ts.map
