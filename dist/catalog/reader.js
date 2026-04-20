@@ -1,7 +1,7 @@
 import { existsSync, readFileSync } from 'fs';
 import { join } from 'path';
 import { getPackageRoot } from '../utils/package.js';
-import { summarizeCatalogCounts, validateCatalogManifest } from './schema.js';
+import { summarizeCatalogCounts, validateCatalogManifest, } from './schema.js';
 const MANIFEST_CANDIDATE_PATHS = [
     ['catalog-manifest.json'],
     ['src', 'catalog', 'manifest.json'],
@@ -46,9 +46,7 @@ export function toPublicCatalogContract(manifest) {
     const aliases = manifest.skills
         .filter((s) => (s.status === 'alias' || s.status === 'merged') && typeof s.canonical === 'string')
         .map((s) => ({ name: s.name, canonical: s.canonical }));
-    const internalHidden = manifest.skills
-        .filter((s) => s.status === 'internal')
-        .map((s) => s.name);
+    const internalHidden = manifest.skills.filter((s) => s.status === 'internal').map((s) => s.name);
     return {
         generatedAt: new Date().toISOString(),
         version: manifest.catalogVersion,

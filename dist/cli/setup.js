@@ -1,7 +1,7 @@
 /**
  * omk setup - Install OMK skills, prompts, agents and configure Kimi hooks
  */
-import { readFileSync, writeFileSync, existsSync, mkdirSync, cpSync, } from 'fs';
+import { readFileSync, writeFileSync, existsSync, mkdirSync, cpSync } from 'fs';
 import { createHash } from 'crypto';
 import { join, dirname } from 'path';
 import { homedir } from 'os';
@@ -129,7 +129,8 @@ export async function setup(scopeArg) {
             }
             mkdirSync(dstDir, { recursive: true });
             const dstFile = join(dstDir, 'SKILL.md');
-            if (existsSync(dstFile) && readFileSync(srcFile, 'utf-8') === readFileSync(dstFile, 'utf-8')) {
+            if (existsSync(dstFile) &&
+                readFileSync(srcFile, 'utf-8') === readFileSync(dstFile, 'utf-8')) {
                 skillSummary.unchanged++;
                 continue;
             }

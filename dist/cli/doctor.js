@@ -192,7 +192,11 @@ function checkHooks(configPath) {
 function checkIntegrity(skillsDir) {
     const integrityFile = join(skillsDir, 'omk', 'integrity.json');
     if (!existsSync(integrityFile)) {
-        return { name: 'Version Integrity', status: 'warn', message: 'integrity.json not found (please run `omk setup`)' };
+        return {
+            name: 'Version Integrity',
+            status: 'warn',
+            message: 'integrity.json not found (please run `omk setup`)',
+        };
     }
     try {
         const stored = JSON.parse(readFileSync(integrityFile, 'utf-8'));

@@ -217,7 +217,11 @@ function checkHooks(configPath: string): CheckResult {
 function checkIntegrity(skillsDir: string): CheckResult {
   const integrityFile = join(skillsDir, 'omk', 'integrity.json');
   if (!existsSync(integrityFile)) {
-    return { name: 'Version Integrity', status: 'warn', message: 'integrity.json not found (please run `omk setup`)' };
+    return {
+      name: 'Version Integrity',
+      status: 'warn',
+      message: 'integrity.json not found (please run `omk setup`)',
+    };
   }
 
   try {
@@ -246,7 +250,8 @@ function checkIntegrity(skillsDir: string): CheckResult {
         return {
           name: 'Version Integrity',
           status: 'fail',
-          message: 'Hook handler hash mismatch — file may have been modified. Run `omk setup` to restore.',
+          message:
+            'Hook handler hash mismatch — file may have been modified. Run `omk setup` to restore.',
         };
       }
       return {

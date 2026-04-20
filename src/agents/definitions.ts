@@ -122,7 +122,8 @@ export const AGENT_DEFINITIONS: Record<string, AgentDefinition> = {
   },
   'code-simplifier': {
     name: 'code-simplifier',
-    description: 'Simplifies recently modified code for clarity and consistency without changing behavior',
+    description:
+      'Simplifies recently modified code for clarity and consistency without changing behavior',
     reasoningEffort: 'high',
     modelClass: 'frontier',
   },

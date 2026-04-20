@@ -24,8 +24,14 @@ describe('agents/definitions', () => {
     for (const [key, def] of Object.entries(AGENT_DEFINITIONS)) {
       assert.equal(typeof def.name, 'string', `${key} should have name`);
       assert.equal(typeof def.description, 'string', `${key} should have description`);
-      assert.ok(['low', 'medium', 'high'].includes(def.reasoningEffort), `${key} should have valid reasoningEffort`);
-      assert.ok(['frontier', 'standard', 'fast'].includes(def.modelClass), `${key} should have valid modelClass`);
+      assert.ok(
+        ['low', 'medium', 'high'].includes(def.reasoningEffort),
+        `${key} should have valid reasoningEffort`
+      );
+      assert.ok(
+        ['frontier', 'standard', 'fast'].includes(def.modelClass),
+        `${key} should have valid modelClass`
+      );
     }
   });
 });

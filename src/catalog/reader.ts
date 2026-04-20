@@ -1,7 +1,12 @@
 import { existsSync, readFileSync } from 'fs';
 import { join } from 'path';
 import { getPackageRoot } from '../utils/package.js';
-import { type CatalogManifest, summarizeCatalogCounts, type CatalogCounts, validateCatalogManifest } from './schema.js';
+import {
+  type CatalogManifest,
+  summarizeCatalogCounts,
+  type CatalogCounts,
+  validateCatalogManifest,
+} from './schema.js';
 
 const MANIFEST_CANDIDATE_PATHS = [
   ['catalog-manifest.json'],
@@ -35,7 +40,9 @@ export function readCatalogManifest(packageRoot: string = getPackageRoot()): Cat
   return manifest;
 }
 
-export function tryReadCatalogManifest(packageRoot: string = getPackageRoot()): CatalogManifest | null {
+export function tryReadCatalogManifest(
+  packageRoot: string = getPackageRoot()
+): CatalogManifest | null {
   try {
     return readCatalogManifest(packageRoot);
   } catch {
@@ -61,11 +68,11 @@ export interface PublicCatalogContract {
 
 export function toPublicCatalogContract(manifest: CatalogManifest): PublicCatalogContract {
   const aliases = manifest.skills
-    .filter((s) => (s.status === 'alias' || s.status === 'merged') && typeof s.canonical === 'string')
+    .filter(
+      (s) => (s.status === 'alias' || s.status === 'merged') && typeof s.canonical === 'string'
+    )
     .map((s) => ({ name: s.name, canonical: s.canonical! }));
-  const internalHidden = manifest.skills
-    .filter((s) => s.status === 'internal')
-    .map((s) => s.name);
+  const internalHidden = manifest.skills.filter((s) => s.status === 'internal').map((s) => s.name);
 
   return {
     generatedAt: new Date().toISOString(),

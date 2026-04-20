@@ -1,6 +1,23 @@
-const SKILL_CATEGORIES = new Set(['execution', 'planning', 'shortcut', 'utility']);
-const AGENT_CATEGORIES = new Set(['build', 'review', 'domain', 'product', 'coordination']);
-const ENTRY_STATUSES = new Set(['active', 'alias', 'merged', 'deprecated', 'internal']);
+const SKILL_CATEGORIES = new Set([
+    'execution',
+    'planning',
+    'shortcut',
+    'utility',
+]);
+const AGENT_CATEGORIES = new Set([
+    'build',
+    'review',
+    'domain',
+    'product',
+    'coordination',
+]);
+const ENTRY_STATUSES = new Set([
+    'active',
+    'alias',
+    'merged',
+    'deprecated',
+    'internal',
+]);
 const REQUIRED_CORE_SKILLS = new Set(['ralplan', 'team', 'ralph', 'plan', 'deep-interview']);
 function isObject(value) {
     return typeof value === 'object' && value !== null && !Array.isArray(value);

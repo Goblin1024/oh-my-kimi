@@ -25,9 +25,26 @@ export interface CatalogManifest {
   agents: CatalogAgentEntry[];
 }
 
-const SKILL_CATEGORIES = new Set<CatalogSkillCategory>(['execution', 'planning', 'shortcut', 'utility']);
-const AGENT_CATEGORIES = new Set<CatalogAgentCategory>(['build', 'review', 'domain', 'product', 'coordination']);
-const ENTRY_STATUSES = new Set<CatalogEntryStatus>(['active', 'alias', 'merged', 'deprecated', 'internal']);
+const SKILL_CATEGORIES = new Set<CatalogSkillCategory>([
+  'execution',
+  'planning',
+  'shortcut',
+  'utility',
+]);
+const AGENT_CATEGORIES = new Set<CatalogAgentCategory>([
+  'build',
+  'review',
+  'domain',
+  'product',
+  'coordination',
+]);
+const ENTRY_STATUSES = new Set<CatalogEntryStatus>([
+  'active',
+  'alias',
+  'merged',
+  'deprecated',
+  'internal',
+]);
 const REQUIRED_CORE_SKILLS = new Set(['ralplan', 'team', 'ralph', 'plan', 'deep-interview']);
 
 function isObject(value: unknown): value is Record<string, unknown> {
@@ -70,9 +87,10 @@ export function validateCatalogManifest(input: unknown): CatalogManifest {
     if (seenSkills.has(name)) throw new Error(`catalog_manifest_invalid:duplicate_skill:${name}`);
     seenSkills.add(name);
 
-    const canonical = typeof entry.canonical === 'string' && entry.canonical.trim() !== ''
-      ? entry.canonical.trim()
-      : undefined;
+    const canonical =
+      typeof entry.canonical === 'string' && entry.canonical.trim() !== ''
+        ? entry.canonical.trim()
+        : undefined;
 
     if ((entry.status === 'alias' || entry.status === 'merged') && !canonical) {
       throw new Error(`catalog_manifest_invalid:skills[${index}].canonical`);
@@ -106,9 +124,10 @@ export function validateCatalogManifest(input: unknown): CatalogManifest {
     if (seenAgents.has(name)) throw new Error(`catalog_manifest_invalid:duplicate_agent:${name}`);
     seenAgents.add(name);
 
-    const canonical = typeof entry.canonical === 'string' && entry.canonical.trim() !== ''
-      ? entry.canonical.trim()
-      : undefined;
+    const canonical =
+      typeof entry.canonical === 'string' && entry.canonical.trim() !== ''
+        ? entry.canonical.trim()
+        : undefined;
 
     if ((entry.status === 'alias' || entry.status === 'merged') && !canonical) {
       throw new Error(`catalog_manifest_invalid:agents[${index}].canonical`);
