@@ -4,9 +4,14 @@
  * Run this after omk setup to verify everything is correctly installed
  */
 
-import { existsSync, readFileSync } from 'fs';
-import { join } from 'path';
+import { existsSync, readFileSync, readdirSync, statSync } from 'fs';
+import { join, dirname } from 'path';
 import { homedir } from 'os';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const PACKAGE_ROOT = join(__dirname, '..');
 
 const KIMI_HOME = join(homedir(), '.kimi');
 const KIMI_CONFIG = join(KIMI_HOME, 'config.toml');
@@ -50,29 +55,17 @@ checks.push({
 });
 
 // Check 6: Skills exist
-checks.push({
-  name: 'Skill: deep-interview',
-  test: () => existsSync(join(OMK_SKILLS_DIR, 'deep-interview', 'SKILL.md')),
-  path: join(OMK_SKILLS_DIR, 'deep-interview', 'SKILL.md'),
-});
-
-checks.push({
-  name: 'Skill: ralplan',
-  test: () => existsSync(join(OMK_SKILLS_DIR, 'ralplan', 'SKILL.md')),
-  path: join(OMK_SKILLS_DIR, 'ralplan', 'SKILL.md'),
-});
-
-checks.push({
-  name: 'Skill: ralph',
-  test: () => existsSync(join(OMK_SKILLS_DIR, 'ralph', 'SKILL.md')),
-  path: join(OMK_SKILLS_DIR, 'ralph', 'SKILL.md'),
-});
-
-checks.push({
-  name: 'Skill: cancel',
-  test: () => existsSync(join(OMK_SKILLS_DIR, 'cancel', 'SKILL.md')),
-  path: join(OMK_SKILLS_DIR, 'cancel', 'SKILL.md'),
-});
+const skillsDir = join(PACKAGE_ROOT, 'skills');
+if (existsSync(skillsDir)) {
+  const skills = readdirSync(skillsDir).filter((f) => statSync(join(skillsDir, f)).isDirectory());
+  for (const skill of skills) {
+    checks.push({
+      name: `Skill: ${skill}`,
+      test: () => existsSync(join(OMK_SKILLS_DIR, skill, 'SKILL.md')),
+      path: join(OMK_SKILLS_DIR, skill, 'SKILL.md'),
+    });
+  }
+}
 
 // Check 7: Hooks configured in config.toml
 checks.push({

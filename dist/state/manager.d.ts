@@ -26,17 +26,17 @@ export declare function writeState(filePath: string, state: SkillState): void;
  */
 export declare function getActiveSkill(projectRoot?: string): SkillState | null;
 /**
- * Set active skill
+ * Save the active skill state globally.
  */
-export declare function setActiveSkill(state: SkillState, projectRoot?: string): void;
+export declare function setActiveSkill(state: SkillState, cwd?: string): void;
 /**
- * Get skill-specific state
+ * Retrieve skill-specific persistent state.
  */
 export declare function getSkillState(skill: string, projectRoot?: string): SkillState | null;
 /**
- * Set skill-specific state
+ * Save skill-specific persistent state.
  */
-export declare function setSkillState(skill: string, state: SkillState, projectRoot?: string): void;
+export declare function setSkillState(skill: string, state: SkillState, cwd?: string): void;
 /**
  * Check if a workflow is active
  */

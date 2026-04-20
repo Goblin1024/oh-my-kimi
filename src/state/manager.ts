@@ -5,6 +5,7 @@
 import { readFileSync, writeFileSync, mkdirSync } from 'fs';
 import { dirname } from 'path';
 import { skillActivePath, skillStatePath } from './paths.js';
+import { assertValidTransition } from './workflow-transition.js';
 
 export interface SkillState {
   skill: string;
@@ -47,24 +48,40 @@ export function getActiveSkill(projectRoot?: string): SkillState | null {
 }
 
 /**
- * Set active skill
+ * Save the active skill state globally.
  */
-export function setActiveSkill(state: SkillState, projectRoot?: string): void {
-  writeState(skillActivePath(projectRoot), state);
+export function setActiveSkill(state: SkillState, cwd?: string): void {
+  const filePath = skillActivePath(cwd);
+
+  // If a previous state exists, validate the transition
+  const previousState = readState(filePath);
+  if (previousState && previousState.skill === state.skill) {
+    assertValidTransition(state.skill, previousState.phase, state.phase);
+  }
+
+  writeState(filePath, state);
 }
 
 /**
- * Get skill-specific state
+ * Retrieve skill-specific persistent state.
  */
 export function getSkillState(skill: string, projectRoot?: string): SkillState | null {
   return readState<SkillState>(skillStatePath(skill, projectRoot));
 }
 
 /**
- * Set skill-specific state
+ * Save skill-specific persistent state.
  */
-export function setSkillState(skill: string, state: SkillState, projectRoot?: string): void {
-  writeState(skillStatePath(skill, projectRoot), state);
+export function setSkillState(skill: string, state: SkillState, cwd?: string): void {
+  const filePath = skillStatePath(skill, cwd);
+
+  // Validate transition
+  const previousState = readState(filePath);
+  if (previousState) {
+    assertValidTransition(skill, previousState.phase, state.phase);
+  }
+
+  writeState(filePath, state);
 }
 
 /**

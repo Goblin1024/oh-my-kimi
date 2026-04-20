@@ -2,7 +2,15 @@
  * omk setup - Install OMK skills and configure Kimi hooks
  */
 
-import { readFileSync, writeFileSync, existsSync, mkdirSync, cpSync } from 'fs';
+import {
+  readFileSync,
+  writeFileSync,
+  existsSync,
+  mkdirSync,
+  cpSync,
+  readdirSync,
+  statSync,
+} from 'fs';
 import { join, dirname } from 'path';
 import { homedir } from 'os';
 import { fileURLToPath } from 'url';
@@ -98,15 +106,16 @@ export async function setup(): Promise<void> {
     {
       name: 'Install skills',
       action: () => {
-        const skills = ['ralph', 'deep-interview', 'ralplan', 'cancel'];
-        for (const skill of skills) {
-          const sourceDir = join(packageRoot, 'skills', skill);
-          const targetDir = join(OMK_SKILLS_DIR, skill);
+        const skillsRoot = join(packageRoot, 'skills');
+        if (!existsSync(skillsRoot)) return;
 
-          if (!existsSync(sourceDir)) {
-            console.warn(`  ⚠ Skill source not found: ${sourceDir}`);
-            continue;
-          }
+        const skills = readdirSync(skillsRoot).filter((f) =>
+          statSync(join(skillsRoot, f)).isDirectory()
+        );
+
+        for (const skill of skills) {
+          const sourceDir = join(skillsRoot, skill);
+          const targetDir = join(OMK_SKILLS_DIR, skill);
 
           mkdirSync(targetDir, { recursive: true });
           const skillFile = join(sourceDir, 'SKILL.md');
@@ -116,9 +125,33 @@ export async function setup(): Promise<void> {
         }
       },
       verify: () => {
-        return ['ralph', 'deep-interview', 'ralplan', 'cancel'].every((skill) =>
-          existsSync(join(OMK_SKILLS_DIR, skill, 'SKILL.md'))
+        const skillsRoot = join(packageRoot, 'skills');
+        if (!existsSync(skillsRoot)) return true;
+        const skills = readdirSync(skillsRoot).filter((f) =>
+          statSync(join(skillsRoot, f)).isDirectory()
         );
+        return skills.every((skill) => existsSync(join(OMK_SKILLS_DIR, skill, 'SKILL.md')));
+      },
+    },
+    {
+      name: 'Copy prompts',
+      action: () => {
+        const sourcePrompts = join(packageRoot, 'prompts');
+        const targetPrompts = join(KIMI_HOME, 'prompts', 'omk');
+        if (existsSync(sourcePrompts)) {
+          mkdirSync(targetPrompts, { recursive: true });
+          const prompts = readdirSync(sourcePrompts).filter((f) => f.endsWith('.md'));
+          for (const prompt of prompts) {
+            cpSync(join(sourcePrompts, prompt), join(targetPrompts, prompt));
+          }
+        }
+      },
+      verify: () => {
+        const sourcePrompts = join(packageRoot, 'prompts');
+        if (!existsSync(sourcePrompts)) return true;
+        const targetPrompts = join(KIMI_HOME, 'prompts', 'omk');
+        const prompts = readdirSync(sourcePrompts).filter((f) => f.endsWith('.md'));
+        return prompts.every((prompt) => existsSync(join(targetPrompts, prompt)));
       },
     },
     {

@@ -4,21 +4,12 @@
  */
 import { readFileSync, writeFileSync, mkdirSync } from 'fs';
 import { join } from 'path';
-// Workflow keywords mapping
-const KEYWORDS = {
-    'deep-interview': /\$deep-interview/,
-    ralplan: /\$ralplan/,
-    ralph: /\$ralph/,
-    cancel: /\$cancel/,
-    team: /\$team/,
-};
+import { createDefaultRegistry } from './keyword-registry.js';
+import { injectOverlay } from './agents-overlay.js';
+const keywordRegistry = createDefaultRegistry();
 function detectSkill(prompt) {
-    for (const [skill, pattern] of Object.entries(KEYWORDS)) {
-        if (pattern.test(prompt)) {
-            return skill;
-        }
-    }
-    return null;
+    const match = keywordRegistry.detect(prompt);
+    return match ? match.skill : null;
 }
 function getStateDir(cwd) {
     return join(cwd, '.omk', 'state');
@@ -93,12 +84,13 @@ function handleSessionStart(input) {
     // Check for active workflow
     const activeState = readState(stateDir, 'skill-active.json');
     if (activeState?.active) {
+        const overlayContext = injectOverlay(activeState.skill);
         return {
             hookSpecificOutput: {
                 hookEventName: 'SessionStart',
                 skill: activeState.skill,
                 activated: true,
-                message: `Resuming ${activeState.skill} workflow (phase: ${activeState.phase})`,
+                message: `Resuming ${activeState.skill} workflow (phase: ${activeState.phase})\n${overlayContext}`,
             },
         };
     }

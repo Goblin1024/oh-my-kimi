@@ -4,6 +4,7 @@
 import { readFileSync, writeFileSync, mkdirSync } from 'fs';
 import { dirname } from 'path';
 import { skillActivePath, skillStatePath } from './paths.js';
+import { assertValidTransition } from './workflow-transition.js';
 /**
  * Read state from JSON file
  */
@@ -30,22 +31,34 @@ export function getActiveSkill(projectRoot) {
     return readState(skillActivePath(projectRoot));
 }
 /**
- * Set active skill
+ * Save the active skill state globally.
  */
-export function setActiveSkill(state, projectRoot) {
-    writeState(skillActivePath(projectRoot), state);
+export function setActiveSkill(state, cwd) {
+    const filePath = skillActivePath(cwd);
+    // If a previous state exists, validate the transition
+    const previousState = readState(filePath);
+    if (previousState && previousState.skill === state.skill) {
+        assertValidTransition(state.skill, previousState.phase, state.phase);
+    }
+    writeState(filePath, state);
 }
 /**
- * Get skill-specific state
+ * Retrieve skill-specific persistent state.
  */
 export function getSkillState(skill, projectRoot) {
     return readState(skillStatePath(skill, projectRoot));
 }
 /**
- * Set skill-specific state
+ * Save skill-specific persistent state.
  */
-export function setSkillState(skill, state, projectRoot) {
-    writeState(skillStatePath(skill, projectRoot), state);
+export function setSkillState(skill, state, cwd) {
+    const filePath = skillStatePath(skill, cwd);
+    // Validate transition
+    const previousState = readState(filePath);
+    if (previousState) {
+        assertValidTransition(skill, previousState.phase, state.phase);
+    }
+    writeState(filePath, state);
 }
 /**
  * Check if a workflow is active
