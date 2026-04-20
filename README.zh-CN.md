@@ -1,4 +1,5 @@
 <div align="center">
+<img src="logo/omk-character-spark-initiative.jpg" width="600" alt="oh-my-kimi Logo">
 
 # 🚀 oh-my-kimi (OMK)
 
@@ -11,6 +12,9 @@
 </p>
 
 <p align="center">
+  <a href="https://github.com/Goblin1024/oh-my-kimi/actions/workflows/ci.yml">
+    <img src="https://img.shields.io/github/actions/workflow/status/Goblin1024/oh-my-kimi/ci.yml?branch=main&label=CI&logo=github" alt="CI 状态">
+  </a>
   <a href="https://www.npmjs.com/package/oh-my-kimi">
     <img src="https://img.shields.io/npm/v/oh-my-kimi.svg" alt="npm 版本">
   </a>
