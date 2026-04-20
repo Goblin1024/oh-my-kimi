@@ -7,13 +7,10 @@ import { join, dirname } from 'path';
 import { homedir } from 'os';
 import { fileURLToPath } from 'url';
 import { createHash } from 'crypto';
+import { tryReadCatalogManifest } from '../catalog/reader.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-
-const KIMI_HOME = join(homedir(), '.kimi');
-const KIMI_CONFIG = join(KIMI_HOME, 'config.toml');
-const OMK_SKILLS_DIR = join(KIMI_HOME, 'skills', 'omk');
 
 interface CheckResult {
   name: string;
@@ -24,24 +21,22 @@ interface CheckResult {
 export async function doctor(): Promise<void> {
   console.log('oh-my-kimi doctor\n');
 
+  const cwd = process.cwd();
+  const scope = resolveDoctorScope(cwd);
+  const dirs = resolveDoctorPaths(cwd, scope);
+
+  console.log(`Resolved scope: ${scope}\n`);
+
   const checks: CheckResult[] = [];
-
-  // Check 1: Kimi CLI installation
   checks.push(checkKimiCli());
+  checks.push(checkDirectory('Kimi home', dirs.kimiHomeDir));
+  checks.push(...checkSkills(dirs.skillsDir));
+  checks.push(...checkPrompts(dirs.promptsDir));
+  checks.push(...checkAgents(dirs.agentsDir));
+  checks.push(checkHooks(dirs.configPath));
+  checks.push(checkIntegrity(dirs.skillsDir));
+  checks.push(checkDirectory('State dir', dirs.omkStateDir));
 
-  // Check 2: OMK skills directory
-  checks.push(checkSkillsDir());
-
-  // Check 3: Individual skills
-  checks.push(...checkSkills());
-
-  // Check 4: Hooks configuration
-  checks.push(checkHooks());
-
-  // Check 5: Integrity
-  checks.push(checkIntegrity());
-
-  // Print results
   let passCount = 0;
   let failCount = 0;
   let warnCount = 0;
@@ -57,7 +52,6 @@ export async function doctor(): Promise<void> {
     else warnCount++;
   }
 
-  // Summary
   console.log('-'.repeat(40));
   console.log(`Results: ${passCount} passed, ${failCount} failed, ${warnCount} warnings`);
 
@@ -69,136 +63,170 @@ export async function doctor(): Promise<void> {
   }
 }
 
-function checkKimiCli(): CheckResult {
-  if (existsSync(KIMI_HOME)) {
-    return {
-      name: 'Kimi CLI',
-      status: 'pass',
-      message: `Found at ${KIMI_HOME}`,
-    };
-  }
-  return {
-    name: 'Kimi CLI',
-    status: 'fail',
-    message: 'Not found. Please install Kimi CLI first.',
-  };
-}
-
-function checkSkillsDir(): CheckResult {
-  if (existsSync(OMK_SKILLS_DIR)) {
-    return {
-      name: 'OMK Skills Directory',
-      status: 'pass',
-      message: OMK_SKILLS_DIR,
-    };
-  }
-  return {
-    name: 'OMK Skills Directory',
-    status: 'fail',
-    message: `Not found at ${OMK_SKILLS_DIR}. Run "omk setup".`,
-  };
-}
-
-function checkSkills(): CheckResult[] {
-  const results: CheckResult[] = [];
-
-  if (!existsSync(OMK_SKILLS_DIR)) {
-    return [];
-  }
-
+function resolveDoctorScope(cwd: string): 'user' | 'project' {
+  const scopePath = join(cwd, '.omk', 'setup-scope.json');
+  if (!existsSync(scopePath)) return 'user';
   try {
-    const entries = readdirSync(OMK_SKILLS_DIR);
-    const skills = entries.filter((f) => statSync(join(OMK_SKILLS_DIR, f)).isDirectory());
+    const raw = JSON.parse(readFileSync(scopePath, 'utf-8'));
+    if (raw.scope === 'user' || raw.scope === 'project') return raw.scope;
+  } catch {
+    // ignore
+  }
+  return 'user';
+}
 
-    if (skills.length === 0) {
-      results.push({
-        name: 'Skills',
-        status: 'warn',
-        message: 'No skills found in ' + OMK_SKILLS_DIR,
-      });
-      return results;
-    }
+function resolveDoctorPaths(cwd: string, scope: 'user' | 'project') {
+  if (scope === 'project') {
+    const kimiHomeDir = join(cwd, '.kimi');
+    return {
+      kimiHomeDir,
+      configPath: join(kimiHomeDir, 'config.toml'),
+      promptsDir: join(kimiHomeDir, 'prompts'),
+      skillsDir: join(kimiHomeDir, 'skills'),
+      agentsDir: join(kimiHomeDir, 'agents'),
+      omkStateDir: join(cwd, '.omk', 'state'),
+    };
+  }
+  const kimiHomeDir = join(homedir(), '.kimi');
+  return {
+    kimiHomeDir,
+    configPath: join(kimiHomeDir, 'config.toml'),
+    promptsDir: join(kimiHomeDir, 'prompts'),
+    skillsDir: join(kimiHomeDir, 'skills'),
+    agentsDir: join(kimiHomeDir, 'agents'),
+    omkStateDir: join(cwd, '.omk', 'state'),
+  };
+}
 
-    for (const skill of skills) {
-      const skillFile = join(OMK_SKILLS_DIR, skill, 'SKILL.md');
-      if (existsSync(skillFile)) {
-        results.push({
-          name: `Skill: ${skill}`,
-          status: 'pass',
-          message: 'SKILL.md found',
-        });
-      } else {
-        results.push({
-          name: `Skill: ${skill}`,
-          status: 'warn',
-          message: 'SKILL.md not found',
-        });
-      }
-    }
-  } catch (err) {
+function checkKimiCli(): CheckResult {
+  const kimiHome = join(homedir(), '.kimi');
+  if (existsSync(kimiHome)) {
+    return { name: 'Kimi CLI', status: 'pass', message: `Found at ${kimiHome}` };
+  }
+  return { name: 'Kimi CLI', status: 'fail', message: 'Not found. Please install Kimi CLI first.' };
+}
+
+function checkDirectory(name: string, path: string): CheckResult {
+  if (existsSync(path)) {
+    return { name, status: 'pass', message: path };
+  }
+  return { name, status: 'warn', message: `${path} (not created yet)` };
+}
+
+function checkSkills(skillsDir: string): CheckResult[] {
+  const results: CheckResult[] = [];
+  const manifest = tryReadCatalogManifest();
+  const expected = manifest?.skills.filter((s) => s.status === 'active') ?? [];
+
+  if (!existsSync(skillsDir)) {
+    results.push({ name: 'Skills', status: 'warn', message: 'Skills directory not found' });
+    return results;
+  }
+
+  const entries = readdirSync(skillsDir).filter((f) => statSync(join(skillsDir, f)).isDirectory());
+  const installed = entries.filter((e) => existsSync(join(skillsDir, e, 'SKILL.md')));
+
+  if (installed.length < expected.length) {
     results.push({
-      name: 'Skills scan',
-      status: 'fail',
-      message: `Failed to read skills directory: ${err}`,
+      name: 'Skills',
+      status: 'warn',
+      message: `${installed.length} installed (expected >= ${expected.length})`,
+    });
+  } else {
+    results.push({
+      name: 'Skills',
+      status: 'pass',
+      message: `${installed.length} skills installed`,
     });
   }
 
   return results;
 }
 
-function checkHooks(): CheckResult {
-  if (!existsSync(KIMI_CONFIG)) {
-    return {
-      name: 'Hooks config',
-      status: 'fail',
-      message: 'Kimi config.toml not found',
-    };
+function checkPrompts(promptsDir: string): CheckResult[] {
+  const results: CheckResult[] = [];
+  const manifest = tryReadCatalogManifest();
+  const expected = manifest?.agents.filter((a) => a.status === 'active') ?? [];
+
+  if (!existsSync(promptsDir)) {
+    results.push({ name: 'Prompts', status: 'warn', message: 'Prompts directory not found' });
+    return results;
   }
 
-  try {
-    const content = readFileSync(KIMI_CONFIG, 'utf-8');
-    if (content.includes('omk') || content.includes('oh-my-kimi')) {
-      return {
-        name: 'Hooks config',
-        status: 'pass',
-        message: 'OMK hooks configured',
-      };
-    }
+  const files = readdirSync(promptsDir).filter((f) => f.endsWith('.md'));
+  if (files.length < expected.length) {
+    results.push({
+      name: 'Prompts',
+      status: 'warn',
+      message: `${files.length} prompts (expected >= ${expected.length})`,
+    });
+  } else {
+    results.push({
+      name: 'Prompts',
+      status: 'pass',
+      message: `${files.length} agent prompts installed`,
+    });
+  }
 
-    return {
-      name: 'Hooks config',
-      status: 'fail',
-      message: 'OMK hooks not found in config.toml',
-    };
+  return results;
+}
+
+function checkAgents(agentsDir: string): CheckResult[] {
+  const results: CheckResult[] = [];
+  const manifest = tryReadCatalogManifest();
+  const expected = manifest?.agents.filter((a) => a.status === 'active') ?? [];
+
+  if (!existsSync(agentsDir)) {
+    results.push({ name: 'Agents', status: 'warn', message: 'Agents directory not found' });
+    return results;
+  }
+
+  const files = readdirSync(agentsDir).filter((f) => f.endsWith('.toml'));
+  if (files.length < expected.length) {
+    results.push({
+      name: 'Agents',
+      status: 'warn',
+      message: `${files.length} agents (expected >= ${expected.length})`,
+    });
+  } else {
+    results.push({
+      name: 'Agents',
+      status: 'pass',
+      message: `${files.length} native agents installed`,
+    });
+  }
+
+  return results;
+}
+
+function checkHooks(configPath: string): CheckResult {
+  if (!existsSync(configPath)) {
+    return { name: 'Hooks config', status: 'fail', message: 'Kimi config.toml not found' };
+  }
+  try {
+    const content = readFileSync(configPath, 'utf-8');
+    if (content.includes('omk') || content.includes('oh-my-kimi')) {
+      return { name: 'Hooks config', status: 'pass', message: 'OMK hooks configured' };
+    }
+    return { name: 'Hooks config', status: 'fail', message: 'OMK hooks not found in config.toml' };
   } catch (_e) {
-    return {
-      name: 'Hooks config',
-      status: 'fail',
-      message: 'Could not read config.toml',
-    };
+    return { name: 'Hooks config', status: 'fail', message: 'Could not read config.toml' };
   }
 }
 
-function checkIntegrity(): CheckResult {
-  const integrityFile = join(OMK_SKILLS_DIR, 'integrity.json');
+function checkIntegrity(skillsDir: string): CheckResult {
+  const integrityFile = join(skillsDir, 'omk', 'integrity.json');
   if (!existsSync(integrityFile)) {
-    return {
-      name: 'Version Integrity',
-      status: 'warn',
-      message: 'integrity.json not found (please run `omk setup`)',
-    };
+    return { name: 'Version Integrity', status: 'warn', message: 'integrity.json not found (please run `omk setup`)' };
   }
 
   try {
     const stored = JSON.parse(readFileSync(integrityFile, 'utf-8'));
-
-    // Find CLI package.json
     let packagePath = join(__dirname, '..', '..', 'package.json');
     if (!existsSync(packagePath)) {
       packagePath = join(__dirname, '..', 'package.json');
     }
 
-    // Version check
     if (existsSync(packagePath)) {
       const pkg = JSON.parse(readFileSync(packagePath, 'utf-8'));
       if (pkg.version !== stored.version) {
@@ -210,8 +238,7 @@ function checkIntegrity(): CheckResult {
       }
     }
 
-    // Handler hash check (tamper detection)
-    const handlerPath = join(OMK_SKILLS_DIR, 'handler.js');
+    const handlerPath = join(skillsDir, 'omk', 'handler.js');
     if (stored.handlerHash && stored.handlerHash !== 'none' && existsSync(handlerPath)) {
       const currentContent = readFileSync(handlerPath, 'utf-8');
       const currentHash = createHash('sha256').update(currentContent).digest('hex');
@@ -219,8 +246,7 @@ function checkIntegrity(): CheckResult {
         return {
           name: 'Version Integrity',
           status: 'fail',
-          message:
-            'Hook handler hash mismatch — file may have been modified. Run `omk setup` to restore.',
+          message: 'Hook handler hash mismatch — file may have been modified. Run `omk setup` to restore.',
         };
       }
       return {

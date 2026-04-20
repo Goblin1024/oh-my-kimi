@@ -1,5 +1,6 @@
 /**
- * omk setup - Install OMK skills and configure Kimi hooks
+ * omk setup - Install OMK skills, prompts, agents and configure Kimi hooks
  */
-export declare function setup(): Promise<void>;
+export type SetupScope = 'user' | 'project';
+export declare function setup(scopeArg?: string): Promise<void>;
 //# sourceMappingURL=setup.d.ts.map

@@ -1,69 +1,29 @@
 /**
- * Tests for Agent Definitions Registry
+ * Tests for Agent Definitions
  */
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { AgentRegistry, agentRegistry } from '../definitions.js';
+import { AGENT_DEFINITIONS } from '../definitions.js';
 describe('agents/definitions', () => {
-    describe('AgentRegistry', () => {
-        it('initializes with default agents', () => {
-            const registry = new AgentRegistry();
-            const agents = registry.listAgents();
-            // Should have exactly 10 core agents
-            assert.equal(agents.length, 10);
-            // Verify specific core agents exist
-            assert.ok(registry.getAgent('architect'));
-            assert.ok(registry.getAgent('executor'));
-            assert.ok(registry.getAgent('debugger'));
-            assert.ok(registry.getAgent('code-reviewer'));
-            assert.ok(registry.getAgent('qa-tester'));
-            assert.ok(registry.getAgent('security-reviewer'));
-            assert.ok(registry.getAgent('planner'));
-            assert.ok(registry.getAgent('explorer'));
-            assert.ok(registry.getAgent('writer'));
-            assert.ok(registry.getAgent('verifier'));
-        });
-        it('can register new agents', () => {
-            const registry = new AgentRegistry();
-            const initialCount = registry.listAgents().length;
-            registry.register({
-                id: 'custom-bot',
-                name: 'Custom Bot',
-                description: 'A custom test bot',
-                promptFile: 'custom.md',
-                complexity: 'low',
-                tags: ['test'],
-            });
-            assert.equal(registry.listAgents().length, initialCount + 1);
-            const custom = registry.getAgent('custom-bot');
-            assert.ok(custom);
-            assert.equal(custom.name, 'Custom Bot');
-        });
-        it('overwrites agent with same id', () => {
-            const registry = new AgentRegistry();
-            registry.register({
-                id: 'architect',
-                name: 'Modified Architect',
-                description: 'Modified desc',
-                promptFile: 'architect.md',
-                complexity: 'standard',
-                tags: ['test'],
-            });
-            const modified = registry.getAgent('architect');
-            assert.ok(modified);
-            assert.equal(modified.name, 'Modified Architect');
-            assert.equal(modified.complexity, 'standard');
-        });
-        it('returns undefined for unknown agent id', () => {
-            const registry = new AgentRegistry();
-            assert.equal(registry.getAgent('unknown'), undefined);
-        });
+    it('exports AGENT_DEFINITIONS with core agents', () => {
+        assert.ok(AGENT_DEFINITIONS['architect']);
+        assert.ok(AGENT_DEFINITIONS['executor']);
+        assert.ok(AGENT_DEFINITIONS['debugger']);
+        assert.ok(AGENT_DEFINITIONS['code-reviewer']);
+        assert.ok(AGENT_DEFINITIONS['qa-tester']);
+        assert.ok(AGENT_DEFINITIONS['security-reviewer']);
+        assert.ok(AGENT_DEFINITIONS['planner']);
+        assert.ok(AGENT_DEFINITIONS['writer']);
+        assert.ok(AGENT_DEFINITIONS['verifier']);
+        assert.ok(AGENT_DEFINITIONS['analyst']);
     });
-    describe('Global agentRegistry instance', () => {
-        it('is exported and initialized', () => {
-            assert.ok(agentRegistry);
-            assert.equal(agentRegistry.listAgents().length, 10);
-        });
+    it('each agent has required fields', () => {
+        for (const [key, def] of Object.entries(AGENT_DEFINITIONS)) {
+            assert.equal(typeof def.name, 'string', `${key} should have name`);
+            assert.equal(typeof def.description, 'string', `${key} should have description`);
+            assert.ok(['low', 'medium', 'high'].includes(def.reasoningEffort), `${key} should have valid reasoningEffort`);
+            assert.ok(['frontier', 'standard', 'fast'].includes(def.modelClass), `${key} should have valid modelClass`);
+        }
     });
 });
 //# sourceMappingURL=definitions.test.js.map
