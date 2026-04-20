@@ -42,7 +42,7 @@ export async function main(args) {
         await teamCommand(args.slice(1));
     }
     else if (command === '--version' || command === '-v') {
-        console.log('oh-my-kimi v0.1.0');
+        console.log('oh-my-kimi v0.5.0');
     }
     else {
         showHelp();
