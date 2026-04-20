@@ -8,9 +8,6 @@ import {
   existsSync,
   mkdirSync,
   cpSync,
-  readdirSync,
-  statSync,
-  rmSync,
 } from 'fs';
 import { createHash } from 'crypto';
 import { join, dirname } from 'path';
