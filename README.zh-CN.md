@@ -1,5 +1,5 @@
 <div align="center">
-<img src="logo/omk-character-spark-initiative.jpg" width="600" alt="oh-my-kimi Logo">
+<img src="logo/logo.png" width="600" alt="oh-my-kimi Logo">
 
 # 🚀 oh-my-kimi (OMK)
 
