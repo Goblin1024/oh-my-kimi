@@ -1,144 +1,172 @@
-/**
- * Agent Definition Registry
- *
- * Defines the available agents and their metadata for the OMK orchestration layer.
- */
-
-export type AgentComplexity = 'low' | 'standard' | 'high';
-
 export interface AgentDefinition {
-  /** Unique identifier for the agent (e.g. 'architect', 'executor') */
-  id: string;
-  /** Human-readable name */
   name: string;
-  /** Brief description of the agent's role and capabilities */
   description: string;
-  /** Path to the markdown prompt file relative to prompts/ dir */
-  promptFile: string;
-  /** Expected complexity level for routing logic */
-  complexity: AgentComplexity;
-  /** Keywords or tags to help identify when this agent is needed */
-  tags: string[];
+  reasoningEffort: 'low' | 'medium' | 'high';
+  modelClass: 'frontier' | 'standard' | 'fast';
 }
 
-export class AgentRegistry {
-  private agents: Map<string, AgentDefinition> = new Map();
-
-  constructor() {
-    this.registerDefaults();
-  }
-
-  /**
-   * Register a new agent definition
-   */
-  register(definition: AgentDefinition): void {
-    this.agents.set(definition.id, definition);
-  }
-
-  /**
-   * Get an agent by ID
-   */
-  getAgent(id: string): AgentDefinition | undefined {
-    return this.agents.get(id);
-  }
-
-  /**
-   * List all registered agents
-   */
-  listAgents(): AgentDefinition[] {
-    return Array.from(this.agents.values());
-  }
-
-  private registerDefaults(): void {
-    const defaultAgents: AgentDefinition[] = [
-      {
-        id: 'architect',
-        name: 'Architect',
-        description: 'System architect responsible for high-level design and technical foundations',
-        promptFile: 'architect.md',
-        complexity: 'high',
-        tags: ['design', 'architecture', 'system', 'foundation'],
-      },
-      {
-        id: 'executor',
-        name: 'Executor',
-        description: 'Senior engineer focused on writing high-quality, production-ready code',
-        promptFile: 'executor.md',
-        complexity: 'standard',
-        tags: ['code', 'implement', 'feature', 'build'],
-      },
-      {
-        id: 'debugger',
-        name: 'Debugger',
-        description: 'Specialist in root-cause analysis and resolving complex software defects',
-        promptFile: 'debugger.md',
-        complexity: 'high',
-        tags: ['bug', 'fix', 'error', 'stacktrace', 'issue'],
-      },
-      {
-        id: 'code-reviewer',
-        name: 'Code Reviewer',
-        description:
-          'Meticulous reviewer focusing on code quality, performance, and best practices',
-        promptFile: 'code-reviewer.md',
-        complexity: 'standard',
-        tags: ['review', 'quality', 'lint', 'performance'],
-      },
-      {
-        id: 'qa-tester',
-        name: 'QA Tester',
-        description: 'Quality assurance engineer focused on test coverage and edge cases',
-        promptFile: 'qa-tester.md',
-        complexity: 'standard',
-        tags: ['test', 'unit-test', 'integration', 'e2e', 'coverage'],
-      },
-      {
-        id: 'security-reviewer',
-        name: 'Security Reviewer',
-        description: 'Security engineer focused on vulnerability analysis and secure coding',
-        promptFile: 'security-reviewer.md',
-        complexity: 'high',
-        tags: ['security', 'vulnerability', 'owasp', 'exploit', 'auth'],
-      },
-      {
-        id: 'planner',
-        name: 'Planner',
-        description: 'Project planner that breaks down complex goals into sequential tasks',
-        promptFile: 'planner.md',
-        complexity: 'standard',
-        tags: ['plan', 'breakdown', 'tasks', 'roadmap'],
-      },
-      {
-        id: 'explorer',
-        name: 'Explorer',
-        description: 'Investigative agent adept at navigating large, unfamiliar codebases',
-        promptFile: 'explorer.md',
-        complexity: 'low',
-        tags: ['search', 'find', 'navigate', 'discover'],
-      },
-      {
-        id: 'writer',
-        name: 'Writer',
-        description: 'Technical writer for clear, concise documentation and comments',
-        promptFile: 'writer.md',
-        complexity: 'low',
-        tags: ['docs', 'readme', 'comments', 'documentation'],
-      },
-      {
-        id: 'verifier',
-        name: 'Verifier',
-        description: 'Objective gatekeeper that validates executed work against requirements',
-        promptFile: 'verifier.md',
-        complexity: 'standard',
-        tags: ['verify', 'validate', 'check', 'done'],
-      },
-    ];
-
-    for (const agent of defaultAgents) {
-      this.register(agent);
-    }
-  }
-}
-
-// Export a singleton instance for global use
-export const agentRegistry = new AgentRegistry();
+export const AGENT_DEFINITIONS: Record<string, AgentDefinition> = {
+  analyst: {
+    name: 'analyst',
+    description: 'Requirements clarity, acceptance criteria, hidden constraints',
+    reasoningEffort: 'medium',
+    modelClass: 'frontier',
+  },
+  planner: {
+    name: 'planner',
+    description: 'Task sequencing, execution plans, risk flags',
+    reasoningEffort: 'medium',
+    modelClass: 'frontier',
+  },
+  architect: {
+    name: 'architect',
+    description: 'System design, boundaries, interfaces, long-horizon tradeoffs',
+    reasoningEffort: 'high',
+    modelClass: 'frontier',
+  },
+  debugger: {
+    name: 'debugger',
+    description: 'Root-cause analysis, regression isolation, failure diagnosis',
+    reasoningEffort: 'high',
+    modelClass: 'standard',
+  },
+  executor: {
+    name: 'executor',
+    description: 'Code implementation, refactoring, feature work',
+    reasoningEffort: 'high',
+    modelClass: 'standard',
+  },
+  verifier: {
+    name: 'verifier',
+    description: 'Completion evidence, claim validation, test adequacy',
+    reasoningEffort: 'high',
+    modelClass: 'standard',
+  },
+  'style-reviewer': {
+    name: 'style-reviewer',
+    description: 'Formatting, naming, idioms, lint conventions',
+    reasoningEffort: 'low',
+    modelClass: 'fast',
+  },
+  'quality-reviewer': {
+    name: 'quality-reviewer',
+    description: 'Logic defects, maintainability, anti-patterns',
+    reasoningEffort: 'medium',
+    modelClass: 'standard',
+  },
+  'api-reviewer': {
+    name: 'api-reviewer',
+    description: 'API contracts, versioning, backward compatibility',
+    reasoningEffort: 'medium',
+    modelClass: 'standard',
+  },
+  'security-reviewer': {
+    name: 'security-reviewer',
+    description: 'Vulnerabilities, trust boundaries, authn/authz',
+    reasoningEffort: 'medium',
+    modelClass: 'frontier',
+  },
+  'performance-reviewer': {
+    name: 'performance-reviewer',
+    description: 'Hotspots, complexity, memory/latency optimization',
+    reasoningEffort: 'medium',
+    modelClass: 'standard',
+  },
+  'code-reviewer': {
+    name: 'code-reviewer',
+    description: 'Comprehensive review across all concerns',
+    reasoningEffort: 'high',
+    modelClass: 'frontier',
+  },
+  'dependency-expert': {
+    name: 'dependency-expert',
+    description: 'External SDK/API/package evaluation',
+    reasoningEffort: 'high',
+    modelClass: 'standard',
+  },
+  'test-engineer': {
+    name: 'test-engineer',
+    description: 'Test strategy, coverage, flaky-test hardening',
+    reasoningEffort: 'medium',
+    modelClass: 'frontier',
+  },
+  'quality-strategist': {
+    name: 'quality-strategist',
+    description: 'Quality strategy, release readiness, risk assessment',
+    reasoningEffort: 'medium',
+    modelClass: 'standard',
+  },
+  designer: {
+    name: 'designer',
+    description: 'UX/UI architecture, interaction design',
+    reasoningEffort: 'high',
+    modelClass: 'standard',
+  },
+  writer: {
+    name: 'writer',
+    description: 'Documentation, migration notes, user guidance',
+    reasoningEffort: 'high',
+    modelClass: 'standard',
+  },
+  'qa-tester': {
+    name: 'qa-tester',
+    description: 'Interactive CLI/service runtime validation',
+    reasoningEffort: 'low',
+    modelClass: 'standard',
+  },
+  'git-master': {
+    name: 'git-master',
+    description: 'Commit strategy, history hygiene, rebasing',
+    reasoningEffort: 'high',
+    modelClass: 'standard',
+  },
+  'code-simplifier': {
+    name: 'code-simplifier',
+    description:
+      'Simplifies recently modified code for clarity and consistency without changing behavior',
+    reasoningEffort: 'high',
+    modelClass: 'frontier',
+  },
+  researcher: {
+    name: 'researcher',
+    description: 'External documentation and reference research',
+    reasoningEffort: 'high',
+    modelClass: 'standard',
+  },
+  'product-manager': {
+    name: 'product-manager',
+    description: 'Problem framing, personas/JTBD, PRDs',
+    reasoningEffort: 'medium',
+    modelClass: 'standard',
+  },
+  'ux-researcher': {
+    name: 'ux-researcher',
+    description: 'Heuristic audits, usability, accessibility',
+    reasoningEffort: 'medium',
+    modelClass: 'standard',
+  },
+  'information-architect': {
+    name: 'information-architect',
+    description: 'Taxonomy, navigation, findability',
+    reasoningEffort: 'low',
+    modelClass: 'standard',
+  },
+  'product-analyst': {
+    name: 'product-analyst',
+    description: 'Product metrics, funnel analysis, experiments',
+    reasoningEffort: 'low',
+    modelClass: 'standard',
+  },
+  critic: {
+    name: 'critic',
+    description: 'Plan/design critical challenge and review',
+    reasoningEffort: 'high',
+    modelClass: 'frontier',
+  },
+  vision: {
+    name: 'vision',
+    description: 'Image/screenshot/diagram analysis',
+    reasoningEffort: 'low',
+    modelClass: 'frontier',
+  },
+};

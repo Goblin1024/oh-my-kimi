@@ -1,195 +1,60 @@
 /**
- * omk setup - Install OMK skills and configure Kimi hooks
+ * omk setup - Install OMK skills, prompts, agents and configure Kimi hooks
  */
-import { readFileSync, writeFileSync, existsSync, mkdirSync, cpSync, readdirSync, statSync, } from 'fs';
+import { readFileSync, writeFileSync, existsSync, mkdirSync, cpSync } from 'fs';
 import { createHash } from 'crypto';
 import { join, dirname } from 'path';
 import { homedir } from 'os';
 import { fileURLToPath } from 'url';
 import * as TOML from '@iarna/toml';
+import { tryReadCatalogManifest } from '../catalog/reader.js';
+import { AGENT_DEFINITIONS } from '../agents/definitions.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-const KIMI_HOME = join(homedir(), '.kimi');
-const KIMI_CONFIG = join(KIMI_HOME, 'config.toml');
-const OMK_SKILLS_DIR = join(KIMI_HOME, 'skills', 'omk');
-export async function setup() {
-    console.log('🚀 oh-my-kimi setup\n');
-    console.log('='.repeat(50));
-    console.log('');
-    // Find package root
-    const packageRoot = findPackageRoot();
-    console.log(`Package root: ${packageRoot}`);
-    console.log('');
-    // Define all setup steps
-    const steps = [
-        {
-            name: 'Check Kimi CLI installation',
-            action: () => {
-                if (!existsSync(KIMI_HOME)) {
-                    throw new Error('Kimi CLI not found. Please install Kimi CLI first.');
-                }
-            },
-            verify: () => existsSync(KIMI_HOME),
-        },
-        {
-            name: 'Create OMK skills directory',
-            action: () => {
-                mkdirSync(OMK_SKILLS_DIR, { recursive: true });
-            },
-            verify: () => existsSync(OMK_SKILLS_DIR),
-        },
-        {
-            name: 'Copy hook handler',
-            action: () => {
-                const source = join(packageRoot, 'dist', 'hooks', 'handler.js');
-                const target = join(OMK_SKILLS_DIR, 'handler.js');
-                if (!existsSync(source)) {
-                    throw new Error(`Hook handler not found at ${source}. Run "npm run build" first.`);
-                }
-                cpSync(source, target);
-            },
-            verify: () => existsSync(join(OMK_SKILLS_DIR, 'handler.js')),
-        },
-        {
-            name: 'Copy session-start hook',
-            action: () => {
-                // Session start uses the same handler with different entry point
-                const source = join(packageRoot, 'dist', 'hooks', 'handler.js');
-                const target = join(OMK_SKILLS_DIR, 'session-start.js');
-                // For now, copy the same file - handler.js handles all events
-                cpSync(source, target);
-            },
-            verify: () => existsSync(join(OMK_SKILLS_DIR, 'session-start.js')),
-        },
-        {
-            name: 'Copy stop hook',
-            action: () => {
-                const source = join(packageRoot, 'dist', 'hooks', 'handler.js');
-                const target = join(OMK_SKILLS_DIR, 'stop.js');
-                cpSync(source, target);
-            },
-            verify: () => existsSync(join(OMK_SKILLS_DIR, 'stop.js')),
-        },
-        {
-            name: 'Install skills',
-            action: () => {
-                const skillsRoot = join(packageRoot, 'skills');
-                if (!existsSync(skillsRoot))
-                    return;
-                const skills = readdirSync(skillsRoot).filter((f) => statSync(join(skillsRoot, f)).isDirectory());
-                for (const skill of skills) {
-                    const sourceDir = join(skillsRoot, skill);
-                    const targetDir = join(OMK_SKILLS_DIR, skill);
-                    mkdirSync(targetDir, { recursive: true });
-                    const skillFile = join(sourceDir, 'SKILL.md');
-                    if (existsSync(skillFile)) {
-                        cpSync(skillFile, join(targetDir, 'SKILL.md'));
-                    }
-                }
-            },
-            verify: () => {
-                const skillsRoot = join(packageRoot, 'skills');
-                if (!existsSync(skillsRoot))
-                    return true;
-                const skills = readdirSync(skillsRoot).filter((f) => statSync(join(skillsRoot, f)).isDirectory());
-                return skills.every((skill) => existsSync(join(OMK_SKILLS_DIR, skill, 'SKILL.md')));
-            },
-        },
-        {
-            name: 'Copy prompts',
-            action: () => {
-                const sourcePrompts = join(packageRoot, 'prompts');
-                const targetPrompts = join(KIMI_HOME, 'prompts', 'omk');
-                if (existsSync(sourcePrompts)) {
-                    mkdirSync(targetPrompts, { recursive: true });
-                    const prompts = readdirSync(sourcePrompts).filter((f) => f.endsWith('.md'));
-                    for (const prompt of prompts) {
-                        cpSync(join(sourcePrompts, prompt), join(targetPrompts, prompt));
-                    }
-                }
-            },
-            verify: () => {
-                const sourcePrompts = join(packageRoot, 'prompts');
-                if (!existsSync(sourcePrompts))
-                    return true;
-                const targetPrompts = join(KIMI_HOME, 'prompts', 'omk');
-                const prompts = readdirSync(sourcePrompts).filter((f) => f.endsWith('.md'));
-                return prompts.every((prompt) => existsSync(join(targetPrompts, prompt)));
-            },
-        },
-        {
-            name: 'Configure Kimi hooks',
-            action: () => {
-                configureHooks();
-            },
-            verify: () => {
-                if (!existsSync(KIMI_CONFIG))
-                    return false;
-                const content = readFileSync(KIMI_CONFIG, 'utf-8');
-                return content.includes('omk') || content.includes('oh-my-kimi');
-            },
-        },
-        {
-            name: 'Write integrity hash',
-            action: () => {
-                const pkgPath = join(packageRoot, 'package.json');
-                const pkg = JSON.parse(readFileSync(pkgPath, 'utf-8'));
-                // Compute SHA-256 of the handler script for tamper detection
-                const handlerPath = join(OMK_SKILLS_DIR, 'handler.js');
-                let handlerHash = 'none';
-                if (existsSync(handlerPath)) {
-                    const handlerContent = readFileSync(handlerPath, 'utf-8');
-                    handlerHash = createHash('sha256').update(handlerContent).digest('hex');
-                }
-                const integrity = { version: pkg.version, handlerHash };
-                writeFileSync(join(OMK_SKILLS_DIR, 'integrity.json'), JSON.stringify(integrity, null, 2));
-            },
-            verify: () => existsSync(join(OMK_SKILLS_DIR, 'integrity.json')),
-        },
-    ];
-    // Execute each step with verification
-    let allPassed = true;
-    for (let i = 0; i < steps.length; i++) {
-        const step = steps[i];
-        const stepNum = i + 1;
-        console.log(`Step ${stepNum}/${steps.length}: ${step.name}`);
-        try {
-            // Execute action
-            await step.action();
-            // Verify
-            const verified = step.verify();
-            if (verified) {
-                console.log(`  ✓ Success\n`);
-            }
-            else {
-                console.log(`  ✗ Verification failed\n`);
-                allPassed = false;
-            }
-        }
-        catch (error) {
-            console.log(`  ✗ Error: ${error instanceof Error ? error.message : String(error)}\n`);
-            allPassed = false;
-        }
+function resolveScopeDirectories(scope, projectRoot) {
+    if (scope === 'project') {
+        const kimiHomeDir = join(projectRoot, '.kimi');
+        return {
+            kimiHomeDir,
+            configPath: join(kimiHomeDir, 'config.toml'),
+            promptsDir: join(kimiHomeDir, 'prompts'),
+            skillsDir: join(kimiHomeDir, 'skills'),
+            agentsDir: join(kimiHomeDir, 'agents'),
+            omkStateDir: join(projectRoot, '.omk', 'state'),
+            omkPlansDir: join(projectRoot, '.omk', 'plans'),
+        };
     }
-    console.log('='.repeat(50));
-    console.log('');
-    if (allPassed) {
-        console.log('✅ Setup completed successfully!\n');
-        // Run final verification
-        console.log('Running final verification...\n');
-        await runFinalVerification();
-        console.log('\nNext steps:');
-        console.log('  1. Launch Kimi CLI: kimi');
-        console.log('  2. Try: $deep-interview "your idea"');
+    const kimiHomeDir = join(homedir(), '.kimi');
+    return {
+        kimiHomeDir,
+        configPath: join(kimiHomeDir, 'config.toml'),
+        promptsDir: join(kimiHomeDir, 'prompts'),
+        skillsDir: join(kimiHomeDir, 'skills'),
+        agentsDir: join(kimiHomeDir, 'agents'),
+        omkStateDir: join(projectRoot, '.omk', 'state'),
+        omkPlansDir: join(projectRoot, '.omk', 'plans'),
+    };
+}
+function readPersistedScope(projectRoot) {
+    const scopePath = join(projectRoot, '.omk', 'setup-scope.json');
+    if (!existsSync(scopePath))
+        return undefined;
+    try {
+        const raw = JSON.parse(readFileSync(scopePath, 'utf-8'));
+        if (raw.scope === 'user' || raw.scope === 'project')
+            return raw.scope;
     }
-    else {
-        console.log('❌ Setup completed with errors.\n');
-        console.log('Please check the error messages above.');
-        process.exit(1);
+    catch {
+        // ignore invalid
     }
+    return undefined;
+}
+function persistScope(projectRoot, scope) {
+    const scopeDir = join(projectRoot, '.omk');
+    mkdirSync(scopeDir, { recursive: true });
+    writeFileSync(join(scopeDir, 'setup-scope.json'), JSON.stringify({ scope }, null, 2));
 }
 function findPackageRoot() {
-    // Try to find package.json by walking up from __dirname
     let current = __dirname;
     for (let i = 0; i < 5; i++) {
         if (existsSync(join(current, 'package.json'))) {
@@ -197,90 +62,193 @@ function findPackageRoot() {
         }
         current = dirname(current);
     }
-    // Fallback to current working directory
     return process.cwd();
 }
-function configureHooks() {
+export async function setup(scopeArg) {
+    const projectRoot = process.cwd();
+    const persisted = readPersistedScope(projectRoot);
+    let scope = 'user';
+    if (scopeArg === 'user' || scopeArg === 'project') {
+        scope = scopeArg;
+    }
+    else if (persisted) {
+        scope = persisted;
+    }
+    const dirs = resolveScopeDirectories(scope, projectRoot);
+    const packageRoot = findPackageRoot();
+    console.log('🚀 oh-my-kimi setup\n');
+    console.log('='.repeat(50));
+    console.log(`Scope: ${scope}`);
+    console.log('');
+    const manifest = tryReadCatalogManifest(packageRoot);
+    const activeSkills = manifest?.skills.filter((s) => s.status === 'active') ?? [];
+    const activeAgents = manifest?.agents.filter((a) => a.status === 'active') ?? [];
+    // Step 1: Create directories
+    console.log('Step 1/6: Creating directories...');
+    mkdirSync(dirs.kimiHomeDir, { recursive: true });
+    mkdirSync(dirs.promptsDir, { recursive: true });
+    mkdirSync(dirs.skillsDir, { recursive: true });
+    mkdirSync(dirs.agentsDir, { recursive: true });
+    mkdirSync(dirs.omkStateDir, { recursive: true });
+    mkdirSync(dirs.omkPlansDir, { recursive: true });
+    persistScope(projectRoot, scope);
+    console.log('  ✓ Success\n');
+    // Step 2: Install prompts (active agents)
+    const promptSummary = { updated: 0, unchanged: 0, skipped: 0 };
+    console.log('Step 2/6: Installing agent prompts...');
+    const promptsSrc = join(packageRoot, 'prompts');
+    if (existsSync(promptsSrc) && activeAgents.length > 0) {
+        for (const agent of activeAgents) {
+            const src = join(promptsSrc, `${agent.name}.md`);
+            const dst = join(dirs.promptsDir, `${agent.name}.md`);
+            if (!existsSync(src)) {
+                promptSummary.skipped++;
+                continue;
+            }
+            if (existsSync(dst) && readFileSync(src, 'utf-8') === readFileSync(dst, 'utf-8')) {
+                promptSummary.unchanged++;
+                continue;
+            }
+            cpSync(src, dst);
+            promptSummary.updated++;
+        }
+    }
+    console.log(`  ✓ Prompts: updated=${promptSummary.updated}, unchanged=${promptSummary.unchanged}, skipped=${promptSummary.skipped}\n`);
+    // Step 3: Install skills (active skills)
+    const skillSummary = { updated: 0, unchanged: 0, skipped: 0 };
+    console.log('Step 3/6: Installing skills...');
+    const skillsSrc = join(packageRoot, 'skills');
+    if (existsSync(skillsSrc) && activeSkills.length > 0) {
+        for (const skill of activeSkills) {
+            const srcDir = join(skillsSrc, skill.name);
+            const dstDir = join(dirs.skillsDir, skill.name);
+            const srcFile = join(srcDir, 'SKILL.md');
+            if (!existsSync(srcFile)) {
+                skillSummary.skipped++;
+                continue;
+            }
+            mkdirSync(dstDir, { recursive: true });
+            const dstFile = join(dstDir, 'SKILL.md');
+            if (existsSync(dstFile) &&
+                readFileSync(srcFile, 'utf-8') === readFileSync(dstFile, 'utf-8')) {
+                skillSummary.unchanged++;
+                continue;
+            }
+            cpSync(srcFile, dstFile);
+            skillSummary.updated++;
+        }
+    }
+    console.log(`  ✓ Skills: updated=${skillSummary.updated}, unchanged=${skillSummary.unchanged}, skipped=${skillSummary.skipped}\n`);
+    // Step 4: Generate native agent TOMLs
+    const agentSummary = { updated: 0, unchanged: 0, skipped: 0 };
+    console.log('Step 4/6: Installing native agent configs...');
+    for (const agent of activeAgents) {
+        const def = AGENT_DEFINITIONS[agent.name];
+        if (!def) {
+            agentSummary.skipped++;
+            continue;
+        }
+        const promptPath = join(promptsSrc, `${agent.name}.md`);
+        let promptContent = '';
+        if (existsSync(promptPath)) {
+            promptContent = readFileSync(promptPath, 'utf-8');
+        }
+        const toml = generateAgentToml(def, promptContent);
+        const dst = join(dirs.agentsDir, `${agent.name}.toml`);
+        if (existsSync(dst) && readFileSync(dst, 'utf-8') === toml) {
+            agentSummary.unchanged++;
+            continue;
+        }
+        writeFileSync(dst, toml);
+        agentSummary.updated++;
+    }
+    console.log(`  ✓ Agents: updated=${agentSummary.updated}, unchanged=${agentSummary.unchanged}, skipped=${agentSummary.skipped}\n`);
+    // Step 5: Configure hooks
+    console.log('Step 5/6: Configuring Kimi hooks...');
+    configureHooks(dirs.configPath, dirs.skillsDir);
+    console.log('  ✓ Success\n');
+    // Step 6: Write integrity hash
+    console.log('Step 6/6: Writing integrity hash...');
+    const pkgPath = join(packageRoot, 'package.json');
+    const pkg = JSON.parse(readFileSync(pkgPath, 'utf-8'));
+    const handlerPath = join(dirs.skillsDir, 'omk', 'handler.js');
+    let handlerHash = 'none';
+    if (existsSync(handlerPath)) {
+        handlerHash = createHash('sha256').update(readFileSync(handlerPath, 'utf-8')).digest('hex');
+    }
+    const integrity = { version: pkg.version, handlerHash, scope };
+    writeFileSync(join(dirs.skillsDir, 'omk', 'integrity.json'), JSON.stringify(integrity, null, 2));
+    console.log('  ✓ Success\n');
+    console.log('='.repeat(50));
+    console.log('');
+    console.log('✅ Setup completed successfully!\n');
+    console.log(`  Prompts: ${promptSummary.updated} updated, ${promptSummary.unchanged} unchanged`);
+    console.log(`  Skills:  ${skillSummary.updated} updated, ${skillSummary.unchanged} unchanged`);
+    console.log(`  Agents:  ${agentSummary.updated} updated, ${agentSummary.unchanged} unchanged`);
+    console.log('');
+    console.log('Next steps:');
+    console.log('  1. Launch Kimi CLI: kimi');
+    console.log('  2. Try: $architect, $planner, or $deep-interview');
+}
+function configureHooks(configPath, skillsDir) {
     let config = {};
-    // Read existing config
-    if (existsSync(KIMI_CONFIG)) {
+    if (existsSync(configPath)) {
         try {
-            const content = readFileSync(KIMI_CONFIG, 'utf-8');
-            config = TOML.parse(content);
+            config = TOML.parse(readFileSync(configPath, 'utf-8'));
         }
         catch (_e) {
             console.warn('  ⚠ Could not parse existing config, creating new one');
         }
     }
-    // Ensure hooks array exists
     if (!config.hooks) {
         config.hooks = [];
     }
-    // Check if OMK hooks already exist
+    const omkSkillsDir = join(skillsDir, 'omk');
     const hasOmkHooks = config.hooks.some((h) => h.command && h.command.includes('omk'));
     if (hasOmkHooks) {
         console.log('  ℹ OMK hooks already configured');
         return;
     }
-    // Add OMK hooks
     const omkHooks = [
         {
             event: 'UserPromptSubmit',
-            command: `node ${join(OMK_SKILLS_DIR, 'handler.js')}`,
+            command: `node ${join(omkSkillsDir, 'handler.js')}`,
             matcher: '\\$[a-z-]+',
         },
         {
             event: 'SessionStart',
-            command: `node ${join(OMK_SKILLS_DIR, 'session-start.js')}`,
+            command: `node ${join(omkSkillsDir, 'session-start.js')}`,
         },
         {
             event: 'Stop',
-            command: `node ${join(OMK_SKILLS_DIR, 'stop.js')}`,
+            command: `node ${join(omkSkillsDir, 'stop.js')}`,
             timeout: 30,
         },
     ];
     config.hooks.push(...omkHooks);
-    // Write config back — cast through unknown to satisfy TOML library's JsonMap type
-    // (KimiConfig uses unknown value types but all actual values are TOML-serializable)
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const tomlContent = TOML.stringify(config);
-    writeFileSync(KIMI_CONFIG, tomlContent);
-    console.log(`  ✓ Added hooks to ~/.kimi/config.toml`);
+    writeFileSync(configPath, TOML.stringify(config));
+    console.log(`  ✓ Added hooks to ${configPath}`);
 }
-async function runFinalVerification() {
-    // Dynamically discover expected skills from the bundled skills/ directory
-    const root = findPackageRoot();
-    const skillsRoot = join(root, 'skills');
-    const expectedSkills = existsSync(skillsRoot)
-        ? readdirSync(skillsRoot).filter((f) => statSync(join(skillsRoot, f)).isDirectory())
-        : ['ralph', 'deep-interview', 'ralplan', 'cancel'];
-    const checks = [
-        {
-            name: 'Hook handler executable',
-            test: () => existsSync(join(OMK_SKILLS_DIR, 'handler.js')),
-        },
-        {
-            name: `All ${expectedSkills.length} skills installed`,
-            test: () => expectedSkills.every((skill) => existsSync(join(OMK_SKILLS_DIR, skill, 'SKILL.md'))),
-        },
-        {
-            name: 'Kimi config updated',
-            test: () => {
-                if (!existsSync(KIMI_CONFIG))
-                    return false;
-                const content = readFileSync(KIMI_CONFIG, 'utf-8');
-                return content.includes('omk');
-            },
-        },
+function generateAgentToml(def, promptContent) {
+    const lines = [
+        `# Native agent config for Kimi Code CLI`,
+        `# Generated by oh-my-kimi`,
+        ``,
+        `name = "${def.name}"`,
+        `description = "${def.description.replace(/"/g, '\\"')}"`,
+        ``,
+        `[model]`,
+        `reasoning_effort = "${def.reasoningEffort}"`,
+        ``,
     ];
-    let passed = 0;
-    for (const check of checks) {
-        const result = check.test();
-        const icon = result ? '✓' : '✗';
-        console.log(`  ${icon} ${check.name}`);
-        if (result)
-            passed++;
+    if (promptContent) {
+        lines.push(`[prompt]`);
+        lines.push(`system = """`);
+        lines.push(promptContent);
+        lines.push(`"""`);
+        lines.push('');
     }
-    console.log(`\nVerification: ${passed}/${checks.length} checks passed`);
+    return lines.join('\n');
 }
 //# sourceMappingURL=setup.js.map
