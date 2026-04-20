@@ -1,6 +1,23 @@
 ---
 name: ralph
 description: Persistence loop until task completion with verification
+trigger: $ralph
+flags:
+  - name: --prd
+    description: Reference an approved PRD file for guidance
+  - name: --verbose
+    description: Print detailed progress at each iteration
+phases:
+  - starting
+  - executing
+  - verifying
+  - fixing
+  - completing
+  - cancelled
+gates:
+  - type: prompt_specificity
+    description: Task description must be at least 10 characters
+    blocking: true
 ---
 
 # Ralph Skill

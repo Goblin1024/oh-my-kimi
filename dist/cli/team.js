@@ -48,12 +48,18 @@ export async function teamCommand(args) {
         await runtime.shutdownTeam();
         return;
     }
+    if (subCommand === 'logs') {
+        const { teamLogs } = await import('./team-logs.js');
+        await teamLogs(args[1]);
+        return;
+    }
     // Otherwise, start a new team
     // Format: omk team 3:executor "the task string"
     if (args.length < 2) {
         console.error('Usage: omk team <N:role> "<task>"');
         console.error('   Or: omk team status');
         console.error('   Or: omk team shutdown');
+        console.error('   Or: omk team logs [workerId]');
         process.exit(1);
     }
     const { count, role } = parseCountAndRole(args[0]);

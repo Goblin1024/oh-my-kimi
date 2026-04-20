@@ -9,6 +9,7 @@ import { resolveAgentForSkill, loadAgentPrompt } from '../hooks/agents-overlay.j
 import { join } from 'path';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
+import { createWriteStream, mkdirSync, existsSync, rmSync } from 'fs';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 // Get the mock script path
@@ -47,6 +48,16 @@ export class TeamRuntime {
             };
             state.workers.push(workerState);
         }
+        // Clear previous logs when starting a new team
+        const logDir = join(cwd || process.cwd(), '.omk', 'logs', 'team', 'latest');
+        if (existsSync(logDir)) {
+            try {
+                rmSync(logDir, { recursive: true, force: true });
+            }
+            catch {
+                // ignore
+            }
+        }
         setTeamState(state, cwd);
         // Spawn processes
         for (const workerState of state.workers) {
@@ -82,16 +93,25 @@ export class TeamRuntime {
             child.stdin.write(workerState.task);
             child.stdin.end();
         }
+        // Setup logging
+        const logDir = join(cwd || process.cwd(), '.omk', 'logs', 'team', 'latest');
+        mkdirSync(logDir, { recursive: true });
+        const logStream = createWriteStream(join(logDir, `${workerId}.log`), { flags: 'a' });
+        logStream.on('error', () => {
+            /* ignore teardown errors */
+        });
         // Handle output
         child.stdout?.on('data', (data) => {
-            // In a more complex version, we'd log this to a specific worker log file
             process.stdout.write(`\x1b[36m[${workerId}]\x1b[0m ${data}`);
+            logStream.write(data);
         });
         child.stderr?.on('data', (data) => {
             process.stderr.write(`\x1b[31m[${workerId}]\x1b[0m ${data}`);
+            logStream.write(data);
         });
         // Handle exit
         child.on('exit', (code, signal) => {
+            logStream.end();
             this.workers.delete(workerId);
             let status;
             if (signal === 'SIGTERM' || signal === 'SIGKILL') {
@@ -100,13 +120,16 @@ export class TeamRuntime {
             else {
                 status = code === 0 ? 'completed' : 'failed';
             }
-            // Only update if not already terminated by shutdownTeam
-            const currentState = getTeamState(cwd);
-            const currentWorker = currentState?.workers.find((w) => w.id === workerId);
-            if (currentWorker && currentWorker.status !== 'terminated') {
-                updateWorkerState(workerId, { status, finishedAt: new Date().toISOString() }, cwd);
-            }
-            this.checkTeamCompletion(cwd);
+            // Only update if not already terminated by shutdownTeam — wrap in async IIFE
+            // because updateWorkerState is now async (uses withFileLock)
+            void (async () => {
+                const currentState = getTeamState(cwd);
+                const currentWorker = currentState?.workers.find((w) => w.id === workerId);
+                if (currentWorker && currentWorker.status !== 'terminated') {
+                    await updateWorkerState(workerId, { status, finishedAt: new Date().toISOString() }, cwd);
+                }
+                this.checkTeamCompletion(cwd);
+            })();
         });
     }
     checkTeamCompletion(cwd) {

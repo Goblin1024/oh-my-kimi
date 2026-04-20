@@ -9,7 +9,7 @@ export interface ExploreResult {
     content: string;
 }
 /**
- * Recursively search a directory for a pattern.
+ * Search the codebase for a pattern.
  */
 export declare function searchCodebase(dir: string, query: string, isRegex?: boolean, baseDir?: string, results?: ExploreResult[]): ExploreResult[];
 export declare function explore(args: string[]): Promise<void>;

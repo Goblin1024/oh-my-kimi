@@ -11,6 +11,7 @@ import { z } from 'zod';
 import { join } from 'path';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
 import { omkContextDir } from '../state/paths.js';
+import { searchBM25 } from '../utils/bm25.js';
 
 const server = new Server(
   {
@@ -41,11 +42,22 @@ function getMemoryPath(cwd?: string): string {
   return join(dir, 'project-memory.json');
 }
 
+const MEMORY_RETENTION_DAYS = 90;
+
 function loadMemory(cwd?: string): ProjectMemory {
   const filePath = getMemoryPath(cwd);
   if (existsSync(filePath)) {
     try {
-      return JSON.parse(readFileSync(filePath, 'utf-8'));
+      const memory: ProjectMemory = JSON.parse(readFileSync(filePath, 'utf-8'));
+      // Expire entries older than retention window
+      const cutoff = Date.now() - MEMORY_RETENTION_DAYS * 24 * 60 * 60 * 1000;
+      const originalCount = memory.entries.length;
+      memory.entries = memory.entries.filter((e) => new Date(e.timestamp).getTime() > cutoff);
+      if (memory.entries.length < originalCount) {
+        // Persist the filtered list so we don't re-process dead entries
+        saveMemory(memory, cwd);
+      }
+      return memory;
     } catch {
       // Return empty if invalid
     }
@@ -147,23 +159,27 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
       const args = queryMemorySchema.parse(request.params.arguments || {});
       const memory = loadMemory(args.cwd);
 
-      const query = args.query.toLowerCase();
-      const results = memory.entries.filter(
-        (e) =>
-          e.content.toLowerCase().includes(query) ||
-          e.tags.some((t) => t.toLowerCase().includes(query))
-      );
+      const docs = memory.entries.map((e) => ({
+        id: e.id,
+        // Combine tags and content for searching
+        content: [...e.tags, e.content].join(' '),
+      }));
 
-      if (results.length === 0) {
+      const topMatches = searchBM25(docs, args.query, 10);
+
+      if (topMatches.length === 0) {
         return {
           content: [{ type: 'text', text: `No memory entries found matching '${args.query}'.` }],
         };
       }
 
-      const formatted = results
-        .map((e) => `[${e.id}] (${e.timestamp}) [Tags: ${e.tags.join(', ')}]\n${e.content}`)
-        .join('\n\n');
-      return { content: [{ type: 'text', text: formatted }] };
+      // Map back to full entries and format
+      const results = topMatches.map((match) => {
+        const entry = memory.entries.find((e) => e.id === match.id)!;
+        return `[${entry.id}] (${entry.timestamp}) [Tags: ${entry.tags.join(', ')}] (Score: ${match.score.toFixed(2)})\n${entry.content}`;
+      });
+
+      return { content: [{ type: 'text', text: results.join('\n\n') }] };
     }
 
     if (request.params.name === 'omk_memory_list') {

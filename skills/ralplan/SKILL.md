@@ -1,6 +1,24 @@
 ---
 name: ralplan
 description: Architecture planning and plan approval workflow
+trigger: $ralplan
+flags:
+  - name: --deliberate
+    description: Enable extended multi-round deliberation and review
+  - name: --quick
+    description: Skip deliberation, produce a single-pass plan
+phases:
+  - starting
+  - planning
+  - deliberating
+  - reviewing
+  - approved
+  - revising
+  - cancelled
+gates:
+  - type: prompt_specificity
+    description: Task description must be at least 10 characters
+    blocking: true
 ---
 
 # Ralplan Skill

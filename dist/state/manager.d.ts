@@ -1,5 +1,8 @@
 /**
  * State management operations
+ *
+ * All writes use writeAtomic (write-to-temp-then-rename) so that concurrent
+ * hook invocations or HUD polling can never observe a partially-written JSON.
  */
 export interface SkillState {
     skill: string;
@@ -18,7 +21,8 @@ export interface SkillState {
  */
 export declare function readState<T extends SkillState = SkillState>(filePath: string): T | null;
 /**
- * Write state to JSON file
+ * Write state to JSON file using an atomic rename so reads always see
+ * complete JSON even under concurrent access.
  */
 export declare function writeState(filePath: string, state: SkillState): void;
 /**

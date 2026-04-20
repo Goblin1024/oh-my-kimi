@@ -106,7 +106,7 @@ describe('hooks/handler', () => {
       // First activate a workflow
       runHandler({
         hook_event_name: 'UserPromptSubmit',
-        prompt: '$ralph "build it"',
+        prompt: '$ralph "build the authentication system"',
         cwd: testDir,
       });
 
@@ -159,7 +159,7 @@ describe('hooks/handler', () => {
       // Activate a workflow
       runHandler({
         hook_event_name: 'UserPromptSubmit',
-        prompt: '$ralph "work"',
+        prompt: '$ralph "implement the feature"',
         cwd: testDir,
       });
 
@@ -190,7 +190,7 @@ describe('hooks/handler', () => {
       // Activate
       runHandler({
         hook_event_name: 'UserPromptSubmit',
-        prompt: '$ralph "work"',
+        prompt: '$ralph "implement the feature"',
         cwd: testDir,
       });
 

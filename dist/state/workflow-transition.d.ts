@@ -3,6 +3,8 @@
  *
  * Defines the valid state transitions for an active workflow.
  * Prevents illegal state jumps and ensures phase consistency.
+ *
+ * Enhanced to support per-skill phase lists loaded from SKILL.md manifests.
  */
 export type WorkflowPhase = 'starting' | 'planning' | 'executing' | 'verifying' | 'completed' | 'cancelled';
 export declare class IllegalStateTransitionError extends Error {
@@ -16,11 +18,13 @@ export declare class IllegalStateTransitionError extends Error {
  *
  * @param fromPhase The current phase
  * @param toPhase The target phase
+ * @param skill Optional skill name to load per-skill phase rules
+ * @param cwd Optional project root for manifest lookup
  * @returns true if allowed, false otherwise
  */
-export declare function isValidTransition(fromPhase: string, toPhase: string): boolean;
+export declare function isValidTransition(fromPhase: string, toPhase: string, skill?: string, cwd?: string): boolean;
 /**
  * Ensures a transition is valid. Throws if invalid.
  */
-export declare function assertValidTransition(skill: string, fromPhase: string, toPhase: string): void;
+export declare function assertValidTransition(skill: string, fromPhase: string, toPhase: string, cwd?: string): void;
 //# sourceMappingURL=workflow-transition.d.ts.map

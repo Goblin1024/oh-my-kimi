@@ -2,6 +2,7 @@
  * omk setup - Install OMK skills and configure Kimi hooks
  */
 import { readFileSync, writeFileSync, existsSync, mkdirSync, cpSync, readdirSync, statSync, } from 'fs';
+import { createHash } from 'crypto';
 import { join, dirname } from 'path';
 import { homedir } from 'os';
 import { fileURLToPath } from 'url';
@@ -128,6 +129,23 @@ export async function setup() {
                 return content.includes('omk') || content.includes('oh-my-kimi');
             },
         },
+        {
+            name: 'Write integrity hash',
+            action: () => {
+                const pkgPath = join(packageRoot, 'package.json');
+                const pkg = JSON.parse(readFileSync(pkgPath, 'utf-8'));
+                // Compute SHA-256 of the handler script for tamper detection
+                const handlerPath = join(OMK_SKILLS_DIR, 'handler.js');
+                let handlerHash = 'none';
+                if (existsSync(handlerPath)) {
+                    const handlerContent = readFileSync(handlerPath, 'utf-8');
+                    handlerHash = createHash('sha256').update(handlerContent).digest('hex');
+                }
+                const integrity = { version: pkg.version, handlerHash };
+                writeFileSync(join(OMK_SKILLS_DIR, 'integrity.json'), JSON.stringify(integrity, null, 2));
+            },
+            verify: () => existsSync(join(OMK_SKILLS_DIR, 'integrity.json')),
+        },
     ];
     // Execute each step with verification
     let allPassed = true;
@@ -230,14 +248,20 @@ function configureHooks() {
     console.log(`  ✓ Added hooks to ~/.kimi/config.toml`);
 }
 async function runFinalVerification() {
+    // Dynamically discover expected skills from the bundled skills/ directory
+    const root = findPackageRoot();
+    const skillsRoot = join(root, 'skills');
+    const expectedSkills = existsSync(skillsRoot)
+        ? readdirSync(skillsRoot).filter((f) => statSync(join(skillsRoot, f)).isDirectory())
+        : ['ralph', 'deep-interview', 'ralplan', 'cancel'];
     const checks = [
         {
             name: 'Hook handler executable',
             test: () => existsSync(join(OMK_SKILLS_DIR, 'handler.js')),
         },
         {
-            name: 'All skills installed',
-            test: () => ['ralph', 'deep-interview', 'ralplan', 'cancel'].every((skill) => existsSync(join(OMK_SKILLS_DIR, skill, 'SKILL.md'))),
+            name: `All ${expectedSkills.length} skills installed`,
+            test: () => expectedSkills.every((skill) => existsSync(join(OMK_SKILLS_DIR, skill, 'SKILL.md'))),
         },
         {
             name: 'Kimi config updated',
