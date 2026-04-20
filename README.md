@@ -162,8 +162,8 @@ OMK exposes two MCP servers for deep Kimi integration:
 
 ### 8. Structured Observability
 
-- **`src/utils/logger.ts`** —分级日志（debug/info/warn/error）写入 `.omk/logs/system.log`
-- **`src/utils/audit.ts`** — Hook 执行审计（JSONL，按天轮转，5MB 上限）
+- **`src/utils/logger.ts`** — Hierarchical logging (debug/info/warn/error) writes to `.omk/logs/system.log`
+- **`src/utils/audit.ts`** — Hook execution audit (JSONL, daily rotation, 5MB limit)
 - Every hook invocation records event, skill, duration, and success/failure
 
 ### 9. CLI Lifecycle Management
