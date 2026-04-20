@@ -317,7 +317,8 @@ async function runFinalVerification(): Promise<void> {
     },
     {
       name: `All ${expectedSkills.length} skills installed`,
-      test: () => expectedSkills.every((skill) => existsSync(join(OMK_SKILLS_DIR, skill, 'SKILL.md'))),
+      test: () =>
+        expectedSkills.every((skill) => existsSync(join(OMK_SKILLS_DIR, skill, 'SKILL.md'))),
     },
     {
       name: 'Kimi config updated',

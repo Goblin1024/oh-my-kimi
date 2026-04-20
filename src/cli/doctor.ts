@@ -219,7 +219,8 @@ function checkIntegrity(): CheckResult {
         return {
           name: 'Version Integrity',
           status: 'fail',
-          message: 'Hook handler hash mismatch — file may have been modified. Run `omk setup` to restore.',
+          message:
+            'Hook handler hash mismatch — file may have been modified. Run `omk setup` to restore.',
         };
       }
       return {

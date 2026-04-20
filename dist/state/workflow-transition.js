@@ -44,7 +44,9 @@ function buildTransitionsFromPhases(phases) {
 }
 function getSkillTransitions(skill, cwd) {
     const manifest = loadSkillManifest(skill, cwd);
-    if (manifest && manifest.phases.length > 0 && !manifest.phases.every((p) => p in VALID_TRANSITIONS)) {
+    if (manifest &&
+        manifest.phases.length > 0 &&
+        !manifest.phases.every((p) => p in VALID_TRANSITIONS)) {
         // Skill defines custom phases — build a transition map from them
         return buildTransitionsFromPhases(manifest.phases);
     }
