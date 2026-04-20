@@ -47,3 +47,23 @@ This file acts as the project's unique fingerprint and a continuous log of impro
 - **Action**: Pushed the current state of the project to the master branch of Goblin1024/oh-my-kimi.git.
 
 - **Reason**: To deliver the improvements and ensure the project fingerprint is synchronized with the remote repository.
+
+### [2026-04-20] Investigation: omk setup vs omk doctor Path Mismatch
+
+- **Observation**: After running `npm install -g oh-my-kimi` and `omk setup`, `omk doctor` reported:
+  - `[!!] Prompts: prompts directory not found`
+  - `[!!] Skills: 1 skills (expected >= 22)`
+- **Root Cause Analysis**:
+  1. The globally installed npm package (`wang-h/oh-my-kimi`, v0.11.15) has a systematic path inconsistency:
+     - `omk setup` installs assets to `~/.kimi/` (using `PRIMARY_PROVIDER_HOME_DIRNAME = ".kimi"`).
+     - `omk doctor` checks `~/.codex/` (hard-coded legacy path in `resolveDoctorPaths`).
+  2. In `project` scope the mismatch is between `./.kimi/` (setup) and `./.codex/` (doctor).
+  3. In `user` scope the mismatch is between `~/.kimi/` (setup) and `~/.codex/` (doctor via `legacyCodexHome()`).
+  3. The current repository (`Goblin1024/oh-my-kimi`, v0.5.0) does **not** contain this bug because its `src/cli/doctor.ts` lacks the scope logic entirely.
+- **Executed Workaround (Plan A)**:
+  1. Removed `C:\Users\23755\.omk\setup-scope.json` to clear persisted `project` scope.
+  2. Ran `omk setup --scope user` (assets confirmed in `~/.kimi/`).
+  3. Set environment variable `CODEX_HOME=C:\Users\23755\.kimi` so `omk doctor` resolves the legacy path to the same `~/.kimi` directory.
+  4. Verified: `omk doctor` now passes with 9 OK, 3 warnings, 0 failures.
+- **Recommended Fix for Upstream**:
+  - Unify `doctor.js` path resolution to use `providerHome()` / `PRIMARY_PROVIDER_HOME_DIRNAME` instead of `legacyCodexHome()` / hard-coded `.codex`.
