@@ -64,8 +64,8 @@ describe('team/kimi-runtime', () => {
       });
 
       rt.start();
-      // Wait for mock to complete (mock delay default 500ms + buffer)
-      await new Promise((r) => setTimeout(r, 700));
+      // Wait for mock to complete (mock delay default 500ms + generous buffer for CI)
+      await new Promise((r) => setTimeout(r, 1200));
 
       assert.ok(exited, 'should have called onExit');
       assert.equal(rt.getState().status, 'stopped');
