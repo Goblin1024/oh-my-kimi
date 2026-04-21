@@ -31,4 +31,6 @@ export declare function formatDuration(ms: number): string;
 export declare function drawHeader(title: string): void;
 export declare function drawSection(title: string): void;
 export declare function drawKeyValue(key: string, value: string, valueColor?: string): void;
+export declare function drawProgressBar(label: string, used: number, total: number, width?: number): void;
+export declare function drawBadge(label: string, color: string): string;
 //# sourceMappingURL=render.d.ts.map

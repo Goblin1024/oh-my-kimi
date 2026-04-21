@@ -21,7 +21,10 @@ describe('memory/bridge', () => {
   let testDir: string;
 
   beforeEach(() => {
-    testDir = join(tmpdir(), `omk-memory-test-${Date.now()}-${Math.random().toString(36).slice(2)}`);
+    testDir = join(
+      tmpdir(),
+      `omk-memory-test-${Date.now()}-${Math.random().toString(36).slice(2)}`
+    );
     mkdirSync(testDir, { recursive: true });
     clearAvailabilityCache();
   });

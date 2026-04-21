@@ -96,12 +96,28 @@ Create PRD (Product Requirements Document):
 - [ ] Criterion 2
 ```
 
+After documenting approaches, submit evidence:
+```
+omk_submit_evidence({skill:"ralplan", step:"approaches_documented", phase:"documenting", evidenceType:"context_record", metadata:{approachCount:2}})
+```
+
 ### Phase 4: Approval
 
-1. Present plan to user
-2. Request explicit approval
-3. Document any changes requested
-4. Mark plan as approved
+1. Save PRD to `.omk/plans/prd-{slug}.md`
+2. Submit PRD evidence:
+   ```
+   omk_submit_evidence({skill:"ralplan", step:"prd_written", phase:"approving", evidenceType:"file_artifact", artifactPath:".omk/plans/prd-{slug}.md", artifactSize:<size>})
+   ```
+3. Present plan to user
+4. Request explicit approval
+5. After user approves, submit approval evidence:
+   ```
+   omk_submit_evidence({skill:"ralplan", step:"user_approved", phase:"completed", evidenceType:"review_signature", reviewerAgent:"user", reviewResult:"approved"})
+   ```
+6. Before advancing phase, verify:
+   ```
+   omk_list_required_evidence({skill:"ralplan", phase:"approving"})
+   ```
 
 ## Output
 

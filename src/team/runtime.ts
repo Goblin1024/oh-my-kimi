@@ -75,11 +75,24 @@ export class TeamRuntime {
       /* ignore teardown errors */
     });
 
-    const child = spawn('kimi', [], {
-      cwd,
-      env: process.env,
-      stdio: ['pipe', 'pipe', 'pipe'],
-    });
+    // Support mock mode for tests when 'kimi' is not available
+    const isMockMode = process.env.OMK_MOCK_TEAM === '1';
+    const mockDelay = parseInt(process.env.MOCK_DELAY || '100', 10);
+
+    const child = isMockMode
+      ? spawn(
+          'node',
+          [
+            '-e',
+            `setTimeout(() => { console.log('Mock worker completed'); process.exit(0); }, ${mockDelay})`,
+          ],
+          { cwd, env: process.env, stdio: ['pipe', 'pipe', 'pipe'] }
+        )
+      : spawn('kimi', [], {
+          cwd,
+          env: process.env,
+          stdio: ['pipe', 'pipe', 'pipe'],
+        });
 
     child.on('error', (err) => {
       if ((err as NodeJS.ErrnoException).code === 'ENOENT') {

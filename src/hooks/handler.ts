@@ -8,11 +8,11 @@ import { join } from 'path';
 
 import { createDefaultRegistry } from './keyword-registry.js';
 import { injectOverlay } from './agents-overlay.js';
+import { getHonestyContract } from './honesty-overlay.js';
 import { validateFlags, checkGates } from '../skills/validator.js';
 import { logger } from '../utils/logger.js';
 import { writeAudit } from '../utils/audit.js';
-import { writeAtomic } from '../state/atomic.js';
-import { setActiveSkill, setSkillState, cancelWorkflow } from '../state/manager.js';
+import { setActiveSkill, setSkillState, cancelWorkflow, writeState } from '../state/manager.js';
 
 const keywordRegistry = createDefaultRegistry();
 
@@ -154,12 +154,13 @@ function handleSessionStart(input: HookInput): HookOutput {
 
   if (activeState?.active) {
     const overlayContext = injectOverlay(activeState.skill);
+    const honestyContract = getHonestyContract();
     return {
       hookSpecificOutput: {
         hookEventName: 'SessionStart',
         skill: activeState.skill,
         activated: true,
-        message: `Resuming ${activeState.skill} workflow (phase: ${activeState.phase})\n${overlayContext}`,
+        message: `Resuming ${activeState.skill} workflow (phase: ${activeState.phase})\n${overlayContext}\n${honestyContract}`,
       },
     };
   }
@@ -178,12 +179,13 @@ function handleStop(input: HookInput): HookOutput {
 
   // If workflow is active, block stop until complete
   if (activeState?.active) {
-    // Update phase if needed
+    // Update phase if needed — bypass evidence validation for Stop hook
     if (activeState.phase !== 'completing') {
-      setActiveSkill({
+      const updatedState = {
         ...activeState,
-        phase: 'completing',
-      }, input.cwd);
+        phase: 'completing' as string,
+      };
+      writeState(join(stateDir, 'skill-active.json'), updatedState);
     }
 
     return {
@@ -251,6 +253,7 @@ function main(): void {
       error: error instanceof Error ? error.stack : errorMsg,
     });
     // Return empty output on error (fail-open)
+    console.error(`[OMK Hook Error] ${errorMsg}`);
     console.log(JSON.stringify({}));
   }
 

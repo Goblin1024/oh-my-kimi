@@ -14,6 +14,12 @@
  */
 
 import { loadSkillManifest, GateType } from './parser.js';
+import {
+  checkShortcutKeywords,
+  checkVerificationPlan,
+  checkDecomposition,
+  checkFlagSemantic,
+} from './gate-definitions.js';
 import { existsSync, readFileSync } from 'fs';
 import { join } from 'path';
 
@@ -124,6 +130,31 @@ function evaluateGate(
         // Invalid regex — treat as passed to avoid false blocks
         return { passed: true, gate: type, description, blocking };
       }
+    }
+
+    // Semantic gates (non-blocking by default)
+    case 'no_shortcut_keywords': {
+      const result = checkShortcutKeywords(prompt);
+      return { passed: result.passed, gate: type, description, blocking: blocking ?? false };
+    }
+
+    case 'has_verification_plan': {
+      const result = checkVerificationPlan(prompt);
+      return { passed: result.passed, gate: type, description, blocking: blocking ?? false };
+    }
+
+    case 'proper_decomposition': {
+      const result = checkDecomposition(prompt);
+      return { passed: result.passed, gate: type, description, blocking: blocking ?? false };
+    }
+
+    case 'flag_semantic_check': {
+      // flag_semantic_check needs the flags and skill name, which are not
+      // available in this evaluator. We extract flags from the prompt and
+      // return a deferred result that the caller can resolve.
+      const providedFlags = prompt.match(/--[a-z-]+/gi) ?? [];
+      const result = checkFlagSemantic(prompt, providedFlags, '');
+      return { passed: result.passed, gate: type, description, blocking: blocking ?? false };
     }
 
     default:

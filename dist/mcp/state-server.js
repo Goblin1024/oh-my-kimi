@@ -2,6 +2,7 @@
  * MCP State Server
  *
  * Provides tools for reading and writing OMK workflow state via the Model Context Protocol.
+ * Enhanced with evidence submission, verification, and phase assertion capabilities.
  */
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
@@ -11,15 +12,18 @@ import { getActiveSkill, setActiveSkill, setSkillState } from '../state/manager.
 import { kimiHome } from '../state/paths.js';
 import { join } from 'path';
 import { existsSync, readdirSync, statSync } from 'fs';
+import { submitEvidence, listEvidence, getEvidenceForSkillPhase } from '../state/evidence.js';
+import { detectShortcuts } from '../evidence/anti-pattern-detector.js';
+import { getPhaseRequirements } from '../skills/evidence-requirements.js';
 const server = new Server({
     name: 'omk-state-server',
-    version: '0.1.0',
+    version: '0.2.0',
 }, {
     capabilities: {
         tools: {},
     },
 });
-// Define tool schemas
+// ── Tool Schemas ──
 const readStateSchema = z.object({
     cwd: z
         .string()
@@ -38,6 +42,56 @@ const writeStateSchema = z.object({
         .optional()
         .describe('Optional reason for the state change (especially for cancellations)'),
 });
+const submitEvidenceSchema = z.object({
+    skill: z.string().describe('The skill that produced this evidence'),
+    step: z.string().describe('Step identifier (e.g. tests_passed, prd_written)'),
+    phase: z.string().describe('Phase this evidence unlocks'),
+    evidenceType: z
+        .string()
+        .refine((v) => [
+        'command_output',
+        'file_artifact',
+        'review_signature',
+        'diff_record',
+        'context_record',
+    ].includes(v), {
+        message: 'Invalid evidence type',
+    }),
+    command: z.string().optional().describe('Command that was run (for command_output)'),
+    output: z.string().optional().describe('Command output (first 10KB)'),
+    exitCode: z.number().optional().describe('Exit code (0 for success)'),
+    artifactPath: z.string().optional().describe('Path to created artifact (for file_artifact)'),
+    artifactHash: z.string().optional().describe('SHA-256 hash of artifact'),
+    artifactSize: z.number().optional().describe('Artifact size in bytes'),
+    reviewerAgent: z.string().optional().describe('Name of reviewer agent (for review_signature)'),
+    reviewResult: z.enum(['approved', 'rejected', 'changes_requested']).optional(),
+    filesModified: z
+        .array(z.string())
+        .optional()
+        .describe('List of modified files (for diff_record)'),
+    linesAdded: z.number().optional(),
+    linesRemoved: z.number().optional(),
+    filesRead: z.array(z.string()).optional().describe('List of files read (for context_record)'),
+    dependenciesAnalyzed: z.boolean().optional(),
+    metadata: z.record(z.string(), z.unknown()).optional().describe('Free-form metadata'),
+    cwd: z.string().optional().describe('Project root directory'),
+});
+const listRequiredEvidenceSchema = z.object({
+    skill: z.string().describe('The skill name'),
+    phase: z.string().describe('The target phase'),
+    cwd: z.string().optional().describe('Project root directory'),
+});
+const verifyEvidenceSchema = z.object({
+    skill: z.string().describe('The skill name'),
+    claim: z.string().optional().describe('Optional claim text to validate against evidence'),
+    cwd: z.string().optional().describe('Project root directory'),
+});
+const assertPhaseSchema = z.object({
+    skill: z.string().describe('The skill name'),
+    phase: z.string().describe('The target phase to assert'),
+    cwd: z.string().optional().describe('Project root directory'),
+});
+// ── Tool List ──
 server.setRequestHandler(ListToolsRequestSchema, async () => {
     return {
         tools: [
@@ -74,9 +128,87 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
                     properties: {},
                 },
             },
+            {
+                name: 'omk_submit_evidence',
+                description: 'Submit machine-checkable evidence for a workflow step',
+                inputSchema: {
+                    type: 'object',
+                    properties: {
+                        skill: { type: 'string' },
+                        step: { type: 'string' },
+                        phase: { type: 'string' },
+                        evidenceType: {
+                            type: 'string',
+                            enum: [
+                                'command_output',
+                                'file_artifact',
+                                'review_signature',
+                                'diff_record',
+                                'context_record',
+                            ],
+                        },
+                        command: { type: 'string' },
+                        output: { type: 'string' },
+                        exitCode: { type: 'number' },
+                        artifactPath: { type: 'string' },
+                        artifactHash: { type: 'string' },
+                        artifactSize: { type: 'number' },
+                        reviewerAgent: { type: 'string' },
+                        reviewResult: { type: 'string', enum: ['approved', 'rejected', 'changes_requested'] },
+                        filesModified: { type: 'array', items: { type: 'string' } },
+                        linesAdded: { type: 'number' },
+                        linesRemoved: { type: 'number' },
+                        filesRead: { type: 'array', items: { type: 'string' } },
+                        dependenciesAnalyzed: { type: 'boolean' },
+                        metadata: { type: 'object' },
+                        cwd: { type: 'string' },
+                    },
+                    required: ['skill', 'step', 'phase', 'evidenceType'],
+                },
+            },
+            {
+                name: 'omk_list_required_evidence',
+                description: 'List the evidence required to enter a specific phase',
+                inputSchema: {
+                    type: 'object',
+                    properties: {
+                        skill: { type: 'string' },
+                        phase: { type: 'string' },
+                        cwd: { type: 'string' },
+                    },
+                    required: ['skill', 'phase'],
+                },
+            },
+            {
+                name: 'omk_verify_evidence',
+                description: 'Verify submitted evidence and detect shortcut attempts',
+                inputSchema: {
+                    type: 'object',
+                    properties: {
+                        skill: { type: 'string' },
+                        claim: { type: 'string' },
+                        cwd: { type: 'string' },
+                    },
+                    required: ['skill'],
+                },
+            },
+            {
+                name: 'omk_assert_phase',
+                description: 'Check if a phase transition is allowed (evidence + transition validation)',
+                inputSchema: {
+                    type: 'object',
+                    properties: {
+                        skill: { type: 'string' },
+                        phase: { type: 'string' },
+                        cwd: { type: 'string' },
+                    },
+                    required: ['skill', 'phase'],
+                },
+            },
         ],
     };
 });
+// ── Tool Handlers ──
 server.setRequestHandler(CallToolRequestSchema, async (request) => {
     try {
         if (request.params.name === 'omk_read_state') {
@@ -100,14 +232,12 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
                 phase: args.phase,
                 activated_at: now,
                 ...(args.reason ? { reason: args.reason } : {}),
-                ...(!args.active ? { completed_at: now } : {}), // Note: in real scenarios you'd keep activated_at from previous state
+                ...(!args.active ? { completed_at: now } : {}),
             };
-            // Try to fetch previous state to preserve activated_at
             const prevState = getActiveSkill(args.cwd);
             if (prevState && prevState.skill === args.skill && prevState.activated_at) {
                 state.activated_at = prevState.activated_at;
             }
-            // Validates transition implicitly
             setActiveSkill(state, args.cwd);
             setSkillState(args.skill, state, args.cwd);
             return {
@@ -130,6 +260,155 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
                     {
                         type: 'text',
                         text: skills.length > 0 ? `Available skills: ${skills.join(', ')}` : 'No skills found.',
+                    },
+                ],
+            };
+        }
+        if (request.params.name === 'omk_submit_evidence') {
+            const args = submitEvidenceSchema.parse(request.params.arguments || {});
+            const evidence = {
+                skill: args.skill,
+                step: args.step,
+                phase: args.phase,
+                submittedAt: new Date().toISOString(),
+                submitter: 'kimi-agent',
+                evidenceType: args.evidenceType,
+                exitCode: args.exitCode ?? 0,
+                ...(args.command !== undefined ? { command: args.command } : {}),
+                ...(args.output !== undefined ? { output: args.output } : {}),
+                ...(args.artifactPath !== undefined ? { artifactPath: args.artifactPath } : {}),
+                ...(args.artifactHash !== undefined ? { artifactHash: args.artifactHash } : {}),
+                ...(args.artifactSize !== undefined ? { artifactSize: args.artifactSize } : {}),
+                ...(args.reviewerAgent !== undefined ? { reviewerAgent: args.reviewerAgent } : {}),
+                ...(args.reviewResult !== undefined ? { reviewResult: args.reviewResult } : {}),
+                ...(args.filesModified !== undefined ? { filesModified: args.filesModified } : {}),
+                ...(args.linesAdded !== undefined ? { linesAdded: args.linesAdded } : {}),
+                ...(args.linesRemoved !== undefined ? { linesRemoved: args.linesRemoved } : {}),
+                ...(args.filesRead !== undefined ? { filesRead: args.filesRead } : {}),
+                ...(args.dependenciesAnalyzed !== undefined
+                    ? { dependenciesAnalyzed: args.dependenciesAnalyzed }
+                    : {}),
+                ...(args.metadata !== undefined ? { metadata: args.metadata } : {}),
+            };
+            submitEvidence(evidence, args.cwd);
+            return {
+                content: [
+                    {
+                        type: 'text',
+                        text: `Evidence '${args.step}' submitted for skill '${args.skill}' (phase: ${args.phase}).`,
+                    },
+                ],
+            };
+        }
+        if (request.params.name === 'omk_list_required_evidence') {
+            const args = listRequiredEvidenceSchema.parse(request.params.arguments || {});
+            const requirements = getPhaseRequirements(args.skill, args.phase);
+            if (!requirements || requirements.length === 0) {
+                return {
+                    content: [
+                        {
+                            type: 'text',
+                            text: `No evidence requirements for phase '${args.phase}' of skill '${args.skill}'.`,
+                        },
+                    ],
+                };
+            }
+            const { evidence, satisfied, missing } = getEvidenceForSkillPhase(args.skill, args.phase, args.cwd);
+            const lines = [
+                `Evidence requirements for '${args.skill}' → '${args.phase}':`,
+                '',
+                ...requirements.map((req) => {
+                    const hasIt = evidence.some((e) => e.step === req.step);
+                    const status = hasIt ? '✅' : '❌';
+                    return `${status} ${req.step}: ${req.description}`;
+                }),
+                '',
+                satisfied ? 'All requirements satisfied.' : `Missing: ${missing.join(', ')}`,
+            ];
+            return {
+                content: [
+                    {
+                        type: 'text',
+                        text: lines.join('\n'),
+                    },
+                ],
+            };
+        }
+        if (request.params.name === 'omk_verify_evidence') {
+            const args = verifyEvidenceSchema.parse(request.params.arguments || {});
+            const evidence = listEvidence(args.skill, args.cwd);
+            if (evidence.length === 0) {
+                return {
+                    content: [
+                        {
+                            type: 'text',
+                            text: `No evidence found for skill '${args.skill}'.`,
+                        },
+                    ],
+                };
+            }
+            // Run anti-pattern detection
+            const shortcuts = detectShortcuts(args.skill, evidence, args.claim);
+            const lines = [
+                `Evidence verification for '${args.skill}':`,
+                `  Total evidence: ${evidence.length}`,
+                '',
+            ];
+            if (shortcuts.length > 0) {
+                lines.push('⚠️ Shortcut attempts detected:');
+                for (const s of shortcuts) {
+                    lines.push(`  [${s.severity.toUpperCase()}] ${s.type}: ${s.description}`);
+                }
+            }
+            else {
+                lines.push('✅ No shortcut patterns detected.');
+            }
+            lines.push('');
+            lines.push('Submitted evidence:');
+            for (const ev of evidence.slice(0, 10)) {
+                lines.push(`  - ${ev.step} (${ev.evidenceType}) @ ${ev.submittedAt}`);
+            }
+            return {
+                content: [
+                    {
+                        type: 'text',
+                        text: lines.join('\n'),
+                    },
+                ],
+            };
+        }
+        if (request.params.name === 'omk_assert_phase') {
+            const args = assertPhaseSchema.parse(request.params.arguments || {});
+            const active = getActiveSkill(args.cwd);
+            if (!active || active.skill !== args.skill) {
+                return {
+                    content: [
+                        {
+                            type: 'text',
+                            text: `❌ No active workflow for skill '${args.skill}'.`,
+                        },
+                    ],
+                };
+            }
+            const { satisfied, missing } = getEvidenceForSkillPhase(args.skill, args.phase, args.cwd);
+            if (!satisfied) {
+                return {
+                    content: [
+                        {
+                            type: 'text',
+                            text: `❌ Cannot enter phase '${args.phase}'.\n` +
+                                `Missing evidence:\n` +
+                                missing.map((m) => `  - ${m}`).join('\n') +
+                                `\n→ Submit evidence via omk_submit_evidence first.`,
+                        },
+                    ],
+                };
+            }
+            return {
+                content: [
+                    {
+                        type: 'text',
+                        text: `✅ Phase '${args.phase}' is reachable for skill '${args.skill}'. All evidence requirements satisfied.`,
                     },
                 ],
             };

@@ -9,13 +9,13 @@
 
 export interface MemoryLayer {
   /** Human-readable label for the layer */
-  readonly label: string
+  readonly label: string;
 
   /** Approximate token budget for this layer */
-  readonly tokenBudget: number
+  readonly tokenBudget: number;
 
   /** Current estimated token count, or null if not yet computed */
-  tokenCount: number | null
+  tokenCount: number | null;
 }
 
 /** L0 — Identity
@@ -24,14 +24,14 @@ export interface MemoryLayer {
  * Typically loaded from a plain-text file edited by the user.
  */
 export interface Layer0Identity extends MemoryLayer {
-  readonly label: 'Identity'
-  readonly tokenBudget: 100
+  readonly label: 'Identity';
+  readonly tokenBudget: 100;
 
   /** Raw identity text (e.g. content of ~/.omk/identity.txt) */
-  text: string
+  text: string;
 
   /** Whether the text was sourced from a user-created file */
-  userDefined: boolean
+  userDefined: boolean;
 }
 
 /** L1 — Essential Story
@@ -39,14 +39,14 @@ export interface Layer0Identity extends MemoryLayer {
  * Auto-generated narrative built from observed evidence across sessions.
  */
 export interface Layer1EssentialStory extends MemoryLayer {
-  readonly label: 'Essential Story'
-  readonly tokenBudget: 650
+  readonly label: 'Essential Story';
+  readonly tokenBudget: 650;
 
   /** Markdown or plain-text narrative */
-  story: string
+  story: string;
 
   /** Evidence items that contributed to the current story */
-  evidenceIds: string[]
+  evidenceIds: string[];
 }
 
 /** L2 — On-Demand
@@ -54,14 +54,14 @@ export interface Layer1EssentialStory extends MemoryLayer {
  * Relevant snippets retrieved at query time by topic or skill matching.
  */
 export interface Layer2OnDemand extends MemoryLayer {
-  readonly label: 'On-Demand'
-  readonly tokenBudget: 350
+  readonly label: 'On-Demand';
+  readonly tokenBudget: 350;
 
   /** Snippets selected for the current context window */
-  snippets: string[]
+  snippets: string[];
 
   /** Topics / skills that triggered retrieval */
-  matchedTopics: string[]
+  matchedTopics: string[];
 }
 
 /** L3 — Deep Search
@@ -69,29 +69,33 @@ export interface Layer2OnDemand extends MemoryLayer {
  * Full-corpus retrieval via BM25, vector search, or hybrid ranking.
  */
 export interface Layer3DeepSearch extends MemoryLayer {
-  readonly label: 'Deep Search'
-  readonly tokenBudget: number
+  readonly label: 'Deep Search';
+  readonly tokenBudget: number;
 
   /** Search results for the current query */
-  results: SearchResult[]
+  results: SearchResult[];
 
   /** Query string that produced these results */
-  query: string
+  query: string;
 }
 
 export interface SearchResult {
   /** Unique identifier for the document / chunk */
-  id: string
+  id: string;
 
   /** Relevance score (higher = more relevant) */
-  score: number
+  score: number;
 
   /** Source path or URI */
-  source: string
+  source: string;
 
   /** Matching text snippet */
-  text: string
+  text: string;
 }
 
 /** Convenience union of all memory layers */
-export type MemoryLayerStack = Layer0Identity | Layer1EssentialStory | Layer2OnDemand | Layer3DeepSearch
+export type MemoryLayerStack =
+  | Layer0Identity
+  | Layer1EssentialStory
+  | Layer2OnDemand
+  | Layer3DeepSearch;

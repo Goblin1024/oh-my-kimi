@@ -56,28 +56,60 @@ while not complete:
 
 ### Phase 3: Verification (Mandatory)
 
-Before claiming completion:
+Before claiming completion, you MUST submit evidence via MCP tools:
 
-1. **Fresh Evidence Required:**
-   - Run tests: `npm test` → All pass
-   - Run build: `npm run build` → Success
-   - Check types: `tsc --noEmit` → No errors
-   - Run lint: `npm run lint` → Clean
+1. **Submit Test Evidence:**
+   After running `npm test`, call:
+   ```
+   omk_submit_evidence({skill:"ralph", step:"tests_passed", phase:"verifying", evidenceType:"command_output", command:"npm test", output:"<test output>", exitCode:0})
+   ```
 
-2. **TODO Check:**
+2. **Submit Build Evidence:**
+   After running `npm run build`, call:
+   ```
+   omk_submit_evidence({skill:"ralph", step:"build_passed", phase:"verifying", evidenceType:"command_output", command:"npm run build", output:"<build output>", exitCode:0})
+   ```
+
+3. **Submit Lint Evidence:**
+   After running `npm run lint`, call:
+   ```
+   omk_submit_evidence({skill:"ralph", step:"lint_clean", phase:"verifying", evidenceType:"command_output", command:"npm run lint", output:"<lint output>", exitCode:0})
+   ```
+
+4. **Submit Type Evidence:**
+   After running `tsc --noEmit`, call:
+   ```
+   omk_submit_evidence({skill:"ralph", step:"types_clean", phase:"verifying", evidenceType:"command_output", command:"tsc --noEmit", output:"<tsc output>", exitCode:0})
+   ```
+
+5. **Check Required Evidence:**
+   Before advancing phase, verify all evidence is present:
+   ```
+   omk_list_required_evidence({skill:"ralph", phase:"verifying"})
+   ```
+
+6. **TODO Check:**
    - Zero pending items
    - Zero in-progress items
 
-3. **Architect Review:**
+7. **Architect Review:**
    - Delegate to `architect` subagent
-   - Get explicit approval
+   - After approval, submit:
+   ```
+   omk_submit_evidence({skill:"ralph", step:"architect_approved", phase:"completing", evidenceType:"review_signature", reviewerAgent:"architect", reviewResult:"approved"})
+   ```
 
 ### Phase 4: Completion
 
-1. Run final verification
-2. Update state to "complete"
-3. Run `$cancel` to clean up
-4. Report success with evidence
+1. Run final verification and submit all evidence
+2. Submit diff evidence:
+   ```
+   omk_submit_evidence({skill:"ralph", step:"diff_recorded", phase:"completing", evidenceType:"diff_record", filesModified:["src/foo.ts"], linesAdded:10, linesRemoved:2})
+   ```
+3. Call `omk_assert_phase({skill:"ralph", phase:"completed"})` to confirm transition is allowed
+4. Update state to "completed"
+5. Run `$cancel` to clean up
+6. Report success with evidence references
 
 ## Execution Policy
 

@@ -1,6 +1,6 @@
 {
     "name": "oh-my-kimi",
-    "version": "0.5.0",
+    "version": "1.0.0",
     "description": "Workflow orchestration layer for Kimi Code CLI - Bring structured workflows, agent teams, and persistent execution to your Kimi CLI sessions",
     "type": "module",
     "main": "dist/index.js",

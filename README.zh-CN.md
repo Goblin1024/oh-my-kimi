@@ -48,6 +48,10 @@
 - **遵循一致的工作流** — 从需求澄清到完成，使用 `$deep-interview` → `$ralplan` → `$ralph`
 - **调用标准技能** — 使用简单的 `$command` 语法调用预定义工作流
 - **维护项目状态** — 在 `.omk/` 中保存计划、日志和上下文
+- **证据锁定阶段转换** — 每个阶段推进需要机器可验证的证据
+- **Token 效率优化** — 预算跟踪、证据压缩、复杂度路由
+- **交叉验证** — 关键步骤需要独立智能体审核
+- **团队运行时** — 多智能体并行执行，支持工作者间消息传递
 
 ## 🎯 功能特性
 
@@ -57,6 +61,7 @@
 | `$ralplan` | 架构规划和审批 | 需要结构化的实现计划时 |
 | `$ralph` | 持久化循环执行直至完成 | 执行已批准的计划并验证 |
 | `$cancel` | 停止活动工作流 | 需要中止当前工作流时 |
+| `$team` | 并行多智能体执行 | 任务可拆分为独立子任务时 |
 
 ## 📦 安装
 
@@ -123,8 +128,54 @@ omk --help     # 显示帮助
 $deep-interview "..."  # 澄清意图和边界
 $ralplan "..."         # 创建已批准的实现计划
 $ralph "..."           # 持久化执行直至完成
+$team "..."            # 并行多智能体执行
 $cancel                # 停止活动工作流
 ```
+
+## 🏗️ 架构与核心功能
+
+### 1. 证据驱动的工作流引擎
+
+每个重要声明必须由机器可验证的**证据**支持。阶段转换在提交所需证据之前会被阻塞。
+
+- **5 种证据类型**: `command_output` | `file_artifact` | `review_signature` | `diff_record` | `context_record`
+- **证据锁定**: `assertStepPrerequisites()` 在证据缺失时抛出 `TransitionBlockedError`
+- **MCP 工具**: `omk_submit_evidence`, `omk_list_required_evidence`, `omk_verify_evidence`, `omk_assert_phase`
+
+### 2. Token 效率系统
+
+跨会话跟踪、预算和优化 Token 使用。
+
+- **TokenBudget** — 警告/临界/超额阈值；标志倍率 (`--eco` 25%, `--quick` 50%, `--deliberate` 400%)
+- **复杂度路由** — 根据提示复杂度路由到低/中/高配置
+- **证据修剪器** — 压缩超过 5KB 的证据，修剪后回收 Token
+- **SessionAuditor** — 统一的预算 + 路由 + 修剪审计报告
+- **Token HUD 面板** — 实时进度条、剩余 Token、效率评分
+
+### 3. 交叉验证网络
+
+任何智能体不能批准自己的工作。关键步骤需要独立审核。
+
+- **4 条验证规则**: `architect_output`, `implementation`, `security_touch`, `large_change`
+- **触发评估**: `security_touch` 在检测到安全相关文件时自动触发；`large_change` 在超过 100 行变更时触发
+- **审核委托器**: 管理待审核任务和审核者分配
+
+### 4. 团队运行时
+
+Kimi 原生多智能体执行，带并发限制和工作者间消息传递。
+
+- **Slot 管理器** — 从 `~/.kimi/config.toml` 读取 `max_running_tasks`（默认 4）
+- **邮箱** — 基于文件的 JSONL 工作者间通信
+- **KimiRuntime** — 生成真实的 `kimi` 进程，带心跳检测和自动重启（最多 3 次）
+
+### 5. 28 个智能体定义
+
+每个智能体都有配置的 Token 预算、最大步数和允许的工具。
+
+- `architect`: 128K 预算, 50 步, 所有工具
+- `style-reviewer`: 8K 预算, 15 步, `[read]` 仅
+- `executor`: 64K 预算, 30 步, 所有工具
+- 自动生成带 `# omk:` 元数据注释的 TOML，兼容 Kimi Agent
 
 ## 🏗️ 工作原理
 
@@ -156,10 +207,16 @@ OMK 使用 Kimi 的原生钩子系统：
 .omk/
 ├── state/
 │   └── skill-active.json    # 当前工作流状态
+├── evidence/
+│   └── {skill}/            # 按技能组织的证据文件
 ├── plans/
 │   └── prd-*.md            # 已批准的计划
-└── context/
-    └── *.md                # 上下文快照
+├── context/
+│   └── *.md                # 上下文快照
+├── team/
+│   └── {team}/mailbox/     # 工作者间消息邮箱
+└── logs/
+    └── team/latest/        # 团队工作者日志
 ```
 
 ## ✅ 验证
@@ -171,8 +228,7 @@ npm run test:all
 ```
 
 预期输出：
-- 11/11 安装检查通过
-- 5/5 钩子测试通过
+- 271 个测试通过，105 个套件，0 失败
 
 ## 💡 使用场景
 

@@ -7,22 +7,11 @@ import { spawn } from 'child_process';
 import { getTeamState, setTeamState, updateWorkerState } from './state.js';
 import { resolveAgentForSkill, loadAgentPrompt } from '../hooks/agents-overlay.js';
 import { join } from 'path';
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
 import { createWriteStream, mkdirSync, existsSync, rmSync } from 'fs';
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-// Get the mock script path
-function getMockScriptPath() {
-    return join(__dirname, '..', '..', 'scripts', 'mock-kimi.js');
-}
 export class TeamRuntime {
     workers = new Map();
-    isMockMode;
     constructor() {
-        // In a real environment, you might check if `kimi` is in PATH.
-        // For OMK MVP, we default to mock mode if OMK_MOCK_TEAM is set.
-        this.isMockMode = process.env.OMK_MOCK_TEAM === '1';
+        // Workers always spawn real kimi processes
     }
     async startTeam(count, role, task, cwd) {
         const existingState = getTeamState(cwd);
@@ -66,26 +55,40 @@ export class TeamRuntime {
     }
     spawnWorker(workerState, cwd) {
         const workerId = workerState.id;
-        let child;
-        if (this.isMockMode) {
-            child = spawn('node', [getMockScriptPath()], {
-                cwd,
-                env: {
-                    ...process.env,
-                    WORKER_ID: workerId,
-                    MOCK_DELAY: process.env.MOCK_DELAY || (Math.random() * 2000 + 1000).toString(),
-                },
-                stdio: ['pipe', 'pipe', 'pipe'], // stdin, stdout, stderr
-            });
-        }
-        else {
-            // Assuming a hypothetical kimi cli that accepts prompt via stdin or arguments
-            child = spawn('kimi', [], {
+        // Setup logging first so error handler can use it
+        const logDir = join(cwd || process.cwd(), '.omk', 'logs', 'team', 'latest');
+        mkdirSync(logDir, { recursive: true });
+        const logStream = createWriteStream(join(logDir, `${workerId}.log`), { flags: 'a' });
+        logStream.on('error', () => {
+            /* ignore teardown errors */
+        });
+        // Support mock mode for tests when 'kimi' is not available
+        const isMockMode = process.env.OMK_MOCK_TEAM === '1';
+        const mockDelay = parseInt(process.env.MOCK_DELAY || '100', 10);
+        const child = isMockMode
+            ? spawn('node', [
+                '-e',
+                `setTimeout(() => { console.log('Mock worker completed'); process.exit(0); }, ${mockDelay})`,
+            ], { cwd, env: process.env, stdio: ['pipe', 'pipe', 'pipe'] })
+            : spawn('kimi', [], {
                 cwd,
                 env: process.env,
                 stdio: ['pipe', 'pipe', 'pipe'],
             });
-        }
+        child.on('error', (err) => {
+            if (err.code === 'ENOENT') {
+                console.error(`\x1b[31m[${workerId}]\x1b[0m Error: 'kimi' command not found in PATH. Please install Kimi CLI to use team mode.`);
+            }
+            else {
+                console.error(`\x1b[31m[${workerId}]\x1b[0m Error spawning worker: ${err.message}`);
+            }
+            logStream.end();
+            this.workers.delete(workerId);
+            void (async () => {
+                await updateWorkerState(workerId, { status: 'failed', finishedAt: new Date().toISOString() }, cwd);
+                this.checkTeamCompletion(cwd);
+            })();
+        });
         this.workers.set(workerId, child);
         updateWorkerState(workerId, { pid: child.pid, status: 'running' }, cwd);
         // Send task
@@ -93,13 +96,6 @@ export class TeamRuntime {
             child.stdin.write(workerState.task);
             child.stdin.end();
         }
-        // Setup logging
-        const logDir = join(cwd || process.cwd(), '.omk', 'logs', 'team', 'latest');
-        mkdirSync(logDir, { recursive: true });
-        const logStream = createWriteStream(join(logDir, `${workerId}.log`), { flags: 'a' });
-        logStream.on('error', () => {
-            /* ignore teardown errors */
-        });
         // Handle output
         child.stdout?.on('data', (data) => {
             process.stdout.write(`\x1b[36m[${workerId}]\x1b[0m ${data}`);

@@ -1,38 +1,48 @@
 /**
- * Evidence State Management
+ * Evidence Persistence Layer
  *
- * CRUD operations for workflow evidence files.
- * All writes are atomic (writeAtomic) to prevent corruption under concurrent access.
+ * Provides read/write operations for machine-checkable workflow evidence.
+ * Evidence is stored as individual JSON files under:
+ *   .omk/evidence/{skill}/{timestamp}-{step}.json
+ *
+ * All writes use atomic rename (writeAtomic) to prevent corruption under
+ * concurrent access from multiple workers or the HUD.
  */
-import { readFileSync, readdirSync, mkdirSync, existsSync } from 'fs';
+import { mkdirSync, readdirSync, readFileSync, existsSync } from 'fs';
 import { join } from 'path';
 import { writeAtomic } from './atomic.js';
 import { getPhaseRequirements } from '../skills/evidence-requirements.js';
-function getEvidenceDir(skill, cwd) {
-    const dir = join(cwd || process.cwd(), '.omk', 'evidence', skill);
-    mkdirSync(dir, { recursive: true });
-    return dir;
-}
-function evidenceFilePath(skill, step, timestamp, cwd) {
-    // Sanitize timestamp for Windows filenames (remove colons)
-    const safeTimestamp = timestamp.replace(/:/g, '-');
-    return join(getEvidenceDir(skill, cwd), `${safeTimestamp}-${step}.json`);
+/**
+ * Get the evidence directory for a given skill.
+ */
+export function getEvidenceDir(skill, cwd) {
+    const projectRoot = cwd ?? process.cwd();
+    return join(projectRoot, '.omk', 'evidence', skill);
 }
 /**
  * Submit a new evidence record.
+ * Writes to .omk/evidence/{skill}/{timestamp}-{step}.json
  */
-export function submitEvidence(evidence, cwd) {
-    const filePath = evidenceFilePath(evidence.skill, evidence.step, evidence.submittedAt, cwd);
-    writeAtomic(filePath, JSON.stringify(evidence, null, 2));
+export function submitEvidence(ev, cwd) {
+    const dir = getEvidenceDir(ev.skill, cwd);
+    mkdirSync(dir, { recursive: true });
+    const timestamp = ev.submittedAt.replace(/[:.]/g, '-');
+    const randomSuffix = Math.random().toString(36).substring(2, 8);
+    const fileName = `${timestamp}-${randomSuffix}-${ev.step}.json`;
+    const filePath = join(dir, fileName);
+    writeAtomic(filePath, JSON.stringify(ev, null, 2));
 }
 /**
- * List all evidence files for a skill.
+ * List all evidence records for a skill, newest first.
  */
 export function listEvidence(skill, cwd) {
     const dir = getEvidenceDir(skill, cwd);
     if (!existsSync(dir))
         return [];
-    const files = readdirSync(dir).filter((f) => f.endsWith('.json'));
+    const files = readdirSync(dir)
+        .filter((f) => f.endsWith('.json'))
+        .sort()
+        .reverse();
     const results = [];
     for (const file of files) {
         try {
@@ -40,11 +50,9 @@ export function listEvidence(skill, cwd) {
             results.push(JSON.parse(content));
         }
         catch {
-            // Skip corrupt evidence files
+            // Skip corrupted evidence files
         }
     }
-    // Sort by submission time, newest first
-    results.sort((a, b) => new Date(b.submittedAt).getTime() - new Date(a.submittedAt).getTime());
     return results;
 }
 /**
@@ -52,57 +60,46 @@ export function listEvidence(skill, cwd) {
  */
 export function findEvidence(skill, step, cwd) {
     const all = listEvidence(skill, cwd);
-    return all.find((e) => e.step === step) || null;
+    return all.find((e) => e.step === step) ?? null;
 }
 /**
- * Check if all required evidence for a phase transition is present and valid.
+ * Get all evidence records that satisfy the requirements for a target phase.
+ * Returns an object with `satisfied` (boolean) and `missing` (array of requirement descriptions).
  */
-export function verifyEvidenceForPhase(skill, phase, cwd) {
+export function getEvidenceForSkillPhase(skill, phase, cwd) {
     const requirements = getPhaseRequirements(skill, phase);
     if (!requirements || requirements.length === 0) {
-        return { passed: true, missing: [], invalid: [] };
+        return { evidence: [], satisfied: true, missing: [] };
     }
+    const allEvidence = listEvidence(skill, cwd);
+    const found = [];
     const missing = [];
-    const invalid = [];
     for (const req of requirements) {
-        const evidence = findEvidence(skill, req.step, cwd);
-        if (!evidence) {
-            missing.push(req.step);
-            continue;
+        const ev = allEvidence.find((e) => e.step === req.step);
+        if (ev) {
+            found.push(ev);
         }
-        if (req.validator) {
-            const result = req.validator(evidence);
-            if (!result.valid) {
-                invalid.push({ step: req.step, reason: result.reason || 'Validation failed' });
-            }
+        else {
+            missing.push(req.description);
         }
     }
-    return { passed: missing.length === 0 && invalid.length === 0, missing, invalid };
+    return {
+        evidence: found,
+        satisfied: missing.length === 0,
+        missing,
+    };
 }
 /**
- * Clean up evidence older than the retention period (default 30 days).
+ * Check if a phase transition is blocked by missing evidence.
+ * Returns null if allowed, or a descriptive error message if blocked.
  */
-export function cleanupOldEvidence(skill, maxAgeDays = 30, cwd) {
-    const dir = getEvidenceDir(skill, cwd);
-    if (!existsSync(dir))
-        return 0;
-    const cutoff = Date.now() - maxAgeDays * 24 * 60 * 60 * 1000;
-    const files = readdirSync(dir).filter((f) => f.endsWith('.json'));
-    let removed = 0;
-    for (const file of files) {
-        try {
-            const content = readFileSync(join(dir, file), 'utf-8');
-            const evidence = JSON.parse(content);
-            if (new Date(evidence.submittedAt).getTime() < cutoff) {
-                // Note: we don't delete here to avoid importing fs rm functions.
-                // In production this would be handled by a scheduled task.
-                removed++;
-            }
-        }
-        catch {
-            // Skip corrupt files
-        }
-    }
-    return removed;
+export function checkPhaseEvidence(skill, toPhase, cwd) {
+    const { satisfied, missing } = getEvidenceForSkillPhase(skill, toPhase, cwd);
+    if (satisfied)
+        return null;
+    return (`🚫 BLOCKED: Cannot enter '${toPhase}'.\n` +
+        `Missing evidence:\n` +
+        missing.map((m) => `  - ${m}`).join('\n') +
+        `\n→ Submit via: omk_submit_evidence({skill:"${skill}", step:"<step>", ...})`);
 }
 //# sourceMappingURL=evidence.js.map

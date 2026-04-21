@@ -55,7 +55,10 @@ export interface MemPalaceBridge {
   /** Mine files from a directory into the palace */
   mine(projectPath: string, options?: MineOptions): Promise<CommandResult>;
   /** Search the palace */
-  search(query: string, options?: SearchOptions): Promise<CommandResult & { results?: SearchResult[] }>;
+  search(
+    query: string,
+    options?: SearchOptions
+  ): Promise<CommandResult & { results?: SearchResult[] }>;
   /** Load L0+L1 wake-up context */
   wakeUp(options?: WakeUpOptions): Promise<CommandResult>;
   /** Show palace status */
@@ -409,7 +412,8 @@ export async function createBridge(projectRoot?: string): Promise<MemPalaceBridg
   const fallback = (cmd: string): Promise<CommandResult> =>
     Promise.resolve({
       stdout: '',
-      stderr: `MemPalace is not installed. Command "${cmd}" cannot be executed.\n` +
+      stderr:
+        `MemPalace is not installed. Command "${cmd}" cannot be executed.\n` +
         'Install it from https://github.com/MemPalace/mempalace or run `pip install mempalace`.',
       exitCode: 127,
       success: false,
@@ -421,34 +425,25 @@ export async function createBridge(projectRoot?: string): Promise<MemPalaceBridg
 
     async init(projectPath, options = {}) {
       if (!available) return fallback('init');
-      const args = buildArgs(
-        ['init', projectPath],
-        options,
-        {
-          yes: (v) => (v ? ['--yes'] : []),
-          lang: (v) => ['--lang', String(v)],
-        }
-      );
+      const args = buildArgs(['init', projectPath], options, {
+        yes: (v) => (v ? ['--yes'] : []),
+        lang: (v) => ['--lang', String(v)],
+      });
       return runMemPalace(args, { cwd: root });
     },
 
     async mine(projectPath, options = {}) {
       if (!available) return fallback('mine');
-      const args = buildArgs(
-        ['mine', projectPath],
-        options,
-        {
-          mode: (v) => ['--mode', String(v)],
-          wing: (v) => ['--wing', String(v)],
-          agent: (v) => ['--agent', String(v)],
-          limit: (v) => ['--limit', String(v)],
-          dryRun: (v) => (v ? ['--dry-run'] : []),
-          noGitignore: (v) => (v ? ['--no-gitignore'] : []),
-          includeIgnored: (v) =>
-            Array.isArray(v) ? v.flatMap((p) => ['--include-ignored', p]) : [],
-          extract: (v) => ['--extract', String(v)],
-        }
-      );
+      const args = buildArgs(['mine', projectPath], options, {
+        mode: (v) => ['--mode', String(v)],
+        wing: (v) => ['--wing', String(v)],
+        agent: (v) => ['--agent', String(v)],
+        limit: (v) => ['--limit', String(v)],
+        dryRun: (v) => (v ? ['--dry-run'] : []),
+        noGitignore: (v) => (v ? ['--no-gitignore'] : []),
+        includeIgnored: (v) => (Array.isArray(v) ? v.flatMap((p) => ['--include-ignored', p]) : []),
+        extract: (v) => ['--extract', String(v)],
+      });
       if (!args.includes('--palace')) {
         args.push('--palace', palacePath);
       }
@@ -457,15 +452,11 @@ export async function createBridge(projectRoot?: string): Promise<MemPalaceBridg
 
     async search(query, options = {}) {
       if (!available) return { ...(await fallback('search')), results: [] };
-      const args = buildArgs(
-        ['search', query],
-        options,
-        {
-          wing: (v) => ['--wing', String(v)],
-          room: (v) => ['--room', String(v)],
-          results: (v) => ['--results', String(v)],
-        }
-      );
+      const args = buildArgs(['search', query], options, {
+        wing: (v) => ['--wing', String(v)],
+        room: (v) => ['--room', String(v)],
+        results: (v) => ['--results', String(v)],
+      });
       if (!args.includes('--palace')) {
         args.push('--palace', palacePath);
       }
@@ -475,13 +466,9 @@ export async function createBridge(projectRoot?: string): Promise<MemPalaceBridg
 
     async wakeUp(options = {}) {
       if (!available) return fallback('wake-up');
-      const args = buildArgs(
-        ['wake-up'],
-        options,
-        {
-          wing: (v) => ['--wing', String(v)],
-        }
-      );
+      const args = buildArgs(['wake-up'], options, {
+        wing: (v) => ['--wing', String(v)],
+      });
       if (!args.includes('--palace')) {
         args.push('--palace', palacePath);
       }
@@ -747,7 +734,9 @@ export async function getMemPalaceStatus(): Promise<PalaceStatus> {
 
   const palacePath = getPalacePath();
   const result = await runMemPalace(['status', '--palace', palacePath]);
-  return result.success ? parseStatusOutput(result.stdout) || { totalDrawers: 0, wings: [] } : { totalDrawers: 0, wings: [] };
+  return result.success
+    ? parseStatusOutput(result.stdout) || { totalDrawers: 0, wings: [] }
+    : { totalDrawers: 0, wings: [] };
 }
 
 /**

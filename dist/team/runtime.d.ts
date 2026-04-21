@@ -5,7 +5,6 @@
  */
 export declare class TeamRuntime {
     private workers;
-    private isMockMode;
     constructor();
     startTeam(count: number, role: string, task: string, cwd?: string): Promise<void>;
     private spawnWorker;

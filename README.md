@@ -92,7 +92,51 @@ All state writes use **atomic rename** (`write-to-temp-then-rename`) so concurre
 - `src/state/atomic.ts` — `writeAtomic()` + `withFileLock()` (spin-lock with stale detection)
 - `src/team/state.ts` — `updateWorkerState()` serializes concurrent worker exit events
 
-### 2. Skill Manifest Parser & Code-Enforced Validation
+### 2. Evidence-Based Workflow Engine
+
+Every significant claim must be backed by machine-checkable **evidence**. Phase transitions are blocked until required evidence is submitted.
+
+- **5 evidence types**: `command_output` | `file_artifact` | `review_signature` | `diff_record` | `context_record`
+- **Evidence lock**: `assertStepPrerequisites()` throws `TransitionBlockedError` if evidence is missing
+- **MCP tools**: `omk_submit_evidence`, `omk_list_required_evidence`, `omk_verify_evidence`, `omk_assert_phase`
+- **Auto-setup**: `omk setup` registers 3 MCP servers in `~/.kimi/mcp.json`
+
+### 3. Token Efficiency System
+
+Token usage is tracked, budgeted, and optimized across the session.
+
+- **TokenBudget** (`src/token/budget.ts`) — warning/critical/exceeded thresholds; flag multipliers (`--eco` 25%, `--quick` 50%, `--deliberate` 400%)
+- **Complexity router** (`src/token/router.ts`) — routes prompts to low/medium/high configs
+- **Evidence pruner** (`src/token/pruner.ts`) — compresses evidence >5KB, reclaims tokens after prune
+- **SessionAuditor** (`src/token/audit.ts`) — unified budget + route + pruning with audit reports
+- **Token HUD panel** — real-time progress bar, remaining tokens, efficiency score
+
+### 4. Cross-Validation Network
+
+No agent approves its own work. Critical steps require independent review.
+
+- **4 validation rules**: `architect_output`, `implementation`, `security_touch`, `large_change`
+- **Trigger evaluation**: `security_touch` auto-triggers on auth files; `large_change` on >100 lines
+- **Review delegator**: manages pending reviews and reviewer assignment
+
+### 5. Team Runtime
+
+Kimi-native multi-agent execution with concurrency limits and inter-worker messaging.
+
+- **Slot manager** (`src/team/slot-manager.ts`) — reads `max_running_tasks` from `~/.kimi/config.toml` (default 4)
+- **Mailbox** (`src/team/mailbox.ts`) — file-based JSONL messaging between workers
+- **KimiRuntime** (`src/team/kimi-runtime.ts`) — spawns real `kimi` processes with heartbeat + auto-restart (max 3)
+
+### 6. 28 Agent Definitions with Token Budgets
+
+Every agent has a configured token budget, max steps, and allowed tools.
+
+- `architect`: 128K budget, 50 steps, all tools
+- `style-reviewer`: 8K budget, 15 steps, `[read]` only
+- `executor`: 64K budget, 30 steps, all tools
+- Auto-generated TOML with `# omk:` metadata comments for Kimi Agent compatibility
+
+### 7. Skill Manifest Parser & Code-Enforced Validation
 
 Skills are no longer opaque markdown. OMK parses YAML frontmatter from `SKILL.md` at runtime:
 
@@ -121,29 +165,24 @@ gates:
 - `has_active_plan` — blocks execution without an approved plan
 - `workflow_not_active` — prevents concurrent workflow collisions
 - `custom` — regex-based predicate matching
+- **Semantic gates** (non-blocking warnings):
+  - `no_shortcut_keywords` — detects "just", "simply", "quickly", "hack"
+  - `has_verification_plan` — requires test/verify/validate keywords
+  - `proper_decomposition` — complex tasks need step markers
+  - `flag_semantic_check` — warns on mismatched flags
 
-### 3. Per-Skill Workflow State Machine
+### 8. Per-Skill Workflow State Machine
 
 The global phase transition matrix is enhanced with **per-skill custom phases** loaded from manifests. A skill declaring its own `phases:` gets a linear transition graph enforced by `assertValidTransition()`.
 
-### 4. Team Runtime with Worker Logging
-
-```bash
-omk team 3:executor "refactor the auth module"
-omk team logs w1        # view individual worker log
-omk team shutdown       # terminate all workers
-```
-
-Worker stdout/stderr is piped to both the terminal and `.omk/logs/team/latest/{workerId}.log`.
-
-### 5. BM25 Semantic Memory
+### 9. BM25 Semantic Memory
 
 The MCP Memory Server no longer does naive `String.prototype.includes()`. It uses a **pure-JS BM25 implementation** for ranked relevance search across cross-session project memory.
 
 - `src/utils/bm25.ts` — lightweight BM25 with TF-IDF scoring
 - Automatic 90-day retention cleanup
 
-### 6. Event-Driven HUD
+### 10. Event-Driven HUD
 
 ```bash
 omk hud
@@ -153,20 +192,20 @@ omk hud
 - Displays **Workflow Status** + **Team Status** panels
 - Auto-refreshes on state file changes
 
-### 7. MCP Servers
+### 11. MCP Servers
 
 OMK exposes two MCP servers for deep Kimi integration:
 
-- **`omk mcp state`** — `omk_read_state`, `omk_write_state` (validates transitions), `omk_list_skills`
+- **`omk mcp state`** — `omk_read_state`, `omk_write_state` (validates transitions), `omk_list_skills`, plus 4 evidence tools (`omk_submit_evidence`, `omk_list_required_evidence`, `omk_verify_evidence`, `omk_assert_phase`)
 - **`omk mcp memory`** — `omk_memory_store`, `omk_memory_query` (BM25-ranked), `omk_memory_list`
 
-### 8. Structured Observability
+### 12. Structured Observability
 
 - **`src/utils/logger.ts`** — Hierarchical logging (debug/info/warn/error) writes to `.omk/logs/system.log`
 - **`src/utils/audit.ts`** — Hook execution audit (JSONL, daily rotation, 5MB limit)
 - Every hook invocation records event, skill, duration, and success/failure
 
-### 9. CLI Lifecycle Management
+### 13. CLI Lifecycle Management
 
 ```bash
 omk setup        # Install skills, configure hooks, write integrity hash

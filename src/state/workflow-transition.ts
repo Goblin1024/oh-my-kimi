@@ -8,12 +8,14 @@
  */
 
 import { loadSkillManifest } from '../skills/parser.js';
+import { checkPhaseEvidence } from './evidence.js';
 
 export type WorkflowPhase =
   | 'starting'
   | 'planning'
   | 'executing'
   | 'verifying'
+  | 'completing'
   | 'completed'
   | 'cancelled';
 
@@ -23,10 +25,11 @@ export type WorkflowPhase =
  * Value: array of allowed next phases
  */
 const VALID_TRANSITIONS: Record<WorkflowPhase, WorkflowPhase[]> = {
-  starting: ['planning', 'executing', 'completed', 'cancelled'],
-  planning: ['executing', 'completed', 'cancelled'],
-  executing: ['verifying', 'completed', 'cancelled'],
-  verifying: ['executing', 'completed', 'cancelled'], // Can loop back to executing if verification fails
+  starting: ['planning', 'executing', 'completing', 'completed', 'cancelled'],
+  planning: ['executing', 'completing', 'completed', 'cancelled'],
+  executing: ['verifying', 'completing', 'completed', 'cancelled'],
+  verifying: ['executing', 'completing', 'completed', 'cancelled'], // Can loop back to executing if verification fails
+  completing: ['completed', 'cancelled'],
   completed: [], // Terminal state
   cancelled: [], // Terminal state
 };
@@ -37,6 +40,7 @@ const VALID_TRANSITIONS: Record<WorkflowPhase, WorkflowPhase[]> = {
  */
 function buildTransitionsFromPhases(phases: string[]): Record<string, string[]> {
   const map: Record<string, string[]> = {};
+  const hasCompleting = phases.includes('completing');
   for (let i = 0; i < phases.length; i++) {
     const next: string[] = ['cancelled'];
     if (i + 1 < phases.length) {
@@ -45,12 +49,19 @@ function buildTransitionsFromPhases(phases: string[]): Record<string, string[]> 
     // Also allow jumping to 'completed' from any non-terminal phase
     if (phases[i] !== 'completed' && phases[i] !== 'cancelled') {
       next.push('completed');
+      // Allow jumping to 'completing' if the skill defines it (e.g. stop handler)
+      if (hasCompleting) {
+        next.push('completing');
+      }
     }
     map[phases[i]] = next;
   }
   // Terminal states
   map['completed'] = [];
   map['cancelled'] = [];
+  if (hasCompleting) {
+    map['completing'] = ['completed', 'cancelled'];
+  }
   return map;
 }
 
@@ -80,6 +91,13 @@ export class IllegalStateTransitionError extends Error {
   }
 }
 
+export class TransitionBlockedError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = 'TransitionBlockedError';
+  }
+}
+
 /**
  * Validates if a transition from one phase to another is allowed.
  *
@@ -87,13 +105,15 @@ export class IllegalStateTransitionError extends Error {
  * @param toPhase The target phase
  * @param skill Optional skill name to load per-skill phase rules
  * @param cwd Optional project root for manifest lookup
+ * @param evidenceDir Optional evidence directory for phase prerequisite checks
  * @returns true if allowed, false otherwise
  */
 export function isValidTransition(
   fromPhase: string,
   toPhase: string,
   skill?: string,
-  cwd?: string
+  cwd?: string,
+  _evidenceDir?: string
 ): boolean {
   // Load per-skill transitions if a skill is provided
   if (skill) {
@@ -140,5 +160,13 @@ export function assertValidTransition(
 
   if (!isValidTransition(fromPhase, toPhase, skill, cwd)) {
     throw new IllegalStateTransitionError(skill, fromPhase, toPhase);
+  }
+
+  // Layer 2: Evidence lock — check if target phase has prerequisite evidence
+  if (cwd) {
+    const blocked = checkPhaseEvidence(skill, toPhase, cwd);
+    if (blocked) {
+      throw new TransitionBlockedError(blocked);
+    }
   }
 }

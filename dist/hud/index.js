@@ -7,7 +7,9 @@ import { getActiveSkill } from '../state/manager.js';
 import { getTeamState } from '../team/state.js';
 import { omkStateDir } from '../state/paths.js';
 import { watch, existsSync, mkdirSync } from 'fs';
-import { clearScreen, colors, drawHeader, drawSection, drawKeyValue, formatDuration, } from './render.js';
+import { clearScreen, colors, drawHeader, drawSection, drawKeyValue, drawProgressBar, formatDuration, } from './render.js';
+import { loadTokenState } from '../token/persistence.js';
+import { listEvidence } from '../state/evidence.js';
 let isRunning = false;
 function renderHUD() {
     clearScreen();
@@ -46,6 +48,28 @@ function renderHUD() {
                 color = colors.red;
             const pidStr = w.pid ? `PID:${w.pid.toString().padEnd(6)}` : 'PID:---   ';
             console.log(`    [${w.id}] ${pidStr} Status: ${color}${w.status.padEnd(10)}${colors.reset} Task: ${w.task.substring(0, 40).replace(/\n/g, ' ')}...`);
+        }
+    }
+    // Token Budget Panel
+    if (state?.skill) {
+        console.log('\n');
+        drawSection('Token Budget');
+        const tokenState = loadTokenState(state.skill);
+        if (tokenState) {
+            drawProgressBar('Budget', tokenState.used, tokenState.budget);
+            drawKeyValue('Remaining', tokenState.remaining.toLocaleString(), colors.cyan);
+            drawKeyValue('Efficiency', `${tokenState.efficiency}/100`, tokenState.efficiency >= 70
+                ? colors.green
+                : tokenState.efficiency >= 40
+                    ? colors.yellow
+                    : colors.red);
+            drawKeyValue('Route', `${tokenState.route.reasoningEffort} / ${tokenState.route.maxTokens.toLocaleString()} tokens`);
+        }
+        else {
+            // Fallback: show evidence count
+            const evidence = listEvidence(state.skill);
+            drawKeyValue('Evidence', `${evidence.length} items recorded`);
+            drawKeyValue('Status', 'Run session auditor for budget details', colors.dim);
         }
     }
     console.log('\n');

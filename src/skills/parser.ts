@@ -39,7 +39,15 @@ export interface SkillFlag {
   required?: boolean;
 }
 
-export type GateType = 'prompt_specificity' | 'has_active_plan' | 'workflow_not_active' | 'custom';
+export type GateType =
+  | 'prompt_specificity'
+  | 'has_active_plan'
+  | 'workflow_not_active'
+  | 'custom'
+  | 'no_shortcut_keywords'
+  | 'has_verification_plan'
+  | 'proper_decomposition'
+  | 'flag_semantic_check';
 
 export interface SkillGate {
   type: GateType;

@@ -59,7 +59,7 @@ export function setActiveSkill(state: SkillState, cwd?: string): void {
   // If a previous state exists, validate the transition
   const previousState = readState(filePath);
   if (previousState && previousState.skill === state.skill) {
-    assertValidTransition(state.skill, previousState.phase, state.phase);
+    assertValidTransition(state.skill, previousState.phase, state.phase, cwd);
   }
 
   writeState(filePath, state);
@@ -81,7 +81,7 @@ export function setSkillState(skill: string, state: SkillState, cwd?: string): v
   // Validate transition
   const previousState = readState(filePath);
   if (previousState) {
-    assertValidTransition(skill, previousState.phase, state.phase);
+    assertValidTransition(skill, previousState.phase, state.phase, cwd);
   }
 
   writeState(filePath, state);

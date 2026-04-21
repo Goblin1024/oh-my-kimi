@@ -311,7 +311,7 @@ export async function createBridge(projectRoot) {
                 limit: (v) => ['--limit', String(v)],
                 dryRun: (v) => (v ? ['--dry-run'] : []),
                 noGitignore: (v) => (v ? ['--no-gitignore'] : []),
-                includeIgnored: (v) => Array.isArray(v) ? v.flatMap((p) => ['--include-ignored', p]) : [],
+                includeIgnored: (v) => (Array.isArray(v) ? v.flatMap((p) => ['--include-ignored', p]) : []),
                 extract: (v) => ['--extract', String(v)],
             });
             if (!args.includes('--palace')) {
@@ -583,7 +583,9 @@ export async function getMemPalaceStatus() {
     }
     const palacePath = getPalacePath();
     const result = await runMemPalace(['status', '--palace', palacePath]);
-    return result.success ? parseStatusOutput(result.stdout) || { totalDrawers: 0, wings: [] } : { totalDrawers: 0, wings: [] };
+    return result.success
+        ? parseStatusOutput(result.stdout) || { totalDrawers: 0, wings: [] }
+        : { totalDrawers: 0, wings: [] };
 }
 /**
  * Load L0 + L1 wake-up context from MemPalace.

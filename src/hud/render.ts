@@ -70,3 +70,23 @@ export function drawKeyValue(key: string, value: string, valueColor = colors.whi
     `  ${colors.dim}${key.padEnd(15)}:${colors.reset} ${valueColor}${value}${colors.reset}`
   );
 }
+
+export function drawProgressBar(label: string, used: number, total: number, width = 30): void {
+  const ratio = Math.min(1, Math.max(0, used / total));
+  const filled = Math.round(ratio * width);
+  const empty = width - filled;
+
+  let barColor = colors.green;
+  if (ratio > 0.8) barColor = colors.yellow;
+  if (ratio > 0.95) barColor = colors.red;
+
+  const bar = `${barColor}${'█'.repeat(filled)}${colors.dim}${'░'.repeat(empty)}${colors.reset}`;
+  const pct = `${Math.round(ratio * 100)}%`;
+  console.log(
+    `  ${colors.dim}${label.padEnd(15)}:${colors.reset} ${bar} ${pct} (${used.toLocaleString()}/${total.toLocaleString()})`
+  );
+}
+
+export function drawBadge(label: string, color: string): string {
+  return `${color} ${label} ${colors.reset}`;
+}
