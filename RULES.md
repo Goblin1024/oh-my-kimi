@@ -6,7 +6,7 @@
 
 ---
 
-## Part 1 â€” Core Principles
+## Part 1 â€?Core Principles
 
 ### R-01 Â· Understand Before Acting
 
@@ -54,11 +54,11 @@ Never swallow errors or hide failures.
 
 - If a command fails, report the exact error output.
 - If a task cannot be completed, say so clearly with the reason.
-- If a blocker is encountered, escalate immediately â€” do not guess around it.
+- If a blocker is encountered, escalate immediately â€?do not guess around it.
 
 ---
 
-## Part 2 â€” Code Quality
+## Part 2 â€?Code Quality
 
 ### R-10 Â· Follow the Project's Existing Style
 
@@ -96,12 +96,12 @@ A function that does two things is two functions waiting to be extracted.
 ### R-13 Â· Handle Errors Explicitly
 
 ```typescript
-// Bad â€” silent failure
+// Bad â€?silent failure
 try {
   await doSomething();
 } catch (_) {}
 
-// Good â€” explicit handling
+// Good â€?explicit handling
 try {
   await doSomething();
 } catch (err) {
@@ -135,31 +135,31 @@ Commented-out code is noise. Version control exists for history.
 // const oldImplementation = () => { ... };
 
 // Good
-// (deleted â€” see git history if needed)
+// (deleted â€?see git history if needed)
 ```
 
 ---
 
-## Part 3 â€” Testing
+## Part 3 â€?Testing
 
 ### R-20 Â· Tests Are Not Optional
 
 Every non-trivial change requires tests. "I'll add tests later" is not acceptable.
 
-- New features â†’ unit tests + integration tests
-- Bug fixes â†’ regression test that fails before the fix, passes after
-- Refactors â†’ existing tests must continue to pass
+- New features â†?unit tests + integration tests
+- Bug fixes â†?regression test that fails before the fix, passes after
+- Refactors â†?existing tests must continue to pass
 
 ### R-21 Â· Tests Must Be Meaningful
 
 ```typescript
-// Bad â€” tests implementation details
+// Bad â€?tests implementation details
 expect(obj._internalCache.size).toBe(1);
 
-// Bad â€” tests nothing useful
+// Bad â€?tests nothing useful
 expect(true).toBe(true);
 
-// Good â€” tests observable behavior
+// Good â€?tests observable behavior
 expect(registry.get('ralph')?.name).toBe('ralph');
 expect(() => registry.get('unknown')).not.toThrow();
 ```
@@ -177,9 +177,9 @@ Test what the code **does**, not how it is built internally.
 
 100% coverage with trivial tests is worthless. Focus on:
 
-1. **Critical paths** â€” the code that matters most when it breaks
-2. **Edge cases** â€” null inputs, empty arrays, boundary values
-3. **Error paths** â€” what happens when things go wrong
+1. **Critical paths** â€?the code that matters most when it breaks
+2. **Edge cases** â€?null inputs, empty arrays, boundary values
+3. **Error paths** â€?what happens when things go wrong
 
 ### R-24 Â· Verification Is Always Fresh
 
@@ -187,21 +187,21 @@ Never trust cached test results. Before claiming a task is done:
 
 ```bash
 npm run build     # Must succeed
-npm test          # Must pass â€” run fresh
+npm test          # Must pass â€?run fresh
 npm run lint      # Must be clean
 ```
 
 ---
 
-## Part 4 â€” Communication
+## Part 4 â€?Communication
 
 ### R-30 Â· Be Concise, Not Verbose
 
 Responses must be proportional to the task complexity:
 
-- Simple question â†’ direct answer, no preamble
-- Code change â†’ what changed and why, not line-by-line narration
-- Error report â†’ error + root cause + fix, not a story
+- Simple question â†?direct answer, no preamble
+- Code change â†?what changed and why, not line-by-line narration
+- Error report â†?error + root cause + fix, not a story
 
 Avoid filler phrases: "Certainly!", "Great question!", "As an AI language model..."
 
@@ -252,11 +252,11 @@ If the same error occurs 3 times with different fixes, stop and escalate:
 > "I have attempted 3 different approaches and all fail with the same error. 
 > Here is the error and what I've tried. I need your input to proceed."
 
-Do not loop indefinitely. Escalation is not failure â€” it is correct behavior.
+Do not loop indefinitely. Escalation is not failure â€?it is correct behavior.
 
 ---
 
-## Part 5 â€” Safety and Boundaries
+## Part 5 â€?Safety and Boundaries
 
 ### R-40 Â· Read Before Write
 
@@ -291,7 +291,7 @@ Never write secrets, tokens, passwords, or API keys directly in source files.
 
 - Use environment variables: `process.env.API_KEY`
 - Reference `.env.example` for required variable names
-- If a secret is found in existing code, flag it â€” do not propagate it
+- If a secret is found in existing code, flag it â€?do not propagate it
 
 ### R-44 Â· Validate All External Input
 
@@ -307,14 +307,14 @@ Assume external input is malformed until proven otherwise.
 
 ---
 
-## Part 6 â€” Workflow and Process
+## Part 6 â€?Workflow and Process
 
 ### R-50 Â· Follow the Canonical Workflow
 
 For feature development, follow the three-stage chain:
 
 ```
-$deep-interview â†’ $ralplan â†’ $ralph
+$deep-interview â†?$ralplan â†?$ralph
 ```
 
 Skipping stages is allowed only when:
@@ -350,18 +350,18 @@ Before activating a new workflow, check if one is already running. If so:
 
 ---
 
-## Part 7 â€” Tool Usage
+## Part 7 â€?Tool Usage
 
 ### R-60 Â· Prefer Parallel Execution
 
 When tasks are independent, execute them in parallel:
 
 ```
-// Good â€” parallel
+// Good â€?parallel
 Agent("Implement module A", ...)
 Agent("Write tests for module A", ..., run_in_background=true)
 
-// Avoid â€” needlessly sequential
+// Avoid â€?needlessly sequential
 await implementModuleA();
 await writeTests();
 ```
@@ -396,12 +396,12 @@ If a tool call requires a parameter that is unknown:
 
 ---
 
-## Part 8 â€” Definition of Done
+## Part 8 â€?Definition of Done
 
 A task is **Done** when ALL of the following are true:
 
 ```
-[ ] All stated requirements are met â€” verified, not assumed
+[ ] All stated requirements are met â€?verified, not assumed
 [ ] All tests pass (fresh run, not cached)
 [ ] Build succeeds (fresh run)
 [ ] No type errors (tsc --noEmit)

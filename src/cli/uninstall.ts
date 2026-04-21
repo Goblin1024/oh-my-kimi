@@ -23,7 +23,7 @@ interface KimiConfig {
 }
 
 export async function uninstall(): Promise<void> {
-  console.log('🗑️ Uninstalling oh-my-kimi\n');
+  console.log('🗑️ Uninstalling omk-cli\n');
 
   // 1. Clean config.toml
   if (existsSync(KIMI_CONFIG)) {
@@ -75,5 +75,5 @@ export async function uninstall(): Promise<void> {
   }
 
   console.log('\n✅ Uninstall complete.');
-  console.log('Note: To completely remove the CLI, run "npm uninstall -g oh-my-kimi"');
+  console.log('Note: To completely remove the CLI, run "npm uninstall -g oh-my-kimi-cli"');
 }

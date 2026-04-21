@@ -1,10 +1,10 @@
-<!-- AUTONOMY DIRECTIVE ‚Äî DO NOT REMOVE -->
+<!-- AUTONOMY DIRECTIVE ‚Ä?DO NOT REMOVE -->
 YOU ARE AN AUTONOMOUS CODING AGENT. EXECUTE TASKS TO COMPLETION WITHOUT ASKING FOR PERMISSION.
-DO NOT STOP TO ASK "SHOULD I PROCEED?" ‚Äî PROCEED. DO NOT WAIT FOR CONFIRMATION ON OBVIOUS NEXT STEPS.
+DO NOT STOP TO ASK "SHOULD I PROCEED?" ‚Ä?PROCEED. DO NOT WAIT FOR CONFIRMATION ON OBVIOUS NEXT STEPS.
 IF BLOCKED, TRY AN ALTERNATIVE APPROACH. ONLY ASK WHEN TRULY AMBIGUOUS OR DESTRUCTIVE.
 <!-- END AUTONOMY DIRECTIVE -->
 
-# oh-my-kimi ‚Äî Intelligent Workflow Orchestration
+# oh-my-kimi ‚Ä?Intelligent Workflow Orchestration
 <!-- omk:generated:agents-md -->
 
 You are running with oh-my-kimi (OMK), a workflow orchestration layer for Kimi Code CLI.
@@ -85,19 +85,19 @@ Ralph / Ralplan execution gate:
 Skills are workflow commands invoked with `$name` syntax.
 
 Core workflows:
-- `$deep-interview` ‚Äî Socratic requirements gathering
-- `$ralplan` ‚Äî Architecture planning with structured deliberation
-- `$ralph` ‚Äî Persistent completion loop with verification
-- `$team` ‚Äî Coordinated parallel execution
-- `$cancel` ‚Äî Cancel active workflow
+- `$deep-interview` ‚Ä?Socratic requirements gathering
+- `$ralplan` ‚Ä?Architecture planning with structured deliberation
+- `$ralph` ‚Ä?Persistent completion loop with verification
+- `$team` ‚Ä?Coordinated parallel execution
+- `$cancel` ‚Ä?Cancel active workflow
 
 Utility skills:
-- `$plan` ‚Äî Start planning workflow
-- `$analyze` ‚Äî Deep code/problem analysis
-- `$build-fix` ‚Äî Fix build/compilation errors
-- `$code-review` ‚Äî Structured code review
-- `$help` ‚Äî Show available skills
-- `$note` ‚Äî Save session notes
+- `$plan` ‚Ä?Start planning workflow
+- `$analyze` ‚Ä?Deep code/problem analysis
+- `$build-fix` ‚Ä?Fix build/compilation errors
+- `$code-review` ‚Ä?Structured code review
+- `$help` ‚Ä?Show available skills
+- `$note` ‚Ä?Save session notes
 </skills>
 
 ---
@@ -120,10 +120,10 @@ Verification loop: identify what proves the claim, run the verification, read th
 
 <state_management>
 OMK persists runtime state under `.omk/`:
-- `.omk/state/` ‚Äî mode state (skill-active.json, per-skill state files)
-- `.omk/plans/` ‚Äî implementation plans (PRD, test specs)
-- `.omk/context/` ‚Äî project context and memory
-- `.omk/logs/` ‚Äî execution logs
+- `.omk/state/` ‚Ä?mode state (skill-active.json, per-skill state files)
+- `.omk/plans/` ‚Ä?implementation plans (PRD, test specs)
+- `.omk/context/` ‚Ä?project context and memory
+- `.omk/logs/` ‚Ä?execution logs
 
 Mode lifecycle requirements:
 - Write state on start.
@@ -146,9 +146,9 @@ Do not cancel while recoverable work remains.
 
 | Command | Purpose | Best Used When... |
 |:--------|:--------|:-----------------|
-| üïµÔ∏è‚Äç‚ôÇÔ∏è `$deep-interview "..."` | Clarify requirements | Feature is vague or boundaries need clarifying |
+| üïµÔ∏è‚Äç‚ôÇÔ∏?`$deep-interview "..."` | Clarify requirements | Feature is vague or boundaries need clarifying |
 | üìê `$ralplan "..."` | Architecture planning | You need a reviewed plan before coding |
-| üèÉ‚Äç‚ôÇÔ∏è `$ralph "..."` | Persistence loop | Time to write code, test, and verify |
+| üèÉ‚Äç‚ôÇÔ∏?`$ralph "..."` | Persistence loop | Time to write code, test, and verify |
 | ü§ù `$team N "..."` | Parallel execution | Work benefits from coordination |
 | üõë `$cancel` | Stop workflow | Need to stop the current process |
 

@@ -11,7 +11,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 export async function update(): Promise<void> {
-  console.log('🔄 Checking for oh-my-kimi updates...\n');
+  console.log('🔄 Checking for omk-cli updates...\n');
 
   try {
     // Simple way to find package.json relative to dist/cli
@@ -27,7 +27,7 @@ export async function update(): Promise<void> {
 
     // Try to get latest version from npm registry
     try {
-      const latestVersion = execSync('npm show oh-my-kimi version', { encoding: 'utf-8' }).trim();
+      const latestVersion = execSync('npm show oh-my-kimi-cli version', { encoding: 'utf-8' }).trim();
 
       console.log(`Latest version:  v${latestVersion}\n`);
 
@@ -36,7 +36,7 @@ export async function update(): Promise<void> {
       } else {
         console.log(`🎉 A new version is available!`);
         console.log('\nTo update, run:');
-        console.log('  npm install -g oh-my-kimi@latest');
+        console.log('  npm install -g oh-my-kimi-cli@latest');
         console.log('  omk setup');
       }
     } catch {

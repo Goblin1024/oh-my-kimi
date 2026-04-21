@@ -24,13 +24,13 @@ describe('cli/index', () => {
   it('shows version with --version flag', async () => {
     const { main } = await import('../index.js');
     await main(['--version']);
-    assert.ok(capturedOutput.some((line) => line.includes('oh-my-kimi')));
+    assert.ok(capturedOutput.some((line) => line.includes('oh-my-kimi-cli')));
   });
 
   it('shows version with -v flag', async () => {
     const { main } = await import('../index.js');
     await main(['-v']);
-    assert.ok(capturedOutput.some((line) => line.includes('oh-my-kimi')));
+    assert.ok(capturedOutput.some((line) => line.includes('oh-my-kimi-cli')));
   });
 
   it('shows help with --help flag', async () => {

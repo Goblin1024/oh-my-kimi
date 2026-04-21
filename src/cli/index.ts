@@ -1,8 +1,10 @@
 #!/usr/bin/env node
 /**
- * oh-my-kimi CLI
+ * omk-cli
  * Workflow orchestration layer for Kimi Code CLI
  */
+
+import { readFileSync } from 'fs';
 
 export async function main(args: string[]): Promise<void> {
   const command = args[0];
@@ -42,7 +44,9 @@ export async function main(args: string[]): Promise<void> {
     const { teamCommand } = await import('./team.js');
     await teamCommand(args.slice(1));
   } else if (command === '--version' || command === '-v') {
-    console.log('oh-my-kimi v1.0.0');
+    const pkgPath = new URL('../../package.json', import.meta.url);
+    const pkg = JSON.parse(readFileSync(pkgPath, 'utf-8'));
+    console.log(`${pkg.name} v${pkg.version}`);
   } else {
     showHelp();
   }
@@ -50,7 +54,7 @@ export async function main(args: string[]): Promise<void> {
 
 function showHelp(): void {
   console.log(`
-oh-my-kimi (OMK) - Workflow orchestration for Kimi Code CLI
+omk-cli (OMK) - Workflow orchestration for Kimi Code CLI
 
 Usage:
   omk <command>

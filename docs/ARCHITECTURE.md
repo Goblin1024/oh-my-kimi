@@ -5,20 +5,7 @@ Technical overview of oh-my-kimi.
 ## System Overview
 
 ```
-┌─────────────────┐     ┌─────────────┐     ┌──────────────┐
-│   Kimi CLI      │────▶│  OMK Hooks  │────▶│  State Files │
-│                 │     │             │     │  (.omk/)     │
-│  User types:    │     │  Detects    │     │              │
-│  $ralph "..."   │     │  $commands  │     │  skill-      │
-│                 │◀────│             │◀────│  active.json │
-└─────────────────┘     └─────────────┘     └──────────────┘
-                               │
-                               ▼
-                        ┌─────────────┐
-                        │  Skills     │
-                        │  (SKILL.md) │
-                        └─────────────┘
-```
+┌─────────────────�?    ┌─────────────�?    ┌──────────────�?�?  Kimi CLI      │────▶│  OMK Hooks  │────▶│  State Files �?�?                �?    �?            �?    �? (.omk/)     �?�? User types:    �?    �? Detects    �?    �?             �?�? $ralph "..."   �?    �? $commands  �?    �? skill-      �?�?                │◀────�?            │◀────�? active.json �?└─────────────────�?    └─────────────�?    └──────────────�?                               �?                               �?                        ┌─────────────�?                        �? Skills     �?                        �? (SKILL.md) �?                        └─────────────�?```
 
 ## Components
 
@@ -58,12 +45,12 @@ Technical overview of oh-my-kimi.
 ```
 .omk/
 ├── state/
-│   ├── skill-active.json
-│   ├── deep-interview-state.json
-│   ├── ralplan-state.json
-│   └── ralph-state.json
+�?  ├── skill-active.json
+�?  ├── deep-interview-state.json
+�?  ├── ralplan-state.json
+�?  └── ralph-state.json
 ├── plans/
-│   └── prd-*.md
+�?  └── prd-*.md
 └── context/
     └── *.md
 ```
@@ -83,31 +70,24 @@ Technical overview of oh-my-kimi.
 
 ```
 1. User types: $deep-interview "idea"
-   ↓
-2. Kimi calls hook with UserPromptSubmit event
-   ↓
-3. Hook detects "$deep-interview"
-   ↓
-4. Hook writes state:
+   �?2. Kimi calls hook with UserPromptSubmit event
+   �?3. Hook detects "$deep-interview"
+   �?4. Hook writes state:
    {
      "skill": "deep-interview",
      "active": true,
      "phase": "starting"
    }
-   ↓
-5. Hook returns JSON to Kimi
-   ↓
-6. Kimi reads skill SKILL.md
-   ↓
-7. Kimi follows workflow
+   �?5. Hook returns JSON to Kimi
+   �?6. Kimi reads skill SKILL.md
+   �?7. Kimi follows workflow
 ```
 
 ### State Transitions
 
 ```
-Idle → deep-interview → ralplan → ralph → Complete
-         ↓                ↓          ↓
-       Cancel           Cancel     Cancel
+Idle �?deep-interview �?ralplan �?ralph �?Complete
+         �?               �?         �?       Cancel           Cancel     Cancel
 ```
 
 ## Hook Protocol

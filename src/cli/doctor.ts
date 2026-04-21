@@ -19,7 +19,7 @@ interface CheckResult {
 }
 
 export async function doctor(): Promise<void> {
-  console.log('oh-my-kimi doctor\n');
+  console.log('omk-cli doctor\n');
 
   const cwd = process.cwd();
   const scope = resolveDoctorScope(cwd);

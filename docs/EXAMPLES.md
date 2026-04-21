@@ -147,7 +147,7 @@ $ralph "write comprehensive API documentation"
 ## Tips for Each Example
 
 ### New Features
-- Always use full workflow: interview â†’ plan â†’ execute
+- Always use full workflow: interview â†?plan â†?execute
 - Don't skip planning for large features
 
 ### Bug Fixes

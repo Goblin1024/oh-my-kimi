@@ -16,7 +16,7 @@ Quick start guide for oh-my-kimi (OMK) workflow orchestration.
 ### Install OMK
 
 ```bash
-npm install -g oh-my-kimi
+npm install -g oh-my-kimi-cli
 ```
 
 ### Setup

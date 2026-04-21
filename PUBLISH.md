@@ -55,7 +55,7 @@ git push -u origin main
 git push -u origin master
 ```
 
-## ✅ Step 3: Verify Repository
+## �?Step 3: Verify Repository
 
 Check that all files are on GitHub:
 - https://github.com/Goblin1024/oh-my-kimi
@@ -70,7 +70,7 @@ Should see:
 - [ ] `templates/` - Project templates
 - [ ] All markdown files (README.md, README.zh-CN.md, etc.)
 
-## 🏷️ Step 4: Create GitHub Release
+## 🏷�?Step 4: Create GitHub Release
 
 1. Go to https://github.com/Goblin1024/oh-my-kimi/releases/new
 2. Choose a tag: `v0.1.0` (create new tag)
@@ -81,7 +81,7 @@ Should see:
 ```markdown
 ## What's New
 
-### ✨ Features
+### �?Features
 - Initial release of oh-my-kimi (OMK)
 - Workflow skills: `$deep-interview`, `$ralplan`, `$ralph`, `$cancel`
 - CLI commands: `omk setup`, `omk doctor`
@@ -89,7 +89,7 @@ Should see:
 
 ### 📦 Installation
 \`\`\`bash
-npm install -g oh-my-kimi
+npm install -g oh-my-kimi-cli
 omk setup
 \`\`\`
 
@@ -166,7 +166,7 @@ npm view oh-my-kimi readme
 
 ```bash
 # Install globally
-npm install -g oh-my-kimi
+npm install -g oh-my-kimi-cli
 
 # Test CLI
 omk --version
