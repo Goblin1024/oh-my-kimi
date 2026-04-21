@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.1] - 2026-04-21
+
+### Fixed
+- **CI**: Fixed `ENOTEMPTY` error on Windows CI during `kimi-runtime` test cleanup — added async `afterEach` delay and `rmSync` retry options (`src/team/__tests__/kimi-runtime.test.ts`)
+- **CI**: Increased mock process wait time in `kimi-runtime` test to prevent `onExit` timeout on Windows Node 22 runner
+- **Merge conflict**: Restored `AgentDefinition` fields (`tokenBudget`, `maxSteps`, `allowedTools`) lost during `feat/v1.0-evidence-engine` → `master` merge (`src/agents/definitions.ts`)
+
 ## [1.0.0] - 2026-04-21
 
 ### Added
@@ -88,6 +95,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - No network access in hooks
 - State files are local only
 
-[Unreleased]: https://github.com/Goblin1024/oh-my-kimi/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/Goblin1024/oh-my-kimi/compare/v1.0.1...HEAD
+[1.0.1]: https://github.com/Goblin1024/oh-my-kimi/releases/tag/v1.0.1
 [1.0.0]: https://github.com/Goblin1024/oh-my-kimi/releases/tag/v1.0.0
 [0.1.0]: https://github.com/Goblin1024/oh-my-kimi/releases/tag/v0.1.0
