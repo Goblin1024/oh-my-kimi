@@ -1,115 +1,114 @@
 ---
 name: ecomode
-description: Token-efficient execution modifier with budget-aware routing
-trigger: $ecomode
-flags:
-  - name: --eco
-    description: Aggressive cost optimization (25% budget)
-  - name: --quick
-    description: Fast execution with reduced depth (50% budget)
-  - name: --strict
-    description: Block non-essential tool use (read/search only)
-phases:
-  - starting
-  - routing
-  - executing
-  - verifying
-  - completing
-gates:
-  - type: prompt_specificity
-    description: Prompt must reference a specific task or feature
-    blocking: true
-  - type: flag_semantic_check
-    description: Flags should match task complexity
-    blocking: false
-  - type: no_shortcut_keywords
-    description: Avoid minimising language that leads to shallow solutions
-    blocking: false
+description: Token-efficient model routing modifier
 ---
 
 # Ecomode Skill
 
-**Token-efficient execution modifier.** This is a **MODIFIER**, not a standalone execution mode.
-
-Ecomode integrates with the OMK Token Efficiency System to minimize token consumption while maintaining output quality.
+Token-efficient model routing. This is a **MODIFIER**, not a standalone execution mode.
 
 ## What Ecomode Does
 
-1. **Budget-aware routing**: Automatically routes tasks to the lowest viable agent tier
-2. **Context pruning**: Compresses large evidence outputs when approaching budget limits
-3. **Tool restriction**: Limits agent tool access to essential operations only
-4. **Token audit**: Reports efficiency scores and optimization recommendations
+Overrides default model selection to prefer cheaper tiers:
 
-## Budget Tiers
+| Default Tier | Ecomode Override |
+|--------------|------------------|
+| THOROUGH | STANDARD, THOROUGH only if essential |
+| STANDARD | LOW first, STANDARD if needed |
+| LOW | LOW - no change |
 
-| Flag | Budget Multiplier | Use Case |
-|------|-------------------|----------|
-| (none) | 100% | Standard execution |
-| `--quick` | 50% | Fast turnaround, reduced depth |
-| `--eco` | 25% | Maximum cost optimization |
+## What Ecomode Does NOT Do
 
-## Routing Rules
-
-Ecomode uses the OMK `routeTask()` system to select the optimal agent configuration:
-
-| Task Signal | Route | reasoning_effort | maxTokens | Tools |
-|-------------|-------|------------------|-----------|-------|
-| `review`/`explain`/`find` | LOW | low | 8K | read, search |
-| `implement`/`refactor`/`test` | MEDIUM | medium | 32K | all |
-| `design`/`architect`/`migrate` | HIGH | high | 128K | all |
-
-**ALWAYS prefer lower tiers. Only escalate when the task genuinely requires it.**
-
-## Execution Flow
-
-```
-starting ──► routing ──► executing ──► verifying ──► completing
-                │            │            │
-                ▼            ▼            ▼
-          routeTask()   trackBudget()  pruneContext()
-          selectAgent   consume tokens reclaim tokens
-```
-
-## Evidence Requirements
-
-### routing phase
-- `budget_calculated` — Token budget computed with flag multipliers
-- `route_selected` — Agent config chosen via complexity assessment
-
-### executing phase
-- `context_pruned` — Large evidence compressed if >70% budget used
-- `tools_restricted` — Non-essential tools blocked (with `--strict`)
-
-### verifying phase
-- `tests_passed` — npm test exited 0 (if code changes)
-- `budget_report` — Efficiency score ≥ 60 (faster + more remaining = better)
-
-### completing phase
-- `audit_report` — Full token audit with recommendations
+- **Persistence**: Use `ralph` for "don't stop until done"
+- **Parallel Execution**: Use `ultrawork` for parallel agents
+- **Delegation Enforcement**: Always active via core orchestration
 
 ## Combining Ecomode with Other Modes
 
+Ecomode is a modifier that combines with execution modes:
+
 | Combination | Effect |
 |-------------|--------|
-| `eco ralph` | Ralph loop with cost-optimized agents |
-| `eco ultrawork` | Parallel execution with budget caps |
-| `eco autopilot` | Full autonomous with token monitoring |
+| `eco ralph` | Ralph loop with cheaper agents |
+| `eco ultrawork` | Parallel execution with cheaper agents |
+| `eco autopilot` | Full autonomous with cost optimization |
 
-## State Management
+## Ecomode Routing Rules
 
-Use `omk_write_state` MCP tools for ecomode lifecycle state.
+**ALWAYS prefer lower tiers. Only escalate when task genuinely requires it.**
 
-- **On activation**:
-  `omk_write_state({skill: "ecomode", phase: "starting", active: true})`
-- **On deactivation/completion**:
-  `omk_write_state({skill: "ecomode", phase: "completing", active: false})`
-- **On cancellation**:
-  Run `$cancel` to clear active state
+| Decision | Rule |
+|----------|------|
+| DEFAULT | Start with LOW tier for most tasks |
+| UPGRADE | Escalate to STANDARD when LOW tier fails or task requires multi-file reasoning |
+| AVOID | THOROUGH tier - only for planning/critique if essential |
+
+## Agent Selection in Ecomode
+
+**FIRST ACTION:** Before delegating any work, read the agent reference file:
+```
+Read file: docs/shared/agent-tiers.md
+```
+This provides the complete agent tier matrix, MCP tool assignments, and selection guidance.
+
+**Ecomode preference order:**
+
+```
+// PREFERRED - Use for most tasks
+delegate(role="executor", tier="LOW", task="...")
+delegate(role="explore", tier="LOW", task="...")
+delegate(role="architect", tier="LOW", task="...")
+
+// FALLBACK - Only if LOW fails
+delegate(role="executor", tier="STANDARD", task="...")
+delegate(role="architect", tier="STANDARD", task="...")
+
+// AVOID - Only for planning/critique if essential
+delegate(role="planner", tier="THOROUGH", task="...")
+```
+
+## Delegation Enforcement
+
+Ecomode maintains all delegation rules from core protocol with cost-optimized routing:
+
+| Action | Delegate To | Model |
+|--------|-------------|-------|
+| Code changes | executor | LOW / STANDARD |
+| Analysis | architect | LOW |
+| Search | explore | LOW |
+| Documentation | writer | LOW |
+
+### Background Execution
+Long-running commands (install, build, test) run in background. Maximum 20 concurrent.
 
 ## Token Savings Tips
 
 1. **Batch similar tasks** to one agent instead of spawning many
-2. **Use LOW-tier routing** for file discovery and simple changes
-3. **Enable `--strict`** to block write/execute tools for read-only analysis
-4. **Prune evidence** when context exceeds 70% of budget
-5. **Prefer `--eco`** over `--quick` for truly simple tasks
+2. **Use explore (LOW tier)** for file discovery, not architect
+3. **Prefer LOW-tier executor routing** for simple changes - only upgrade if it fails
+4. **Use writer (LOW tier)** for all documentation tasks
+5. **Avoid THOROUGH-tier agents** unless the task genuinely requires deep reasoning
+
+## Disabling Ecomode
+
+Ecomode can be completely disabled via config. When disabled, all ecomode keywords are ignored.
+
+Set in `~/.kimi/.omx-config.json`:
+```json
+{
+  "ecomode": {
+    "enabled": false
+  }
+}
+```
+
+## State Management
+
+Use `omx_state` MCP tools for ecomode lifecycle state.
+
+- **On activation**:
+  `state_write({mode: "ecomode", active: true})`
+- **On deactivation/completion**:
+  `state_write({mode: "ecomode", active: false})`
+- **On cancellation/cleanup**:
+  run `$cancel` (which should call `state_clear(mode="ecomode")`)

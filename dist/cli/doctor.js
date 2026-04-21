@@ -24,7 +24,6 @@ export async function doctor() {
     checks.push(checkHooks(dirs.configPath));
     checks.push(checkIntegrity(dirs.skillsDir));
     checks.push(checkDirectory('State dir', dirs.omkStateDir));
-    checks.push(checkMcpRegistration(dirs.kimiHomeDir));
     let passCount = 0;
     let failCount = 0;
     let warnCount = 0;
@@ -188,41 +187,6 @@ function checkHooks(configPath) {
     }
     catch (_e) {
         return { name: 'Hooks config', status: 'fail', message: 'Could not read config.toml' };
-    }
-}
-function checkMcpRegistration(kimiHomeDir) {
-    const mcpPath = join(kimiHomeDir, 'mcp.json');
-    if (!existsSync(mcpPath)) {
-        return {
-            name: 'MCP Registration',
-            status: 'warn',
-            message: 'mcp.json not found. Run `omk setup` to register MCP servers.',
-        };
-    }
-    try {
-        const mcpConfig = JSON.parse(readFileSync(mcpPath, 'utf-8'));
-        const servers = mcpConfig.mcpServers ? Object.keys(mcpConfig.mcpServers) : [];
-        const expected = ['omk-state-server', 'omk-memory-server', 'omk-trace-server'];
-        const missing = expected.filter((s) => !servers.includes(s));
-        if (missing.length === 0) {
-            return {
-                name: 'MCP Registration',
-                status: 'pass',
-                message: `All 3 OMK MCP servers registered`,
-            };
-        }
-        return {
-            name: 'MCP Registration',
-            status: 'warn',
-            message: `Missing MCP servers: ${missing.join(', ')}. Run \`omk setup\` to fix.`,
-        };
-    }
-    catch {
-        return {
-            name: 'MCP Registration',
-            status: 'fail',
-            message: 'Could not parse mcp.json',
-        };
     }
 }
 function checkIntegrity(skillsDir) {
