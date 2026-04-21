@@ -22,9 +22,11 @@ describe('team/kimi-runtime', () => {
     process.env.OMK_MOCK_TEAM = '1';
   });
 
-  afterEach(() => {
+  afterEach(async () => {
+    // Wait for child processes to release file handles (Windows)
+    await new Promise((r) => setTimeout(r, 300));
     if (existsSync(testDir)) {
-      rmSync(testDir, { recursive: true, force: true });
+      rmSync(testDir, { recursive: true, force: true, maxRetries: 5, retryDelay: 100 });
     }
     if (originalMock !== undefined) {
       process.env.OMK_MOCK_TEAM = originalMock;
