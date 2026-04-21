@@ -3,7 +3,7 @@
  * Processes UserPromptSubmit, SessionStart, and Stop events
  */
 
-import { readFileSync, writeFileSync, mkdirSync } from 'fs';
+import { readFileSync } from 'fs';
 import { join } from 'path';
 
 import { createDefaultRegistry } from './keyword-registry.js';
@@ -11,6 +11,8 @@ import { injectOverlay } from './agents-overlay.js';
 import { validateFlags, checkGates } from '../skills/validator.js';
 import { logger } from '../utils/logger.js';
 import { writeAudit } from '../utils/audit.js';
+import { writeAtomic } from '../state/atomic.js';
+import { setActiveSkill, setSkillState, cancelWorkflow } from '../state/manager.js';
 
 const keywordRegistry = createDefaultRegistry();
 
@@ -58,11 +60,6 @@ function readState(stateDir: string, filename: string): SkillState | null {
   }
 }
 
-function writeState(stateDir: string, filename: string, state: SkillState): void {
-  mkdirSync(stateDir, { recursive: true });
-  writeFileSync(join(stateDir, filename), JSON.stringify(state, null, 2));
-}
-
 function handleUserPromptSubmit(input: HookInput): HookOutput {
   const output: HookOutput = {
     hookSpecificOutput: {
@@ -82,25 +79,17 @@ function handleUserPromptSubmit(input: HookInput): HookOutput {
 
   // Handle cancel
   if (skill === 'cancel') {
-    const stateDir = getStateDir(input.cwd);
-    const currentState = readState(stateDir, 'skill-active.json');
+    const cancelled = cancelWorkflow('Cancelled via $cancel', input.cwd);
 
-    if (currentState?.active) {
-      writeState(stateDir, 'skill-active.json', {
-        ...currentState,
-        active: false,
-        phase: 'cancelled',
-        cancelled_at: new Date().toISOString(),
-      });
-
+    if (cancelled) {
       output.hookSpecificOutput = {
         hookEventName: 'UserPromptSubmit',
         skill: 'cancel',
         activated: true,
-        message: `Cancelled ${currentState.skill} workflow`,
+        message: `Cancelled ${cancelled.skill} workflow`,
       };
 
-      logger.info('handler', `Cancelled ${currentState.skill} workflow via $cancel`);
+      logger.info('handler', `Cancelled ${cancelled.skill} workflow via $cancel`);
     }
 
     return output;
@@ -134,7 +123,6 @@ function handleUserPromptSubmit(input: HookInput): HookOutput {
     return output;
   }
 
-  const stateDir = getStateDir(input.cwd);
   const state: SkillState = {
     skill,
     active: true,
@@ -143,8 +131,8 @@ function handleUserPromptSubmit(input: HookInput): HookOutput {
     session_id: input.session_id,
   };
 
-  writeState(stateDir, 'skill-active.json', state);
-  writeState(stateDir, `${skill}-state.json`, state);
+  setActiveSkill(state, input.cwd);
+  setSkillState(skill, state, input.cwd);
 
   output.hookSpecificOutput = {
     hookEventName: 'UserPromptSubmit',
@@ -192,10 +180,10 @@ function handleStop(input: HookInput): HookOutput {
   if (activeState?.active) {
     // Update phase if needed
     if (activeState.phase !== 'completing') {
-      writeState(stateDir, 'skill-active.json', {
+      setActiveSkill({
         ...activeState,
         phase: 'completing',
-      });
+      }, input.cwd);
     }
 
     return {

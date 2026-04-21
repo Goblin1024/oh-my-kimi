@@ -1,0 +1,210 @@
+/**
+ * Evidence Requirements
+ *
+ * Defines the per-skill, per-phase evidence prerequisites.
+ * Phase transitions are blocked until all required evidence for the target
+ * phase has been submitted and validated.
+ */
+
+import type { Evidence, ValidationResult } from '../evidence/schema.js';
+import { existsSync, statSync } from 'fs';
+
+export interface PhaseRequirement {
+  step: string;
+  description: string;
+  validator?: (evidence: Evidence) => ValidationResult;
+}
+
+export type SkillEvidenceRequirements = Record<string, PhaseRequirement[]>;
+
+// ── Shared validators ──
+
+function ok(): ValidationResult {
+  return { valid: true };
+}
+
+function fail(reason: string): ValidationResult {
+  return { valid: false, reason };
+}
+
+export const validateTestEvidence = (e: Evidence): ValidationResult => {
+  if (e.exitCode !== 0) return fail(`Tests exited with code ${e.exitCode}`);
+  if (!e.command?.includes('test'))
+    return fail('Evidence command does not appear to be a test runner');
+  return ok();
+};
+
+export const validateBuildEvidence = (e: Evidence): ValidationResult => {
+  if (e.exitCode !== 0) return fail(`Build exited with code ${e.exitCode}`);
+  return ok();
+};
+
+export const validateLintEvidence = (e: Evidence): ValidationResult => {
+  if (e.exitCode !== 0) return fail(`Lint exited with code ${e.exitCode}`);
+  return ok();
+};
+
+export const validateTypesEvidence = (e: Evidence): ValidationResult => {
+  if (e.exitCode !== 0) return fail(`Type check exited with code ${e.exitCode}`);
+  return ok();
+};
+
+export const validateReviewEvidence = (e: Evidence): ValidationResult => {
+  if (e.reviewResult !== 'approved')
+    return fail(`Review result was '${e.reviewResult}', expected 'approved'`);
+  if (!e.reviewerAgent) return fail('Missing reviewerAgent in review evidence');
+  return ok();
+};
+
+export const validateTodoEvidence = (e: Evidence): ValidationResult => {
+  const pending = e.metadata?.pendingCount as number | undefined;
+  if (pending !== undefined && pending > 0) return fail(`TODO list has ${pending} pending items`);
+  return ok();
+};
+
+export const validateDiffEvidence = (e: Evidence): ValidationResult => {
+  if (!e.filesModified || e.filesModified.length === 0)
+    return fail('No files modified in diff evidence');
+  return ok();
+};
+
+export const validateContextEvidence = (e: Evidence): ValidationResult => {
+  if (!e.filesRead || e.filesRead.length === 0) return fail('No files read in context evidence');
+  return ok();
+};
+
+export const validatePrdEvidence = (e: Evidence): ValidationResult => {
+  if (!e.artifactPath) return fail('Missing artifactPath for PRD evidence');
+  if (!existsSync(e.artifactPath)) return fail(`PRD file does not exist: ${e.artifactPath}`);
+  const size = statSync(e.artifactPath).size;
+  if (size < 500) return fail(`PRD file is only ${size} bytes (minimum 500)`);
+  return ok();
+};
+
+export const validateUserApproval = (e: Evidence): ValidationResult => {
+  if (e.evidenceType !== 'review_signature' && e.evidenceType !== 'context_record') {
+    return fail('User approval must be a review_signature or context_record');
+  }
+  return ok();
+};
+
+export const validateSpecEvidence = (e: Evidence): ValidationResult => {
+  if (!e.artifactPath) return fail('Missing artifactPath for spec evidence');
+  if (!existsSync(e.artifactPath)) return fail(`Spec file does not exist: ${e.artifactPath}`);
+  return ok();
+};
+
+// ── Per-skill requirements ──
+
+export const SKILL_EVIDENCE_REQUIREMENTS: Record<string, Record<string, PhaseRequirement[]>> = {
+  ralph: {
+    executing: [
+      {
+        step: 'context_loaded',
+        description: 'Read project context and dependencies',
+        validator: validateContextEvidence,
+      },
+    ],
+    verifying: [
+      { step: 'tests_passed', description: 'npm test exited 0', validator: validateTestEvidence },
+      {
+        step: 'build_passed',
+        description: 'npm run build exited 0',
+        validator: validateBuildEvidence,
+      },
+      { step: 'lint_clean', description: 'npm run lint exited 0', validator: validateLintEvidence },
+      {
+        step: 'types_clean',
+        description: 'tsc --noEmit exited 0',
+        validator: validateTypesEvidence,
+      },
+    ],
+    completing: [
+      {
+        step: 'architect_approved',
+        description: 'Independent architect review passed',
+        validator: validateReviewEvidence,
+      },
+      {
+        step: 'todo_cleared',
+        description: 'Zero pending TODO items',
+        validator: validateTodoEvidence,
+      },
+      {
+        step: 'diff_recorded',
+        description: 'All changes documented with diff',
+        validator: validateDiffEvidence,
+      },
+    ],
+  },
+
+  ralplan: {
+    designing: [
+      {
+        step: 'context_reviewed',
+        description: 'Context analyzed and documented',
+        validator: validateContextEvidence,
+      },
+    ],
+    documenting: [
+      {
+        step: 'approaches_documented',
+        description: '≥2 approaches with tradeoffs',
+        validator: (e: Evidence) =>
+          ((e.metadata?.approachCount as number) ?? 0) >= 2
+            ? ok()
+            : fail('Fewer than 2 approaches documented'),
+      },
+    ],
+    approving: [
+      {
+        step: 'prd_written',
+        description: 'PRD > 500 bytes in .omk/plans/prd-*.md',
+        validator: validatePrdEvidence,
+      },
+    ],
+    completed: [
+      {
+        step: 'user_approved',
+        description: 'Explicit user approval recorded',
+        validator: validateUserApproval,
+      },
+    ],
+  },
+
+  'deep-interview': {
+    clarifying: [
+      {
+        step: 'questions_asked',
+        description: '≥3 clarifying questions',
+        validator: (e: Evidence) =>
+          ((e.metadata?.questionCount as number) ?? 0) >= 3
+            ? ok()
+            : fail('Fewer than 3 questions asked'),
+      },
+    ],
+    completed: [
+      {
+        step: 'spec_written',
+        description: 'Specification document written',
+        validator: validateSpecEvidence,
+      },
+    ],
+  },
+};
+
+/**
+ * Get the evidence requirements for a specific skill and target phase.
+ */
+export function getPhaseRequirements(skill: string, phase: string): PhaseRequirement[] | undefined {
+  const skillReqs = SKILL_EVIDENCE_REQUIREMENTS[skill];
+  if (!skillReqs) return undefined;
+  return skillReqs[phase];
+}
+
+/**
+ * Check if a skill has any evidence requirements defined.
+ */
+export function hasEvidenceRequirements(skill: string): boolean {
+  return skill in SKILL_EVIDENCE_REQUIREMENTS;
+}

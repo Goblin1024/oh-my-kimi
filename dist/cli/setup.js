@@ -91,6 +91,11 @@ export async function setup(scopeArg) {
     mkdirSync(dirs.agentsDir, { recursive: true });
     mkdirSync(dirs.omkStateDir, { recursive: true });
     mkdirSync(dirs.omkPlansDir, { recursive: true });
+    mkdirSync(join(projectRoot, '.omk', 'evidence'), { recursive: true });
+    const identityPath = join(projectRoot, '.omk', 'identity.txt');
+    if (!existsSync(identityPath)) {
+        writeFileSync(identityPath, '# This file defines your project identity for OMK teams.\n# Example: "Senior Full-Stack Developer specializing in React and Node.js"\n');
+    }
     persistScope(projectRoot, scope);
     console.log('  ✓ Success\n');
     // Step 2: Install prompts (active agents)
@@ -165,7 +170,7 @@ export async function setup(scopeArg) {
     console.log(`  ✓ Agents: updated=${agentSummary.updated}, unchanged=${agentSummary.unchanged}, skipped=${agentSummary.skipped}\n`);
     // Step 5: Configure hooks
     console.log('Step 5/6: Configuring Kimi hooks...');
-    configureHooks(dirs.configPath, dirs.skillsDir);
+    configureHooks(dirs.configPath, dirs.skillsDir, packageRoot);
     console.log('  ✓ Success\n');
     // Step 6: Write integrity hash
     console.log('Step 6/6: Writing integrity hash...');
@@ -190,7 +195,7 @@ export async function setup(scopeArg) {
     console.log('  1. Launch Kimi CLI: kimi');
     console.log('  2. Try: $architect, $planner, or $deep-interview');
 }
-function configureHooks(configPath, skillsDir) {
+function configureHooks(configPath, skillsDir, packageRoot) {
     let config = {};
     if (existsSync(configPath)) {
         try {
@@ -204,6 +209,7 @@ function configureHooks(configPath, skillsDir) {
         config.hooks = [];
     }
     const omkSkillsDir = join(skillsDir, 'omk');
+    const handlerPath = join(packageRoot, 'dist', 'hooks', 'handler.js');
     const hasOmkHooks = config.hooks.some((h) => h.command && h.command.includes('omk'));
     if (hasOmkHooks) {
         console.log('  ℹ OMK hooks already configured');
@@ -212,7 +218,7 @@ function configureHooks(configPath, skillsDir) {
     const omkHooks = [
         {
             event: 'UserPromptSubmit',
-            command: `node ${join(omkSkillsDir, 'handler.js')}`,
+            command: `node ${handlerPath}`,
             matcher: '\\$[a-z-]+',
         },
         {
