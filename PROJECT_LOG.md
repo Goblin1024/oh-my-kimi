@@ -67,3 +67,60 @@ This file acts as the project's unique fingerprint and a continuous log of impro
   4. Verified: `omk doctor` now passes with 9 OK, 3 warnings, 0 failures.
 - **Recommended Fix for Upstream**:
   - Unify `doctor.js` path resolution to use `providerHome()` / `PRIMARY_PROVIDER_HOME_DIRNAME` instead of `legacyCodexHome()` / hard-coded `.codex`.
+
+---
+
+## Milestone Tracker: v0.5.0 → v1.0.0
+
+### [2026-04-21] Milestone 1: Evidence System Closed Loop ✅
+- **Goal**: Enforce machine-checkable evidence before phase transitions
+- **Deliverables**:
+  - `src/state/evidence.ts` — Evidence persistence with atomic writes
+  - `src/state/workflow-transition.ts` — `TransitionBlockedError`, evidence lock via `assertStepPrerequisites()`
+  - `src/mcp/state-server.ts` — 8 tools including 4 evidence tools
+  - `src/cli/setup.ts` — Auto-registers 3 MCP servers to `~/.kimi/mcp.json`
+  - `src/hooks/handler.ts` — SessionStart injects honesty overlay; Stop bypasses evidence lock
+- **Tests**: 144 tests passing
+
+### [2026-04-21] Milestone 2: Token Efficiency System ✅
+- **Goal**: Optimize token usage with budgets, routing, pruning, and semantic gates
+- **Deliverables**:
+  - `src/token/budget.ts` — `TokenBudget` with thresholds + flag multipliers
+  - `src/token/router.ts` — Complexity assessment → low/medium/high routing
+  - `src/token/pruner.ts` — Evidence compression, token estimation
+  - `src/token/audit.ts` — `SessionAuditor` unifying budget + route + pruning
+  - `src/token/persistence.ts` — Token state snapshots for HUD
+  - `src/skills/gate-definitions.ts` — 4 semantic gates (all non-blocking)
+  - `src/agents/toml-generator.ts` + `definitions.ts` — 27 agents with budgets/steps/tools
+  - `src/hud/index.ts` + `render.ts` — Token budget panel
+- **Tests**: 222 tests passing
+
+### [2026-04-21] Milestone 3: Cross-Validation + Team Runtime ✅
+- **Goal**: Independent agent review and Kimi-native multi-agent execution
+- **Deliverables**:
+  - `src/validation/cross-validation.ts` — 4 cross-validation rules with trigger evaluation
+  - `src/validation/review-delegator.ts` — `ReviewDelegator` for managing pending reviews
+  - `src/team/slot-manager.ts` — Parses `max_running_tasks` from Kimi config, `SlotManager`
+  - `src/team/mailbox.ts` — File-based JSONL mailbox for inter-worker communication
+  - `src/team/kimi-runtime.ts` — `KimiRuntime` spawning real `kimi` processes with heartbeat
+- **Tests**: 271 tests passing, 105 suites, 0 failures
+- **Fixes applied**:
+  - ESM compatibility in mailbox tests
+  - Windows path assertions
+  - Async cleanup race condition in kimi-runtime tests
+  - `hasBlockingValidations` empty-evidence test semantics
+
+### [2026-04-21] Milestone 4: Final Integration & Release Prep ✅
+- **Goal**: Document, version-bump, and release v1.0.0
+- **Actions Completed**:
+  - Updated `CHANGELOG.md` with M1-M3 detailed release notes
+  - Updated `PROJECT_LOG.md` with milestone tracker (this section)
+  - Bumped `package.json` version: `0.5.0` → `1.0.0`
+  - Updated `README.md` + `README.zh-CN.md` with new architecture features (Evidence Engine, Token Efficiency, Cross-Validation, Team Runtime, 27 Agents)
+  - Fixed 11 ESLint unused-var errors across 9 files (0 errors, 4 `any` warnings remaining)
+  - Ran `npm run check` successfully:
+    - Format: ✅ Pass
+    - Lint: ✅ Pass (0 errors)
+    - Build: ✅ Pass
+    - Tests: ✅ 271 pass, 105 suites, 0 fail
+- **Status**: v1.0.0 release ready
