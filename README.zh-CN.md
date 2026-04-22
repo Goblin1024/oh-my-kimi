@@ -1,4 +1,4 @@
-<div align="center">
+﻿<div align="center">
 <img src="logo/logo.png" width="600" alt="oh-my-kimi Logo">
 
 # 🚀 oh-my-kimi (OMK)
