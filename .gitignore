@@ -24,6 +24,15 @@ logs_*/
 *.zip
 ci_test_log.txt
 
+# Local-only analysis / planning files
+about.ini
+analyse*.ini
+todo.ini
+PLAN.md
+PROJECT_LOG.md
+pr_body.md
+publish-to-github.ps1
+
 # Test outputs
 coverage/
 
