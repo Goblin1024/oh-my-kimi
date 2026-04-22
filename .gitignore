@@ -2,6 +2,9 @@
 node_modules/
 package-lock.json
 
+# Build outputs
+dist/
+
 # OMK runtime state (user-specific)
 .omk/
 
@@ -19,9 +22,17 @@ Thumbs.db
 *.log
 logs_*/
 *.zip
+ci_test_log.txt
 
 # Test outputs
 coverage/
 
-# GitHub Actions logs (downloaded)
-logs_*/
+# Playwright test artifacts
+.playwright-mcp/
+
+# Temporary test files
+.tmp-team-test/
+
+# Screenshots generated during testing
+github-*.png
+raw-*.png

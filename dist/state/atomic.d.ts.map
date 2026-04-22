@@ -1,1 +1,0 @@
-{"version":3,"file":"atomic.d.ts","sourceRoot":"","sources":["../../src/state/atomic.ts"],"names":[],"mappings":"AAAA;;;;;;;;GAQG;AAUH;;;;;GAKG;AACH,wBAAgB,WAAW,CAAC,QAAQ,EAAE,MAAM,EAAE,OAAO,EAAE,MAAM,GAAG,IAAI,CAmBnE;AAED;;;;;;;;;GASG;AACH,wBAAsB,YAAY,CAAC,CAAC,EAAE,QAAQ,EAAE,MAAM,EAAE,EAAE,EAAE,MAAM,CAAC,GAAG,OAAO,CAAC,CAAC,CAAC,GAAG,OAAO,CAAC,CAAC,CAAC,CAwD5F"}
