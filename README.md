@@ -8,10 +8,10 @@
 [![CI](https://img.shields.io/github/actions/workflow/status/Goblin1024/oh-my-kimi/ci.yml?branch=master&style=flat-square&label=CI&logo=github)](https://github.com/Goblin1024/oh-my-kimi/actions/workflows/ci.yml)
 [![npm version](https://img.shields.io/npm/v/oh-my-kimi-cli.svg?style=flat-square&color=cb3837)](https://www.npmjs.com/package/oh-my-kimi-cli)
 [![License: MIT](https://img.shields.io/npm/l/oh-my-kimi-cli.svg?style=flat-square&color=blue)](https://github.com/Goblin1024/oh-my-kimi/blob/main/LICENSE)
-[![GitHub stars](https://img.shields.io/github/stars/Goblin1024/oh-my-kimi?style=flat-square&color=yellow)](https://github.com/Goblin1024/oh-my-kimi/stargazers)
+[![GitHub stars](https://img.shields.io/github/stars/Goblin1024/oh-my-kimi?style=flat-square&color=yellow)](https://github.com/Goblin1024/oh-my-kimi/stargagers)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 
-*Bring structured agentic workflows, team collaboration, and persistent execution to your AI coding sessions.*
+*Turn Kimi Code CLI from a conversational assistant into a structured engineering platform.*
 
 [English](./README.md) • [简体中文](./README.zh-CN.md) • [Documentation](docs/GETTING-STARTED.md)
 
@@ -19,21 +19,40 @@
 
 ---
 
-## ✨ Why oh-my-kimi?
+## 🎯 The Problem
 
-**oh-my-kimi (OMK)** supercharges your [Kimi Code CLI](https://moonshotai.github.io/kimi-cli/) experience. While Kimi serves as a powerful execution engine, OMK adds the missing layer of **structured workflows, intelligent state management, and reusable agent skills**.
+[Kimi Code CLI](https://moonshotai.github.io/kimi-cli/) is a powerful **general-purpose execution engine**. It can read code, run shell commands, spawn subagents, and plan autonomously. But when you use it for real software development, you quickly hit friction:
 
-Stop prompting from scratch every time. Start building with a proven system.
+| Pain Point | What Happens |
+|------------|--------------|
+| **No structured process** | You jump straight into coding without clarifying requirements or designing architecture. Refactoring later costs 3× the time. |
+| **Session amnesia** | Every `kimi` launch starts from zero. There's no memory of the plan you approved yesterday or the bug you were halfway through fixing. |
+| **Prompt-level discipline only** | Skills are just markdown files. The AI is supposed to "self-discipline" and follow them—except it often doesn't. |
+| **Phantom completion** | The agent says "tests pass" but never actually ran them. You discover broken builds only after the session ends. |
+| **Black-box token spend** | You have no idea how many tokens a task consumed, no budget guardrails, and no way to optimize. |
+| **No quality gates** | The same agent that wrote the code approves it. Security-sensitive changes go unreviewed. |
+| **Parallel chaos** | `Agent()` spawns workers, but there's no slot management, no inter-worker messaging, and no consolidated oversight. |
 
-### 🌟 What Makes OMK Different
+**OMK solves all of these**—not with better prompts, but with a **code-level workflow engine** that sits between you and Kimi.
 
-Unlike plain prompt templates, OMK is a **code-level workflow engine**:
+---
 
-- 🛡️ **Code-Enforced Gates:** Flags and preconditions are validated by code, not just documented.
-- 🔒 **Atomic State Management:** Concurrent-safe file operations with spin-locks prevent state corruption.
-- 📡 **Event-Driven HUD:** Real-time terminal dashboard using `fs.watch` instead of wasteful polling.
-- 🔍 **Semantic Memory:** BM25-powered memory retrieval instead of naive string matching.
-- 🧩 **Dynamic Skill Discovery:** Skills are parsed from YAML frontmatter at runtime—no hardcoding required.
+## ✨ What OMK Adds to Kimi CLI
+
+| Dimension | Kimi CLI Alone | **Kimi CLI + OMK** |
+|-----------|---------------|-------------------|
+| **Development Flow** | Ad-hoc conversation | `$deep-interview` → `$ralplan` → `$ralph` structured pipeline |
+| **State Persistence** | Session is forgotten on exit | Atomic state in `.omk/state/`; resume with `$ralph "continue"` |
+| **Constraint Enforcement** | "Please follow the skill" (prompt-level) | Code-enforced gates block invalid activations before Kimi even starts |
+| **Completion Verification** | Agent self-declares "done" | Evidence required: test output, build log, lint result, architect sign-off |
+| **Token Control** | Black-box consumption | Per-skill budgets, complexity routing, real-time HUD tracker |
+| **Quality Assurance** | No review mechanism | Cross-validation network: architect→critic, impl→reviewer, auth→security |
+| **Parallel Execution** | Raw `Agent()` calls | Team runtime with slot limits, mailbox messaging, heartbeat monitoring |
+| **Observability** | Blind wait for output | Live HUD dashboard: workflow phase, worker status, token burn rate |
+| **Long-Term Memory** | None | BM25 semantic search across project memory via MemPalace bridge |
+| **Agent Roles** | Manual configuration | 28 pre-defined roles with token budgets, tool restrictions, and step limits |
+
+> **In one sentence:** OMK doesn't replace Kimi. It upgrades Kimi from a **chatbot that codes** to a **software engineering team that executes with process, evidence, and oversight.**
 
 ---
 
@@ -41,7 +60,7 @@ Unlike plain prompt templates, OMK is a **code-level workflow engine**:
 
 ### 1. Installation
 
-Ensure you have Node.js 20+ and [Kimi CLI](https://moonshotai.github.io/kimi-cli/) installed.
+Requires Node.js 20+ and [Kimi CLI](https://moonshotai.github.io/kimi-cli/) installed.
 
 ```bash
 npm install -g oh-my-kimi-cli
@@ -50,22 +69,20 @@ omk setup
 
 ### 2. The Canonical Workflow
 
-Fire up Kimi and experience structured AI development:
-
 ```bash
 kimi
 ```
 
-Then, use the built-in commands:
+Then run the three-stage pipeline:
 
 ```bash
-# 1. Clarify requirements (Socratic questioning)
+# Stage 1: Clarify requirements via Socratic questioning
 $deep-interview "I want to build a secure authentication system"
 
-# 2. Design the architecture (Review & Approve)
+# Stage 2: Design architecture and get user approval
 $ralplan "Draft the implementation plan for the auth system"
 
-# 3. Execute with persistence (Loop until done)
+# Stage 3: Execute with persistence until fully verified
 $ralph "Implement the approved plan"
 ```
 
@@ -75,179 +92,155 @@ $ralph "Implement the approved plan"
 
 | Command | Description | Best Used When... |
 | :--- | :--- | :--- |
-| 🕵️‍♂️ `$deep-interview` | Socratic requirements gathering | The feature is vague, or boundaries need clarifying. |
-| 📐 `$ralplan` | Architecture planning & approval | You need a solid, reviewed plan before coding starts. |
-| 🏃‍♂️ `$ralph` | Persistence loop to completion | It's time to write code, test, and verify against the plan. |
-| 👥 `$team` | Parallel multi-agent execution | A task can be broken into independent sub-tasks. |
-| 🛑 `$cancel` | Graceful workflow abort | You need to stop the current agentic process. |
+| 🕵️‍♂️ `$deep-interview` | Socratic requirements gathering | The feature is vague, or boundaries need clarifying |
+| 📐 `$ralplan` | Architecture planning & approval | You need a solid, reviewed plan before coding starts |
+| 🏃‍♂️ `$ralph` | Persistence loop to completion | It's time to write code, test, and verify against the plan |
+| 👥 `$team` | Parallel multi-agent execution | A task can be broken into independent sub-tasks |
+| 🛑 `$cancel` | Graceful workflow abort | You need to stop the current agentic process |
 
 ---
 
-## 🏗️ Architecture & Core Features
+## 🏗️ Core Systems
 
-### 1. Concurrent-Safe State Management
+### 1. Workflow Orchestration
 
-All state writes use **atomic rename** (`write-to-temp-then-rename`) so concurrent hook invocations or HUD polling can never observe partially-written JSON.
+OMK provides a **code-enforced development pipeline** that guides Kimi through the same stages human teams use:
 
-- `src/state/atomic.ts` — `writeAtomic()` + `withFileLock()` (spin-lock with stale detection)
-- `src/team/state.ts` — `updateWorkerState()` serializes concurrent worker exit events
+- **`$deep-interview`** — Locks down goals, scope, constraints, and risks before any code is written
+- **`$ralplan`** — Generates an architecture PRD and blocks execution until the user explicitly approves it
+- **`$ralph`** — Iterates until completion, requiring machine-checkable evidence at every gate
 
-### 2. Evidence-Based Workflow Engine
+State transitions are validated by `assertValidTransition()`. You cannot jump from "planning" to "complete" without passing through verification.
 
-Every significant claim must be backed by machine-checkable **evidence**. Phase transitions are blocked until required evidence is submitted.
+### 2. Gate & Flag Validation
 
-- **5 evidence types**: `command_output` | `file_artifact` | `review_signature` | `diff_record` | `context_record`
-- **Evidence lock**: `assertStepPrerequisites()` throws `TransitionBlockedError` if evidence is missing
-- **MCP tools**: `omk_submit_evidence`, `omk_list_required_evidence`, `omk_verify_evidence`, `omk_assert_phase`
-- **Auto-setup**: `omk setup` registers 3 MCP servers in `~/.kimi/mcp.json`
-
-### 3. Token Efficiency System
-
-Token usage is tracked, budgeted, and optimized across the session.
-
-- **TokenBudget** (`src/token/budget.ts`) — warning/critical/exceeded thresholds; flag multipliers (`--eco` 25%, `--quick` 50%, `--deliberate` 400%)
-- **Complexity router** (`src/token/router.ts`) — routes prompts to low/medium/high configs
-- **Evidence pruner** (`src/token/pruner.ts`) — compresses evidence >5KB, reclaims tokens after prune
-- **SessionAuditor** (`src/token/audit.ts`) — unified budget + route + pruning with audit reports
-- **Token HUD panel** — real-time progress bar, remaining tokens, efficiency score
-
-### 4. Cross-Validation Network
-
-No agent approves its own work. Critical steps require independent review.
-
-- **4 validation rules**: `architect_output`, `implementation`, `security_touch`, `large_change`
-- **Trigger evaluation**: `security_touch` auto-triggers on auth files; `large_change` on >100 lines
-- **Review delegator**: manages pending reviews and reviewer assignment
-
-### 5. Team Runtime
-
-Kimi-native multi-agent execution with concurrency limits and inter-worker messaging.
-
-- **Slot manager** (`src/team/slot-manager.ts`) — reads `max_running_tasks` from `~/.kimi/config.toml` (default 4)
-- **Mailbox** (`src/team/mailbox.ts`) — file-based JSONL messaging between workers
-- **KimiRuntime** (`src/team/kimi-runtime.ts`) — spawns real `kimi` processes with heartbeat + auto-restart (max 3)
-
-### 6. 28 Agent Definitions with Token Budgets
-
-Every agent has a configured token budget, max steps, and allowed tools.
-
-- `architect`: 128K budget, 50 steps, all tools
-- `style-reviewer`: 8K budget, 15 steps, `[read]` only
-- `executor`: 64K budget, 30 steps, all tools
-- Auto-generated TOML with `# omk:` metadata comments for Kimi Agent compatibility
-
-### 7. Skill Manifest Parser & Code-Enforced Validation
-
-Skills are no longer opaque markdown. OMK parses YAML frontmatter from `SKILL.md` at runtime:
+Skills declare their constraints in YAML frontmatter. OMK enforces them in code **before** Kimi receives the prompt:
 
 ```yaml
----
-name: ralplan
-trigger: $ralplan
-flags:
-  - name: --deliberate
-    description: Enable extended multi-round review
-phases:
-  - starting
-  - planning
-  - deliberating
-  - reviewing
-  - approved
 gates:
-  - type: prompt_specificity
-    description: Task description must be at least 10 characters
+  - type: prompt_specificity      # Blocks vague prompts
     blocking: true
----
+  - type: has_active_plan         # Blocks $ralph without approved PRD
+    blocking: true
+  - type: no_shortcut_keywords    # Warns on "just", "simply", "quickly"
+    blocking: false
 ```
 
-**Code-enforced gates** (not just documentation):
-- `prompt_specificity` — blocks vague prompts
-- `has_active_plan` — blocks execution without an approved plan
-- `workflow_not_active` — prevents concurrent workflow collisions
-- `custom` — regex-based predicate matching
-- **Semantic gates** (non-blocking warnings):
-  - `no_shortcut_keywords` — detects "just", "simply", "quickly", "hack"
-  - `has_verification_plan` — requires test/verify/validate keywords
-  - `proper_decomposition` — complex tasks need step markers
-  - `flag_semantic_check` — warns on mismatched flags
+Flags like `--deliberate` or `--eco` are validated against the manifest. Unknown flags are rejected with a helpful error.
 
-### 8. Per-Skill Workflow State Machine
+### 3. Evidence-Based Verification
 
-The global phase transition matrix is enhanced with **per-skill custom phases** loaded from manifests. A skill declaring its own `phases:` gets a linear transition graph enforced by `assertValidTransition()`.
+"The task is not complete until verification proves it."
 
-### 9. BM25 Semantic Memory
+`$ralph` requires five categories of evidence before marking complete:
 
-The MCP Memory Server no longer does naive `String.prototype.includes()`. It uses a **pure-JS BM25 implementation** for ranked relevance search across cross-session project memory.
+| Evidence Type | Example |
+|---------------|---------|
+| `command_output` | `npm test` exit code 0 |
+| `file_artifact` | Generated source files |
+| `review_signature` | Architect subagent approval |
+| `diff_record` | Lines added/removed |
+| `context_record` | Decision rationale |
 
-- `src/utils/bm25.ts` — lightweight BM25 with TF-IDF scoring
-- Automatic 90-day retention cleanup
+Phase transitions throw `TransitionBlockedError` if required evidence is missing. No more "it should work"—prove it works.
 
-### 10. Event-Driven HUD
+### 4. Token Efficiency System
 
-```bash
-omk hud
-```
+Token usage is tracked, budgeted, and optimized per skill session:
 
-- Uses `fs.watch` with 100ms debounce instead of 2-second polling
-- Displays **Workflow Status** + **Team Status** panels
-- Auto-refreshes on state file changes
+- **Budgets per skill**: `deep-interview` 16K, `ralph` 32K, `autopilot` 128K
+- **Flag multipliers**: `--eco` 0.25×, `--quick` 0.5×, `--deliberate` 4×
+- **Complexity router**: Low-complexity tasks (reviews, searches) get low-cost configs; architecture work gets frontier models
+- **Evidence pruner**: Compresses evidence >5KB to reclaim tokens
+- **HUD panel**: Real-time progress bar, remaining tokens, efficiency score
 
-### 11. MCP Servers
+### 5. Cross-Validation Network
 
-OMK exposes two MCP servers for deep Kimi integration:
+> *No agent approves its own work.*
 
-- **`omk mcp state`** — `omk_read_state`, `omk_write_state` (validates transitions), `omk_list_skills`, plus 4 evidence tools (`omk_submit_evidence`, `omk_list_required_evidence`, `omk_verify_evidence`, `omk_assert_phase`)
-- **`omk mcp memory`** — `omk_memory_store`, `omk_memory_query` (BM25-ranked), `omk_memory_list`
+| Rule | Trigger | Required Reviewer |
+|------|---------|-------------------|
+| `architect_output` | Any architectural decision | `critic` |
+| `implementation` | Code changes | `test-engineer` or `code-reviewer` |
+| `security_touch` | File path matches `/auth\|password\|token\|secret/` | `security-reviewer` |
+| `large_change` | >100 lines added+removed | `architect` |
 
-### 12. Structured Observability
+### 6. Team Runtime
 
-- **`src/utils/logger.ts`** — Hierarchical logging (debug/info/warn/error) writes to `.omk/logs/system.log`
-- **`src/utils/audit.ts`** — Hook execution audit (JSONL, daily rotation, 5MB limit)
-- Every hook invocation records event, skill, duration, and success/failure
+Launch N parallel Kimi workers with `$team N`:
 
-### 13. CLI Lifecycle Management
+- **Slot Manager** — Respects `max_running_tasks` from `~/.kimi/config.toml`
+- **Mailbox** — File-based JSONL messaging between workers
+- **KimiRuntime** — Spawns real `kimi` processes with heartbeat + auto-restart (max 3)
+- **Log isolation** — Each worker writes to `.omk/logs/team/latest/w{N}.log`
 
-```bash
-omk setup        # Install skills, configure hooks, write integrity hash
-omk doctor       # Health checks + version integrity + handler SHA-256 verification
-omk update       # Check npm registry for newer versions
-omk uninstall    # Safely remove hooks (backs up config.toml) and skills
-omk explore "auth" [--regex]   # Search codebase respecting .gitignore
-omk hud          # Live terminal dashboard
-omk team ...     # Parallel agent orchestration
-```
+### 7. Semantic Memory & HUD
+
+- **BM25 Memory Bridge** — Integrates with MemPalace for ranked semantic search across project history (falls back gracefully if not installed)
+- **Event-Driven HUD** — `omk hud` opens a live terminal dashboard using `fs.watch` (100ms debounce). Monitors workflow phase, team worker status, and token burn rate in real time.
+
+### 8. Agent Ecosystem
+
+28 pre-defined agent roles, each with a calibrated token budget, reasoning effort, and tool restriction profile:
+
+| Role | Budget | Tools | Purpose |
+|------|--------|-------|---------|
+| `architect` | 128K | all | System design, long-horizon tradeoffs |
+| `executor` | 64K | read/search/edit/write/execute | Code implementation |
+| `security-reviewer` | 64K | read/search/execute | Vulnerability audit |
+| `style-reviewer` | 8K | read only | Formatting & naming conventions |
+
+TOML configs are auto-generated with `# omk:` metadata for native Kimi Agent compatibility.
 
 ---
 
 ## ⚙️ How It Works Under the Hood
 
-OMK seamlessly integrates using Kimi's native hooks:
+OMK integrates natively via Kimi's hook system:
 
 ```mermaid
 graph LR
-    A[Kimi CLI] -- "$ralph '...'" --> B(OMK Hooks)
-    B -- Detects Command --> C{State Manager}
-    C -- Reads/Writes --> D[(.omk/ state)]
-    C -- Activates --> E[Skill System SKILL.md]
-    E -- Guides --> A
+    A[Kimi CLI] -- "$ralph '...'" --> B(OMK Hook Handler)
+    B -- Gate Validation --> C{Passed?}
+    C -- No --> D[Block + Return Error]
+    C -- Yes --> E[State Manager]
+    E -- Atomic Write --> F[(.omk/state/)]
+    E -- Inject Context --> G[SKILL.md]
+    G -- Guides --> A
 ```
 
-1.  **Hook Interception:** Native Kimi hooks detect your `$command`.
-2.  **Gate Enforcement:** Code-level flag/gate validation blocks invalid activations.
-3.  **State Tracking:** Atomic workflow state management in `.omk/state/`.
-4.  **Skill Injection:** The corresponding `SKILL.md` manifest is loaded into context.
-5.  **Autonomous Execution:** Kimi follows the structured guidance to complete your task.
+1. **Hook Interception** — Kimi `UserPromptSubmit` event triggers the OMK handler
+2. **Gate Enforcement** — Code validates flags, prompt specificity, and workflow preconditions
+3. **State Tracking** — Atomic file writes guarantee concurrent-safe state persistence
+4. **Skill Injection** — The matching `SKILL.md` manifest is loaded into Kimi's context
+5. **Autonomous Execution** — Kimi follows the structured workflow, submitting evidence via MCP tools
+6. **Cross-Validation** — Critical outputs are reviewed by independent agent roles before acceptance
+
+---
+
+## 🖥️ CLI Commands
+
+```bash
+omk setup              # Install skills, configure hooks, register MCP servers
+omk doctor             # Health checks + version integrity + handler SHA-256 verification
+omk update             # Check npm registry for newer versions
+omk uninstall          # Safely remove hooks (backs up config.toml) and skills
+omk hud                # Live terminal dashboard
+omk explore "auth"     # Search codebase respecting .gitignore
+omk team 3:executor "task"   # Launch 3 parallel workers
+omk mcp state          # Start the state MCP server
+omk mcp memory         # Start the memory MCP server
+```
 
 ---
 
 ## 📚 Documentation
 
-Dive deeper into what makes OMK tick:
-
 *   📖 [Getting Started Guide](docs/GETTING-STARTED.md)
 *   💡 [Real-World Examples](docs/EXAMPLES.md)
 *   🏗️ [Architecture Deep Dive](docs/ARCHITECTURE.md)
 *   🤖 [Agent System Guidance](docs/AGENTS.md)
+*   🔄 [Workflow Manual](docs/WORKFLOW.md)
 *   ✅ [Verification & Testing](VERIFICATION.md)
 
 ---
