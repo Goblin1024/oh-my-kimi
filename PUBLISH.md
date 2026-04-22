@@ -55,7 +55,7 @@ git push -u origin main
 git push -u origin master
 ```
 
-## �?Step 3: Verify Repository
+## ✅ Step 3: Verify Repository
 
 Check that all files are on GitHub:
 - https://github.com/Goblin1024/oh-my-kimi
@@ -70,7 +70,7 @@ Should see:
 - [ ] `templates/` - Project templates
 - [ ] All markdown files (README.md, README.zh-CN.md, etc.)
 
-## 🏷�?Step 4: Create GitHub Release
+## 🏷️ Step 4: Create GitHub Release
 
 1. Go to https://github.com/Goblin1024/oh-my-kimi/releases/new
 2. Choose a tag: `v0.1.0` (create new tag)
@@ -81,7 +81,7 @@ Should see:
 ```markdown
 ## What's New
 
-### �?Features
+### ✨ Features
 - Initial release of oh-my-kimi (OMK)
 - Workflow skills: `$deep-interview`, `$ralplan`, `$ralph`, `$cancel`
 - CLI commands: `omk setup`, `omk doctor`
@@ -157,7 +157,7 @@ npm view oh-my-kimi readme
 
 ### npm
 
-- [ ] Package visible at https://www.npmjs.com/package/oh-my-kimi
+- [ ] Package visible at https://www.npmjs.com/package/oh-my-kimi-cli
 - [ ] README rendered correctly
 - [ ] License displayed correctly
 - [ ] Keywords searchable
@@ -258,7 +258,7 @@ After successful publish:
 
 3. **Add badge to README:**
    ```markdown
-   [![npm version](https://badge.fury.io/js/oh-my-kimi.svg)](https://www.npmjs.com/package/oh-my-kimi)
+   [![npm version](https://badge.fury.io/js/oh-my-kimi.svg)](https://www.npmjs.com/package/oh-my-kimi-cli)
    ```
 
 4. **Create discussions/enable issues** for community feedback
@@ -266,6 +266,6 @@ After successful publish:
 ## 📚 Related Links
 
 - [GitHub Repository](https://github.com/Goblin1024/oh-my-kimi)
-- [npm Package](https://www.npmjs.com/package/oh-my-kimi)
+- [npm Package](https://www.npmjs.com/package/oh-my-kimi-cli)
 - [Kimi CLI Documentation](https://moonshotai.github.io/kimi-cli/)
 - [Original Inspiration: oh-my-codex](https://github.com/Yeachan-Heo/oh-my-codex)

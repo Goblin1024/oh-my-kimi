@@ -42,7 +42,7 @@ cd oh-my-kimi
 git remote add upstream https://github.com/Goblin1024/oh-my-kimi.git
 ```
 
-## 🛠�?How to Contribute
+## 🛠️ How to Contribute
 
 ### Reporting Bugs
 
@@ -103,15 +103,15 @@ npm run verify
 oh-my-kimi/
 ├── bin/              # CLI entry points
 ├── src/              # Source code
-�?  ├── cli/          # CLI commands
-�?  ├── hooks/        # Kimi hook handlers
-�?  ├── state/        # State management
-�?  └── utils/        # Utility functions
+│   ├── cli/          # CLI commands
+│   ├── hooks/        # Kimi hook handlers
+│   ├── state/        # State management
+│   └── utils/        # Utility functions
 ├── skills/           # Skill definitions
-�?  ├── deep-interview/
-�?  ├── ralplan/
-�?  ├── ralph/
-�?  └── cancel/
+│   ├── deep-interview/
+│   ├── ralplan/
+│   ├── ralph/
+│   └── cancel/
 ├── templates/        # Project templates
 ├── scripts/          # Utility scripts
 ├── docs/             # Documentation

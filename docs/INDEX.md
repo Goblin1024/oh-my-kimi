@@ -83,7 +83,7 @@ For AI assistants working on OMK:
 
 Documentation is available in:
 - **English** (primary)
-- **简体中�?* - [README.zh-CN.md](../README.zh-CN.md)
+- **简体中文** - [README.zh-CN.md](../README.zh-CN.md)
 
 ## 🔄 Updates
 

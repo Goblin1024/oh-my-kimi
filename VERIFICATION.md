@@ -12,8 +12,8 @@ npm run test:all
 
 Expected output:
 ```
-âœ?All verification checks passed
-âœ?All hook tests passed
+âœ… All verification checks passed
+âœ… All hook tests passed
 ```
 
 ## ğŸ“‹ Detailed Verification Steps
@@ -29,7 +29,7 @@ node scripts/verify-setup.js
 **Expected output:**
 - 11 checks passed
 - 0 checks failed
-- "âœ?All checks passed! OMK is ready to use."
+- "âœ… All checks passed! OMK is ready to use."
 
 #### Hook Handler Testing
 
@@ -41,9 +41,9 @@ node scripts/test-hook.js
 - 5 tests completed
 - All JSON outputs are valid
 - Skills correctly detected:
-  - `$deep-interview` â†?skill: "deep-interview"
-  - `$ralph` â†?skill: "ralph"
-  - `$cancel` â†?skill: "cancel"
+  - `$deep-interview` â†’ skill: "deep-interview"
+  - `$ralph` â†’ skill: "ralph"
+  - `$cancel` â†’ skill: "cancel"
 
 #### Doctor Check
 
@@ -56,17 +56,17 @@ omk doctor
 ğŸ” Running OMK Doctor...
 
 Installation Status:
-  âœ?Kimi CLI
-  âœ?OMK Skills Directory
-  âœ?Skills (deep-interview, ralplan, ralph, cancel)
-  âœ?Kimi Hooks
+  âœ“ Kimi CLI
+  âœ“ OMK Skills Directory
+  âœ“ Skills (deep-interview, ralplan, ralph, cancel)
+  âœ“ Kimi Hooks
 
 OMK State:
-  âœ?State directory exists
-  âœ?Plans directory exists
-  âœ?Context directory exists
+  âœ“ State directory exists
+  âœ“ Plans directory exists
+  âœ“ Context directory exists
 
-âœ?All checks passed!
+âœ… All checks passed!
 ```
 
 ### 2. Manual Verification
@@ -78,7 +78,7 @@ omk setup
 ```
 
 **Verify:**
-- All 7 steps show "âœ?Success"
+- All 7 steps show "âœ“ Success"
 - Final verification shows "3/3 checks passed"
 - No error messages
 
@@ -235,7 +235,7 @@ echo '{"hook_event_name":"UserPromptSubmit","prompt":"$ralph test","cwd":"."}' |
 echo '{"hook_event_name":"UserPromptSubmit","prompt":"$ralph test","cwd":"."}' | node ~/.kimi/skills/omk/handler.js | python3 -m json.tool
 ```
 
-## âœ?Verification Checklist
+## âœ… Verification Checklist
 
 Before considering OMK fully verified:
 
