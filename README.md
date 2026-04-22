@@ -1,4 +1,4 @@
-﻿<div align="center">
+<div align="center">
 <img src="logo/logo.png" width="600" alt="oh-my-kimi Logo">
 
 # 🚀 oh-my-kimi (OMK)
@@ -13,13 +13,13 @@
 
 *Bring structured agentic workflows, team collaboration, and persistent execution to your AI coding sessions.*
 
-[English](./README.md) �?[简体中文](./README.zh-CN.md) �?[Documentation](docs/GETTING-STARTED.md)
+[English](./README.md) • [简体中文](./README.zh-CN.md) • [Documentation](docs/GETTING-STARTED.md)
 
 </div>
 
 ---
 
-## �?Why oh-my-kimi?
+## ✨ Why oh-my-kimi?
 
 **oh-my-kimi (OMK)** supercharges your [Kimi Code CLI](https://moonshotai.github.io/kimi-cli/) experience. While Kimi serves as a powerful execution engine, OMK adds the missing layer of **structured workflows, intelligent state management, and reusable agent skills**.
 
@@ -29,7 +29,7 @@ Stop prompting from scratch every time. Start building with a proven system.
 
 Unlike plain prompt templates, OMK is a **code-level workflow engine**:
 
-- 🛡�?**Code-Enforced Gates:** Flags and preconditions are validated by code, not just documented.
+- 🛡️ **Code-Enforced Gates:** Flags and preconditions are validated by code, not just documented.
 - 🔒 **Atomic State Management:** Concurrent-safe file operations with spin-locks prevent state corruption.
 - 📡 **Event-Driven HUD:** Real-time terminal dashboard using `fs.watch` instead of wasteful polling.
 - 🔍 **Semantic Memory:** BM25-powered memory retrieval instead of naive string matching.
@@ -37,7 +37,7 @@ Unlike plain prompt templates, OMK is a **code-level workflow engine**:
 
 ---
 
-## �?Quick Start
+## ⚡ Quick Start
 
 ### 1. Installation
 
@@ -71,26 +71,26 @@ $ralph "Implement the approved plan"
 
 ---
 
-## 🛠�?Built-in Skills
+## 🛠️ Built-in Skills
 
 | Command | Description | Best Used When... |
 | :--- | :--- | :--- |
-| 🕵️‍♂�?`$deep-interview` | Socratic requirements gathering | The feature is vague, or boundaries need clarifying. |
+| 🕵️‍♂️ `$deep-interview` | Socratic requirements gathering | The feature is vague, or boundaries need clarifying. |
 | 📐 `$ralplan` | Architecture planning & approval | You need a solid, reviewed plan before coding starts. |
-| 🏃‍♂�?`$ralph` | Persistence loop to completion | It's time to write code, test, and verify against the plan. |
+| 🏃‍♂️ `$ralph` | Persistence loop to completion | It's time to write code, test, and verify against the plan. |
 | 👥 `$team` | Parallel multi-agent execution | A task can be broken into independent sub-tasks. |
 | 🛑 `$cancel` | Graceful workflow abort | You need to stop the current agentic process. |
 
 ---
 
-## 🏗�?Architecture & Core Features
+## 🏗️ Architecture & Core Features
 
 ### 1. Concurrent-Safe State Management
 
 All state writes use **atomic rename** (`write-to-temp-then-rename`) so concurrent hook invocations or HUD polling can never observe partially-written JSON.
 
-- `src/state/atomic.ts` �?`writeAtomic()` + `withFileLock()` (spin-lock with stale detection)
-- `src/team/state.ts` �?`updateWorkerState()` serializes concurrent worker exit events
+- `src/state/atomic.ts` — `writeAtomic()` + `withFileLock()` (spin-lock with stale detection)
+- `src/team/state.ts` — `updateWorkerState()` serializes concurrent worker exit events
 
 ### 2. Evidence-Based Workflow Engine
 
@@ -105,11 +105,11 @@ Every significant claim must be backed by machine-checkable **evidence**. Phase 
 
 Token usage is tracked, budgeted, and optimized across the session.
 
-- **TokenBudget** (`src/token/budget.ts`) �?warning/critical/exceeded thresholds; flag multipliers (`--eco` 25%, `--quick` 50%, `--deliberate` 400%)
-- **Complexity router** (`src/token/router.ts`) �?routes prompts to low/medium/high configs
-- **Evidence pruner** (`src/token/pruner.ts`) �?compresses evidence >5KB, reclaims tokens after prune
-- **SessionAuditor** (`src/token/audit.ts`) �?unified budget + route + pruning with audit reports
-- **Token HUD panel** �?real-time progress bar, remaining tokens, efficiency score
+- **TokenBudget** (`src/token/budget.ts`) — warning/critical/exceeded thresholds; flag multipliers (`--eco` 25%, `--quick` 50%, `--deliberate` 400%)
+- **Complexity router** (`src/token/router.ts`) — routes prompts to low/medium/high configs
+- **Evidence pruner** (`src/token/pruner.ts`) — compresses evidence >5KB, reclaims tokens after prune
+- **SessionAuditor** (`src/token/audit.ts`) — unified budget + route + pruning with audit reports
+- **Token HUD panel** — real-time progress bar, remaining tokens, efficiency score
 
 ### 4. Cross-Validation Network
 
@@ -123,9 +123,9 @@ No agent approves its own work. Critical steps require independent review.
 
 Kimi-native multi-agent execution with concurrency limits and inter-worker messaging.
 
-- **Slot manager** (`src/team/slot-manager.ts`) �?reads `max_running_tasks` from `~/.kimi/config.toml` (default 4)
-- **Mailbox** (`src/team/mailbox.ts`) �?file-based JSONL messaging between workers
-- **KimiRuntime** (`src/team/kimi-runtime.ts`) �?spawns real `kimi` processes with heartbeat + auto-restart (max 3)
+- **Slot manager** (`src/team/slot-manager.ts`) — reads `max_running_tasks` from `~/.kimi/config.toml` (default 4)
+- **Mailbox** (`src/team/mailbox.ts`) — file-based JSONL messaging between workers
+- **KimiRuntime** (`src/team/kimi-runtime.ts`) — spawns real `kimi` processes with heartbeat + auto-restart (max 3)
 
 ### 6. 28 Agent Definitions with Token Budgets
 
@@ -161,15 +161,15 @@ gates:
 ```
 
 **Code-enforced gates** (not just documentation):
-- `prompt_specificity` �?blocks vague prompts
-- `has_active_plan` �?blocks execution without an approved plan
-- `workflow_not_active` �?prevents concurrent workflow collisions
-- `custom` �?regex-based predicate matching
+- `prompt_specificity` — blocks vague prompts
+- `has_active_plan` — blocks execution without an approved plan
+- `workflow_not_active` — prevents concurrent workflow collisions
+- `custom` — regex-based predicate matching
 - **Semantic gates** (non-blocking warnings):
-  - `no_shortcut_keywords` �?detects "just", "simply", "quickly", "hack"
-  - `has_verification_plan` �?requires test/verify/validate keywords
-  - `proper_decomposition` �?complex tasks need step markers
-  - `flag_semantic_check` �?warns on mismatched flags
+  - `no_shortcut_keywords` — detects "just", "simply", "quickly", "hack"
+  - `has_verification_plan` — requires test/verify/validate keywords
+  - `proper_decomposition` — complex tasks need step markers
+  - `flag_semantic_check` — warns on mismatched flags
 
 ### 8. Per-Skill Workflow State Machine
 
@@ -179,7 +179,7 @@ The global phase transition matrix is enhanced with **per-skill custom phases** 
 
 The MCP Memory Server no longer does naive `String.prototype.includes()`. It uses a **pure-JS BM25 implementation** for ranked relevance search across cross-session project memory.
 
-- `src/utils/bm25.ts` �?lightweight BM25 with TF-IDF scoring
+- `src/utils/bm25.ts` — lightweight BM25 with TF-IDF scoring
 - Automatic 90-day retention cleanup
 
 ### 10. Event-Driven HUD
@@ -196,13 +196,13 @@ omk hud
 
 OMK exposes two MCP servers for deep Kimi integration:
 
-- **`omk mcp state`** �?`omk_read_state`, `omk_write_state` (validates transitions), `omk_list_skills`, plus 4 evidence tools (`omk_submit_evidence`, `omk_list_required_evidence`, `omk_verify_evidence`, `omk_assert_phase`)
-- **`omk mcp memory`** �?`omk_memory_store`, `omk_memory_query` (BM25-ranked), `omk_memory_list`
+- **`omk mcp state`** — `omk_read_state`, `omk_write_state` (validates transitions), `omk_list_skills`, plus 4 evidence tools (`omk_submit_evidence`, `omk_list_required_evidence`, `omk_verify_evidence`, `omk_assert_phase`)
+- **`omk mcp memory`** — `omk_memory_store`, `omk_memory_query` (BM25-ranked), `omk_memory_list`
 
 ### 12. Structured Observability
 
-- **`src/utils/logger.ts`** �?Hierarchical logging (debug/info/warn/error) writes to `.omk/logs/system.log`
-- **`src/utils/audit.ts`** �?Hook execution audit (JSONL, daily rotation, 5MB limit)
+- **`src/utils/logger.ts`** — Hierarchical logging (debug/info/warn/error) writes to `.omk/logs/system.log`
+- **`src/utils/audit.ts`** — Hook execution audit (JSONL, daily rotation, 5MB limit)
 - Every hook invocation records event, skill, duration, and success/failure
 
 ### 13. CLI Lifecycle Management
@@ -246,9 +246,9 @@ Dive deeper into what makes OMK tick:
 
 *   📖 [Getting Started Guide](docs/GETTING-STARTED.md)
 *   💡 [Real-World Examples](docs/EXAMPLES.md)
-*   🏗�?[Architecture Deep Dive](docs/ARCHITECTURE.md)
+*   🏗️ [Architecture Deep Dive](docs/ARCHITECTURE.md)
 *   🤖 [Agent System Guidance](docs/AGENTS.md)
-*   �?[Verification & Testing](VERIFICATION.md)
+*   ✅ [Verification & Testing](VERIFICATION.md)
 
 ---
 
