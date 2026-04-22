@@ -15,11 +15,11 @@
   <a href="https://github.com/Goblin1024/oh-my-kimi/actions/workflows/ci.yml">
     <img src="https://img.shields.io/github/actions/workflow/status/Goblin1024/oh-my-kimi/ci.yml?branch=master&label=CI&logo=github" alt="CI 状态">
   </a>
-  <a href="https://www.npmjs.com/package/oh-my-kimi">
-    <img src="https://img.shields.io/npm/v/oh-my-kimi.svg" alt="npm 版本">
+  <a href="https://www.npmjs.com/package/oh-my-kimi-cli">
+    <img src="https://img.shields.io/npm/v/oh-my-kimi-cli.svg" alt="npm 版本">
   </a>
   <a href="https://github.com/Goblin1024/oh-my-kimi/blob/main/LICENSE">
-    <img src="https://img.shields.io/npm/l/oh-my-kimi.svg" alt="许可证">
+    <img src="https://img.shields.io/npm/l/oh-my-kimi-cli.svg" alt="许可证">
   </a>
   <a href="https://github.com/Goblin1024/oh-my-kimi">
     <img src="https://img.shields.io/github/stars/Goblin1024/oh-my-kimi?style=social" alt="GitHub 星标">

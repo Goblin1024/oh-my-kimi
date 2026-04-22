@@ -157,7 +157,7 @@ npm view oh-my-kimi readme
 
 ### npm
 
-- [ ] Package visible at https://www.npmjs.com/package/oh-my-kimi-cli
+- [ ] Package visible at https://www.npmjs.com/package/oh-my-kimi-cli-cli
 - [ ] README rendered correctly
 - [ ] License displayed correctly
 - [ ] Keywords searchable
@@ -258,7 +258,7 @@ After successful publish:
 
 3. **Add badge to README:**
    ```markdown
-   [![npm version](https://badge.fury.io/js/oh-my-kimi.svg)](https://www.npmjs.com/package/oh-my-kimi-cli)
+   [![npm version](https://badge.fury.io/js/oh-my-kimi-cli.svg)](https://www.npmjs.com/package/oh-my-kimi-cli-cli)
    ```
 
 4. **Create discussions/enable issues** for community feedback
@@ -266,6 +266,6 @@ After successful publish:
 ## 📚 Related Links
 
 - [GitHub Repository](https://github.com/Goblin1024/oh-my-kimi)
-- [npm Package](https://www.npmjs.com/package/oh-my-kimi-cli)
+- [npm Package](https://www.npmjs.com/package/oh-my-kimi-cli-cli)
 - [Kimi CLI Documentation](https://moonshotai.github.io/kimi-cli/)
 - [Original Inspiration: oh-my-codex](https://github.com/Yeachan-Heo/oh-my-codex)
