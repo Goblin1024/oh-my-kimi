@@ -33,6 +33,9 @@ coverage/
 # Temporary test files
 .tmp-team-test/
 
+# External reference projects (not dependencies)
+oh-my-claudecode/
+
 # Screenshots generated during testing
 github-*.png
 raw-*.png

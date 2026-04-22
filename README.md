@@ -269,6 +269,8 @@ We believe in open collaboration!
 
 Built with inspiration from the phenomenal [oh-my-codex](https://github.com/Yeachan-Heo/oh-my-codex) by Yeachan Heo. OMK reimagines these concepts tailored specifically for the Kimi ecosystem.
 
+This project also draws architectural and design inspiration from [oh-my-claudecode](https://github.com/Yeachan-Heo/oh-my-claudecode) (OMC), the groundbreaking multi-agent orchestration layer for Claude Code. While OMK is an independent implementation for the Kimi ecosystem, we are deeply grateful to the OMC project for pioneering many of the workflow patterns and agentic concepts that inspired our approach.
+
 ---
 
 <div align="center">

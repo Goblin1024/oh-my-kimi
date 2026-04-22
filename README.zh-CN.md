@@ -270,8 +270,9 @@ $ralph "实现认证重构"
 本项目受到以下优秀作品的启发和构建：
 
 - **[oh-my-codex](https://github.com/Yeachan-Heo/oh-my-codex)** by Yeachan Heo
+- **[oh-my-claudecode](https://github.com/Yeachan-Heo/oh-my-claudecode)** (OMC) — 面向 Claude Code 的开创性多智能体编排层
 
-工作流概念、状态管理模式和技能架构均改编自 oh-my-codex，并针对 Kimi Code CLI 重新设计。
+工作流概念、状态管理模式和技能架构均改编自 oh-my-codex，并针对 Kimi Code CLI 重新设计。此外，本项目的架构和设计理念也深受 oh-my-claudecode (OMC) 的启发，感谢 OMC 项目在智能体工作流编排领域的开创性探索。
 
 ## 🌐 语言
 
