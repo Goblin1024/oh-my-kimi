@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.5] - 2026-04-23
+
+### Added
+- **Smart Auto-Orchestrator Documentation**: Updated README and docs to highlight natural language workflow detection
+  - README now prominently features natural language examples alongside explicit commands
+  - GETTING-STARTED guide rewritten with natural language as the primary interface
+  - Added auto-detection examples for all 12 task types
+  - Documented automatic team mode activation for complex tasks
+
+### Changed
+- **Documentation Structure**: Natural language usage is now presented as the recommended approach
+  - Explicit commands ($deep-interview, $ralplan, etc.) moved to "optional" section
+  - Natural language examples added for requirement-gathering, architecture, implementation, debugging, and review
+
 ## [1.0.4] - 2026-04-23
 
 ### Added

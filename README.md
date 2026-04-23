@@ -67,13 +67,33 @@ npm install -g oh-my-kimi-cli
 omk setup
 ```
 
-### 2. The Canonical Workflow
+### 2. Natural Language (No Commands Required)
+
+OMK's **Smart Auto-Orchestrator** detects your intent automatically:
 
 ```bash
 kimi
 ```
 
-Then run the three-stage pipeline:
+Then simply describe what you need in natural language:
+
+```bash
+# OMK automatically detects this as requirement-gathering and activates $deep-interview
+"I want to build a secure authentication system with OAuth and MFA"
+
+# OMK detects architecture-design intent and activates $ralplan
+"Design the database schema and API endpoints for the auth system"
+
+# OMK detects implementation intent and activates $ralph
+"Implement the approved authentication system with unit tests"
+
+# Complex tasks automatically trigger team mode
+"Build a full-stack e-commerce app with React frontend and Node.js backend"
+```
+
+### 3. Explicit Commands (When You Know Exactly What You Want)
+
+For precise control, use explicit skill commands:
 
 ```bash
 # Stage 1: Clarify requirements via Socratic questioning

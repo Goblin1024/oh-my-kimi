@@ -44,55 +44,107 @@ omk doctor
 kimi
 ```
 
-### 2. Use Workflow Commands
+### 2. Natural Language (Recommended)
 
-#### Deep Interview - Clarify Requirements
+Simply describe what you need. OMK's Smart Auto-Orchestrator will detect your intent and activate the appropriate workflow:
+
+#### Requirement Gathering
 
 ```
-$deep-interview "I want to build a todo app"
+"I want to build a todo app with categories and reminders"
 ```
+
+OMK detects: **requirement-gathering** → Activates `$deep-interview`
 
 Kimi will ask clarifying questions and create a context snapshot.
 
-#### Ralplan - Create Implementation Plan
+#### Architecture Design
 
 ```
-$ralplan "implement user authentication"
+"Design the database schema and API for a user authentication system"
 ```
+
+OMK detects: **architecture-design** → Activates `$ralplan`
 
 Kimi will design architecture and create a PRD.
 
-#### Ralph - Execute with Persistence
+#### Implementation
 
 ```
-$ralph "build the approved auth system"
+"Build the approved authentication system with JWT tokens and bcrypt"
 ```
+
+OMK detects: **implementation** → Activates `$ralph`
 
 Kimi will execute until complete with verification.
 
-#### Cancel - Stop Workflow
+#### Complex Tasks (Auto Team Mode)
 
 ```
-$cancel
+"Build a full-stack e-commerce app with React frontend, Node.js backend, and PostgreSQL database"
 ```
 
-Stops the active workflow.
+OMK detects: **implementation** + high complexity → Activates `$team` mode with multiple agents
+
+#### Bug Fix
+
+```
+"Fix the login bug where users can't authenticate with special characters in passwords"
+```
+
+OMK detects: **debugging** → Activates `$ralph`
+
+#### Code Review
+
+```
+"Review the authentication module for security vulnerabilities"
+```
+
+OMK detects: **review** → Activates `$code-review` + `$security-review`
+
+### 3. Explicit Commands (Optional)
+
+For precise control, you can still use explicit skill commands:
+
+```
+$deep-interview "I want to build a todo app"
+$ralplan "implement user authentication"
+$ralph "build the approved auth system"
+$cancel                    # Stop active workflow
+```
 
 ## Workflow Examples
 
-### Example 1: New Feature
+### Example 1: New Feature (Natural Language)
+
+```
+"Add dark mode to the app with system preference detection and toggle"
+```
+
+OMK auto-detects → `$deep-interview` → `$ralplan` → `$ralph`
+
+### Example 2: Bug Fix (Natural Language)
+
+```
+"Fix the login bug where authentication fails for users with special characters"
+```
+
+OMK auto-detects → `$ralph` (debugging mode)
+
+### Example 3: Full Project (Natural Language)
+
+```
+"Build a complete URL shortener service with REST API, React dashboard, and analytics"
+```
+
+OMK auto-detects → `$team` mode with 4 parallel agents
+
+### Example 4: Explicit Pipeline
 
 ```
 $deep-interview "Add dark mode to the app"
 $ralplan "implement dark mode"
 $ralph "build the dark mode feature"
-```
-
-### Example 2: Bug Fix
-
-```
-$deep-interview "Fix the login bug"
-$ralph "fix login authentication bug"
 ```
 
 ## Understanding State
