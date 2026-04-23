@@ -103,7 +103,7 @@ function parseProgress(status: string): number {
   return match ? parseInt(match[1], 10) : 0;
 }
 
-function getTeamStatus(cwd: string): EngineStatus['team'] {
+function getTeamStatus(_cwd: string): EngineStatus['team'] {
   return {
     activeWorkers: 0,
     totalWorkers: 0,

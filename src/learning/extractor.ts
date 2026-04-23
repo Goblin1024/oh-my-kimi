@@ -90,7 +90,7 @@ export async function extractPatterns(skill: string, cwd: string): Promise<Solut
 
 export async function findRelevantPatterns(
   context: LearningContext,
-  cwd: string
+  _cwd: string
 ): Promise<SolutionPattern[]> {
   const patterns: SolutionPattern[] = [];
   
@@ -127,7 +127,7 @@ export async function findRelevantPatterns(
   return patterns;
 }
 
-export function applyPatterns(patterns: SolutionPattern[], task: string): string {
+export function applyPatterns(patterns: SolutionPattern[], _task: string): string {
   if (patterns.length === 0) {
     return '';
   }
@@ -177,7 +177,7 @@ export async function trackCompletion(
   }
 }
 
-export function getLearningStats(cwd: string): {
+export function getLearningStats(_cwd: string): {
   patternsLearned: number;
   patternsReused: number;
   successRate: number;

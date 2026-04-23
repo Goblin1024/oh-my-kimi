@@ -4,14 +4,7 @@
  * Intelligent task scheduling and distribution for multi-agent teams.
  */
 
-import { KimiRuntime, spawnWorkers } from './kimi-runtime.js';
 import { SlotManager } from './slot-manager.js';
-import { 
-  appendMessage, 
-  readUndeliveredFor, 
-  markDelivered,
-  sendTextMessage,
-} from './mailbox.js';
 import { getMaxRunningTasks } from './slot-manager.js';
 import { logger } from '../utils/logger.js';
 
@@ -41,7 +34,7 @@ export interface WorkerAssignment {
   status: 'starting' | 'running' | 'idle';
 }
 
-export function decomposeTask(description: string, roles: string[]): Subtask[] {
+export function decomposeTask(description: string, _roles: string[]): Subtask[] {
   const subtasks: Subtask[] = [];
   
   const hasMultipleComponents = /(?:frontend|backend|api|database|ui|server|client)/gi.test(description);
@@ -117,7 +110,7 @@ export function decomposeTask(description: string, roles: string[]): Subtask[] {
     });
   }
   
-  if (needsReview || true) {
+  if (needsReview) {
     const implIds = subtasks
       .filter(st => st.id.startsWith('implement'))
       .map(st => st.id);
