@@ -17,6 +17,7 @@ import { submitEvidence, listEvidence, getEvidenceForSkillPhase } from '../state
 import type { Evidence, EvidenceType } from '../evidence/schema.js';
 import { detectShortcuts } from '../evidence/anti-pattern-detector.js';
 import { getPhaseRequirements } from '../skills/evidence-requirements.js';
+import { pathToFileURL } from 'url';
 
 const server = new Server(
   {
@@ -485,4 +486,12 @@ export async function runStateServer(): Promise<void> {
   const transport = new StdioServerTransport();
   await server.connect(transport);
   console.error('OMK State MCP Server running on stdio');
+}
+
+// Auto-start when executed directly
+if (import.meta.url === pathToFileURL(process.argv[1]).href) {
+  runStateServer().catch((error) => {
+    console.error('Fatal error in state server:', error);
+    process.exit(1);
+  });
 }

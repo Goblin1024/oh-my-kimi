@@ -12,6 +12,7 @@ import { join } from 'path';
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs';
 import { omkContextDir } from '../state/paths.js';
 import { searchBM25 } from '../utils/bm25.js';
+import { pathToFileURL } from 'url';
 
 const server = new Server(
   {
@@ -223,4 +224,12 @@ export async function runMemoryServer(): Promise<void> {
   const transport = new StdioServerTransport();
   await server.connect(transport);
   console.error('OMK Memory MCP Server running on stdio');
+}
+
+// Auto-start when executed directly
+if (import.meta.url === pathToFileURL(process.argv[1]).href) {
+  runMemoryServer().catch((error) => {
+    console.error('Fatal error in memory server:', error);
+    process.exit(1);
+  });
 }
