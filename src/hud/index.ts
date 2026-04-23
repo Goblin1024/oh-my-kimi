@@ -19,11 +19,17 @@ import {
 } from './render.js';
 import { loadTokenState } from '../token/persistence.js';
 import { listEvidence } from '../state/evidence.js';
+import { getEngineStatus, renderSmartBar } from './smart-bar.js';
 
 let isRunning = false;
 
 function renderHUD(): void {
   clearScreen();
+  
+  // Render smart status bar at the top
+  const engineStatus = getEngineStatus(process.cwd());
+  console.log(renderSmartBar(engineStatus));
+  
   drawHeader('Oh-My-Kimi (OMK) HUD');
 
   const state = getActiveSkill();

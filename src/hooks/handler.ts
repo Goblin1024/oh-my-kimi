@@ -13,6 +13,7 @@ import { validateFlags, checkGates } from '../skills/validator.js';
 import { logger } from '../utils/logger.js';
 import { writeAudit } from '../utils/audit.js';
 import { setActiveSkill, setSkillState, cancelWorkflow, writeState } from '../state/manager.js';
+import { orchestrate, isNaturalLanguageTask, initializePersistence, getContinuationStatus } from '../orchestrator/index.js';
 
 const keywordRegistry = createDefaultRegistry();
 
@@ -68,6 +69,32 @@ function handleUserPromptSubmit(input: HookInput): HookOutput {
   };
 
   if (!input.prompt) {
+    return output;
+  }
+
+  // Check if this is a natural language task description (not an explicit command)
+  if (isNaturalLanguageTask(input.prompt)) {
+    logger.info('handler', 'Natural language task detected, auto-orchestrating');
+    
+    const result = orchestrate(input.prompt, input.cwd);
+    
+    // Only activate if we detected a clear task intent
+    if (result) {
+      output.hookSpecificOutput = {
+        hookEventName: 'UserPromptSubmit',
+        skill: result.skill,
+        activated: true,
+        message: result.message,
+      };
+      
+      logger.info('handler', `Auto-orchestrated workflow: ${result.skill} (${result.mode})`, {
+        session_id: input.session_id,
+      });
+      
+      return output;
+    }
+    
+    // No clear task detected, treat as regular conversation
     return output;
   }
 
@@ -149,18 +176,29 @@ function handleUserPromptSubmit(input: HookInput): HookOutput {
 function handleSessionStart(input: HookInput): HookOutput {
   const stateDir = getStateDir(input.cwd);
 
+  // Initialize persistence engine with auto-recovery
+  initializePersistence(input.cwd);
+
   // Check for active workflow
   const activeState = readState(stateDir, 'skill-active.json');
 
   if (activeState?.active) {
     const overlayContext = injectOverlay(activeState.skill);
     const honestyContract = getHonestyContract();
+    
+    // Check if continuation is required
+    const continuation = getContinuationStatus(input.cwd);
+    let continuationMsg = '';
+    if (continuation) {
+      continuationMsg = `\n⚠️  Task requires continuation (${continuation.progress}% complete)`;
+    }
+    
     return {
       hookSpecificOutput: {
         hookEventName: 'SessionStart',
         skill: activeState.skill,
         activated: true,
-        message: `Resuming ${activeState.skill} workflow (phase: ${activeState.phase})\n${overlayContext}\n${honestyContract}`,
+        message: `Resuming ${activeState.skill} workflow (phase: ${activeState.phase})${continuationMsg}\n${overlayContext}\n${honestyContract}`,
       },
     };
   }

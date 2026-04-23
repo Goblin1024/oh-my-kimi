@@ -7,6 +7,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.4] - 2026-04-23
+
+### Added
+- **Smart Auto-Orchestrator**: Natural language workflow detection - no commands needed
+  - Auto-detects task type, complexity, and required skills from descriptions
+  - Automatic team mode selection for complex tasks
+  - Zero configuration with smart defaults
+- **Team-First Orchestration**: Multi-agent team is now the standard interface
+  - Automatic task decomposition into parallel subtasks
+  - Dependency-aware scheduling with topological sorting
+  - Intelligent role assignment (architect, executor, reviewer, etc.)
+- **Auto-Parallelization**: Complex tasks automatically split among specialized agents
+  - Component-based decomposition (frontend/backend/database)
+  - Parallel execution where dependencies allow
+  - Automatic result aggregation
+- **Persistence Engine**: Continuous execution until confirmed completion
+  - Automatic crash recovery on session restart
+  - Retry mechanism for failed subtasks (up to 3 retries)
+  - Progress tracking with phase-based completion percentages
+- **Cost Optimization Router**: Intelligent model routing saves 30-50% token costs
+  - Complexity-based agent configuration (low/medium/high)
+  - Automatic eco mode for simple tasks
+  - Token budget tracking with efficiency scoring
+- **Experience Learning**: Automatic pattern extraction and reuse
+  - Extracts successful command patterns from completed workflows
+  - Stores file generation patterns and review outcomes
+  - Provides contextual suggestions based on current phase
+- **Smart HUD**: Real-time engine visibility with status bar
+  - Shows workflow phase, team status, token usage
+  - Displays active agents and their roles
+  - Cost optimization indicators and learning suggestions
+
 ## [1.0.3] - 2026-04-23
 
 ### Fixed
@@ -109,7 +141,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - No network access in hooks
 - State files are local only
 
-[Unreleased]: https://github.com/Goblin1024/oh-my-kimi/compare/v1.0.3...HEAD
+[Unreleased]: https://github.com/Goblin1024/oh-my-kimi/compare/v1.0.4...HEAD
+[1.0.4]: https://github.com/Goblin1024/oh-my-kimi/releases/tag/v1.0.4
 [1.0.3]: https://github.com/Goblin1024/oh-my-kimi/releases/tag/v1.0.3
 [1.0.2]: https://github.com/Goblin1024/oh-my-kimi/releases/tag/v1.0.2
 [1.0.1]: https://github.com/Goblin1024/oh-my-kimi/releases/tag/v1.0.1
