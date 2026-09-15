@@ -1,3 +1,5 @@
+
+
 <div align="center">
 <img src="logo/logo.png" width="600" alt="oh-my-kimi Logo">
 
@@ -8,7 +10,7 @@
 [![CI](https://img.shields.io/github/actions/workflow/status/Goblin1024/oh-my-kimi/ci.yml?branch=master&style=flat-square&label=CI&logo=github)](https://github.com/Goblin1024/oh-my-kimi/actions/workflows/ci.yml)
 [![npm version](https://img.shields.io/npm/v/oh-my-kimi-cli.svg?style=flat-square&color=cb3837)](https://www.npmjs.com/package/oh-my-kimi-cli)
 [![License: MIT](https://img.shields.io/npm/l/oh-my-kimi-cli.svg?style=flat-square&color=blue)](https://github.com/Goblin1024/oh-my-kimi/blob/main/LICENSE)
-[![GitHub stars](https://img.shields.io/github/stars/Goblin1024/oh-my-kimi?style=flat-square&color=yellow)](https://github.com/Goblin1024/oh-my-kimi/stargagers)
+[![GitHub stars](https://img.shields.io/github/stars/Goblin1024/oh-my-kimi?style=flat-square&color=yellow)](https://github.com/Goblin1024/oh-my-kimi/stargazers)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 
 *Turn Kimi Code CLI from a conversational assistant into a structured engineering platform.*
@@ -61,6 +63,8 @@
 ### 1. Installation
 
 Requires Node.js 20+ and [Kimi CLI](https://moonshotai.github.io/kimi-cli/) installed.
+
+Supports macOS, Linux, and Windows.
 
 ```bash
 npm install -g oh-my-kimi-cli
